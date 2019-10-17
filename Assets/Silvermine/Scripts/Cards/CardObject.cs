@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Silvermine.Duel.Core;
 
 public class CardObject : MonoBehaviour
@@ -16,12 +14,21 @@ public class CardObject : MonoBehaviour
     {
         _card = new BaseMagicCard(_color, _damange);
         Debug.Log("Card is " + _card.Color);
-        LeanTween.scale(this.gameObject, new Vector2(2f, 2f), 1f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    private void OnMouseEnter()
+    {
+        LeanTween.scale(this.gameObject, new Vector2(1.3f, 1.3f), 0.2f);
+    }
+
+    private void OnMouseExit()
+    {
+        LeanTween.scale(this.gameObject, new Vector2(1f, 1f), 0.2f);
     }
 }
