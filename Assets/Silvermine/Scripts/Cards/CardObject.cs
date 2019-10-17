@@ -16,6 +16,7 @@ public class CardObject : MonoBehaviour
     {
         _card = new BaseMagicCard(_color, _damange);
         Debug.Log("Card is " + _card.Color);
+        LeanTween.scale(this.gameObject, new Vector2(2f, 2f), 1f);
     }
 
     // Update is called once per frame
