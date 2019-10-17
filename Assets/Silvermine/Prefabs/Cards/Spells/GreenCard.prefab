@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1241931365508167899}
   - component: {fileID: 1241931365508167900}
   - component: {fileID: 1241931365508167901}
+  - component: {fileID: 7511271021042841909}
   m_Layer: 0
   m_Name: GreenCard
   m_TagString: Untagged
@@ -94,3 +95,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _color: 2
   _damange: 0
+--- !u!61 &7511271021042841909
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1241931365508167902}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2.23, y: 3.01}
+    newSize: {x: 2.23, y: 3.01}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2.23, y: 3.01}
+  m_EdgeRadius: 0
