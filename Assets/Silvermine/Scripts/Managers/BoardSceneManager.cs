@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Silvermine.Duel.Core;
 
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 {
@@ -23,6 +22,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
         {
             _handMap.Add(_cards[i], _cardLocators[i]);
         }
+
+        Events.Instance.AddListener<CardEvent>(OnCardEvent);
     }
 
     // Update is called once per frame
@@ -45,5 +46,15 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     public Vector2 GetHandCardScale()
     {
         return new Vector2(0.6f, 0.6f);
+    }
+
+    public void OnCardEvent(CardEvent e)
+    {
+        Debug.LogWarning("Handled event by " + e.card);
+    }
+
+    private void OnDestroy()
+    {
+        Events.Instance.RemoveListener<CardEvent>(OnCardEvent);
     }
 }

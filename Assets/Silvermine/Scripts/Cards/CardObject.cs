@@ -26,7 +26,6 @@ public class CardObject : MonoBehaviour
         _manager = BoardSceneManager.Instance;
         _originalScale = transform.localScale;
         _state = CardState.InHand;
-        Debug.LogWarning("originalScale " + _originalScale);
     }
     
     void Update()
@@ -44,8 +43,7 @@ public class CardObject : MonoBehaviour
     {
         if(_state == CardState.Grabbed)
         {
-            _manager.IsHoldingCard = false;
-            ResetCardInHand();
+            DropCard();
         }
         else
         {
@@ -88,7 +86,6 @@ public class CardObject : MonoBehaviour
 
     private void HighlightCard()
     {
-        Debug.LogWarning("HighlightCard");
         Vector2 handPosition = _manager.GetCardHandPosition(this);
 
         LeanTween.scale(this.gameObject, new Vector2(OverSizeScale, OverSizeScale), 0.2f);
@@ -118,5 +115,29 @@ public class CardObject : MonoBehaviour
         _manager.IsHoldingCard = true;
         Vector2 handScale = _manager.GetHandCardScale();
         LeanTween.scale(this.gameObject, handScale, 0.2f);
+    }
+
+    private void DropCard()
+    {
+        Debug.Log("DropCard");
+        _manager.IsHoldingCard = false;
+
+
+        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit hit;
+        // Does the ray intersect any objects excluding the player layer
+        if (Physics.Raycast(position, Vector3.forward, out hit, Mathf.Infinity))
+        {
+
+            Debug.Log("Did Hit");
+            if (hit.transform.tag == "PlaySpace")
+            {
+                Debug.Log("Did Hit PlaySpace");
+                
+                Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.CARD_PLAYED, this));
+            }
+        }
+
+        ResetCardInHand();
     }
 }
