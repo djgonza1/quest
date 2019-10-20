@@ -44,3 +44,6 @@ TagManager:
   - name: Background
     uniqueID: 2730309039
     locked: 0
+  - name: Hand
+    uniqueID: 663210897
+    locked: 0
