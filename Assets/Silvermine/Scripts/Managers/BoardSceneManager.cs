@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Silvermine.Battle.Core;
 
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 {
@@ -10,12 +11,12 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     private Transform[] _cardLocators;
     
     private Dictionary<CardObject, Transform> _handMap;
-    public bool IsHoldingCard { get; set; }
+    public BoardSessionManager _session;
 
     // Start is called before the first frame update
     void Start()
     {
-        IsHoldingCard = false;
+        _session = new BoardSessionManager();
 
         _handMap = new Dictionary<CardObject, Transform>();
         for(int i = 0; i < _cards.Length; i++)
@@ -51,6 +52,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     public void OnCardEvent(CardEvent e)
     {
         Debug.LogWarning("Handled event by " + e.card);
+    }
+
+    public bool TryPlayCard(BaseMagicCard card)
+    {
+        return _session.TryPlayCard(Player.First, card);
     }
 
     private void OnDestroy()

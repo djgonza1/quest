@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
-using Silvermine.Duel.Core;
+using Silvermine.Battle.Core;
 
 public class CardObject : MonoBehaviour
 {
+    private static bool _playerHoldsCard = false;
+
     private enum CardState { None, InHand, Grabbed, Reseting};
 
     private const float OverSizePosOffset = 1.3f;
@@ -66,7 +68,7 @@ public class CardObject : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        if (_state != CardState.InHand || _manager.IsHoldingCard)
+        if (_state != CardState.InHand || _playerHoldsCard)
         {
             return;
         }
@@ -112,7 +114,7 @@ public class CardObject : MonoBehaviour
     private void GrabCard()
     {
         _state = CardState.Grabbed;
-        _manager.IsHoldingCard = true;
+        _playerHoldsCard = true;
         Vector2 handScale = _manager.GetHandCardScale();
         LeanTween.scale(this.gameObject, handScale, 0.2f);
     }
@@ -120,21 +122,22 @@ public class CardObject : MonoBehaviour
     private void DropCard()
     {
         Debug.Log("DropCard");
-        _manager.IsHoldingCard = false;
+        _playerHoldsCard = false;
 
 
         Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit hit;
-        // Does the ray intersect any objects excluding the player layer
-        if (Physics.Raycast(position, Vector3.forward, out hit, Mathf.Infinity))
-        {
 
+        RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.forward);
+
+        foreach(var hit in hits)
+        {
             Debug.Log("Did Hit");
             if (hit.transform.tag == "PlaySpace")
             {
                 Debug.Log("Did Hit PlaySpace");
-                
+
                 Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.CARD_PLAYED, this));
+                break;
             }
         }
 
