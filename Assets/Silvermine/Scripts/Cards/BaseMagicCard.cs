@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Silvermine.Duel.Core
+namespace Silvermine.Battle.Core
 {
 
     public enum CardColor { None, Red, Green, Blue };
