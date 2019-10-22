@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Silvermine.Battle.Core;
+using System;
 
 public class CardObject : MonoBehaviour
 {
@@ -86,7 +87,7 @@ public class CardObject : MonoBehaviour
         ResetCardInHand();
     }
 
-    private void HighlightCard()
+    public void HighlightCard()
     {
         Vector2 handPosition = _manager.GetCardHandPosition(this);
 
@@ -96,7 +97,7 @@ public class CardObject : MonoBehaviour
         _renderer.sortingOrder++;
     }
     
-    private void ResetCardInHand()
+    public void ResetCardInHand(Action callback = null)
     {
         _state = CardState.Reseting;
         Vector2 handPosition = _manager.GetCardHandPosition(this);
@@ -106,12 +107,13 @@ public class CardObject : MonoBehaviour
         LeanTween.move(this.gameObject, new Vector2(handPosition.x, handPosition.y), 0.2f).setOnComplete(()=> 
         {
             _state = CardState.InHand;
+            callback?.Invoke();
         });
 
         _renderer.sortingOrder = 0;
     }
 
-    private void GrabCard()
+    public void GrabCard()
     {
         _state = CardState.Grabbed;
         _playerHoldsCard = true;
@@ -119,7 +121,7 @@ public class CardObject : MonoBehaviour
         LeanTween.scale(this.gameObject, handScale, 0.2f);
     }
 
-    private void DropCard()
+    public void DropCard(Action callback = null)
     {
         Debug.Log("DropCard");
         _playerHoldsCard = false;
@@ -141,6 +143,6 @@ public class CardObject : MonoBehaviour
             }
         }
 
-        ResetCardInHand();
+        ResetCardInHand(callback);
     }
 }
