@@ -6,10 +6,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 {
     [SerializeField]
     private CardObject[] _cards;
-    
     [SerializeField]
     private Transform[] _cardLocators;
-    
+    [SerializeField]
+    private Transform _leftSpellBoardLocator;
+    [SerializeField]
+    private Transform _rightSpellBoardLocator;
+
     private Dictionary<CardObject, Transform> _handMap;
     public BoardSessionManager _session;
 
@@ -33,7 +36,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
         
     }
 
-    public Vector2 GetCardHandPosition(CardObject card)
+    public Vector3 GetCardHandPosition(CardObject card)
     {
         if (_handMap.ContainsKey(card))
         {
@@ -44,9 +47,25 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
         return Vector2.zero;
     }
 
+    public Vector3 GetBoardPlayPosition(CardObject card)
+    {
+        if (_leftSpellBoardLocator)
+        {
+            return _leftSpellBoardLocator.position;
+        }
+
+        Debug.LogError("No play locator found for card object");
+        return Vector2.zero;
+    }
+
     public Vector2 GetHandCardScale()
     {
         return new Vector2(0.6f, 0.6f);
+    }
+
+    public Vector2 GetPlayBoardCardScale()
+    {
+        return GetHandCardScale();
     }
 
     public void OnCardEvent(CardEvent e)

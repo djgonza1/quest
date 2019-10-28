@@ -12,6 +12,8 @@ public class CardObject : MonoBehaviour
     private const float OverSizeScale = 1.5f;
 
     [SerializeField]
+    private PlayMakerFSM _cardFSM;
+    [SerializeField]
     SpriteRenderer _renderer;
     [SerializeField]
     private CardColor _color;
@@ -41,51 +43,7 @@ public class CardObject : MonoBehaviour
         Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         this.transform.position = position;
     }
-
-    private void OnMouseUp()
-    {
-        if(_state == CardState.Grabbed)
-        {
-            DropCard();
-        }
-        else
-        {
-            GrabCard();
-        }
-    }
-
-    private void OnMouseDrag()
-    {
-        if (_state != CardState.InHand)
-        {
-            return;
-        }
-
-        if (Input.GetAxis("Mouse X") > 0f || Input.GetAxis("Mouse Y") > 0f)
-        {
-            GrabCard();
-        }
-    }
-
-    private void OnMouseEnter()
-    {
-        if (_state != CardState.InHand || _playerHoldsCard)
-        {
-            return;
-        }
-        
-        HighlightCard();
-    }
-
-    private void OnMouseExit()
-    {
-        if(_state != CardState.InHand)
-        {
-            return;
-        }
-
-        ResetCardInHand();
-    }
+    
 
     public void HighlightCard()
     {
@@ -99,14 +57,12 @@ public class CardObject : MonoBehaviour
     
     public void ResetCardInHand(Action callback = null)
     {
-        _state = CardState.Reseting;
         Vector2 handPosition = _manager.GetCardHandPosition(this);
         Vector2 handScale = _manager.GetHandCardScale();
 
         LeanTween.scale(this.gameObject, handScale, 0.2f);
         LeanTween.move(this.gameObject, new Vector2(handPosition.x, handPosition.y), 0.2f).setOnComplete(()=> 
         {
-            _state = CardState.InHand;
             callback?.Invoke();
         });
 
@@ -115,34 +71,29 @@ public class CardObject : MonoBehaviour
 
     public void GrabCard()
     {
-        _state = CardState.Grabbed;
         _playerHoldsCard = true;
         Vector2 handScale = _manager.GetHandCardScale();
         LeanTween.scale(this.gameObject, handScale, 0.2f);
     }
 
-    public void DropCard(Action callback = null)
+    public void PlayCard(Action callback = null)
     {
-        Debug.Log("DropCard");
-        _playerHoldsCard = false;
+        Vector3 playPosition = _manager.GetBoardPlayPosition(this);
+        Vector3 playScale = _manager.GetPlayBoardCardScale();
 
+        LeanTween.scale(this.gameObject, playScale, 1);
 
-        Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 start = this.transform.position;
+        Vector3 point1 = start + new Vector3(0, 2f);
+        Vector3 point2 = playPosition + new Vector3(0, 2f);
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.forward);
+        LTBezierPath path = new LTBezierPath(new Vector3[] { start, point2, point1, playPosition});
 
-        foreach(var hit in hits)
+        LeanTween.move(this.gameObject, path, 0.3f).setOnComplete(() =>
         {
-            Debug.Log("Did Hit");
-            if (hit.transform.tag == "PlaySpace")
-            {
-                Debug.Log("Did Hit PlaySpace");
+            callback?.Invoke();
+        });
 
-                Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.CARD_PLAYED, this));
-                break;
-            }
-        }
-
-        ResetCardInHand(callback);
+        _renderer.sortingOrder = 0;
     }
 }

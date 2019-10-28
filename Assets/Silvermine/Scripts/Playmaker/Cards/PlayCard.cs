@@ -2,8 +2,7 @@
 
 namespace Silvermine.Playmaker.Actions
 {
-    [ActionCategory("Silvermine")]
-    public class DropCard : FsmStateAction
+    public class PlayCard : FsmStateAction
     {
         public FsmOwnerDefault Card;
 
@@ -11,7 +10,7 @@ namespace Silvermine.Playmaker.Actions
         {
             var go = Fsm.GetOwnerDefaultTarget(Card);
 
-            go.GetComponent<CardObject>().ResetCardInHand(Finish);
+            go.GetComponent<CardObject>().PlayCard(Finish);
         }
     }
 }
