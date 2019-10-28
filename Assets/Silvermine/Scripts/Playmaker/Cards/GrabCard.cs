@@ -15,12 +15,13 @@ namespace Silvermine.Playmaker.Actions
             _go = Fsm.GetOwnerDefaultTarget(Card);
 
             _go.GetComponent<CardObject>().GrabCard();
-            Finish();
+            //Finish();
         }
 
         public override void OnUpdate()
         {
             Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log("mouse position: " + position);
             _go.transform.position = position;
         }
     }
