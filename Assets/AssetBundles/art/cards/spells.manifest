@@ -1,0 +1,20 @@
+ManifestFileVersion: 0
+CRC: 1280020031
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 745bc066d459bdb37b969f7ebd1ce838
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: cb3f6df5cbc4a2990c44c2787bc9553a
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Silvermine/Art/Sprites/Cards/Spell/SP_TypeA_A01.png
+- Assets/Silvermine/Art/Sprites/Cards/Spell/SP_TypeA_B01.png
+- Assets/Silvermine/Art/Sprites/Cards/Spell/SP_TypeA_C01.png
+Dependencies: []

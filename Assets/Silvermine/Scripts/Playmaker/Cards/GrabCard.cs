@@ -21,7 +21,6 @@ namespace Silvermine.Playmaker.Actions
         public override void OnUpdate()
         {
             Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Debug.Log("mouse position: " + position);
             _go.transform.position = position;
         }
     }
