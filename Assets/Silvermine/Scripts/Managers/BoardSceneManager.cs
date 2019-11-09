@@ -5,8 +5,6 @@ using Silvermine.Battle.Core;
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 {
     [SerializeField]
-    private CardObject[] _cards;
-    [SerializeField]
     private Transform[] _cardLocators;
     [SerializeField]
     private Transform _leftSpellBoardLocator;
@@ -16,15 +14,32 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     private Dictionary<CardObject, Transform> _handMap;
     public BoardSessionManager _session;
 
+    public CardObject tempCard;
     // Start is called before the first frame update
     void Start()
     {
         _session = new BoardSessionManager();
 
         _handMap = new Dictionary<CardObject, Transform>();
-        for(int i = 0; i < _cards.Length; i++)
+
+        BaseMagicCard card1 = new BaseMagicCard(CardColor.Red, 0);
+        BaseMagicCard card2 = new BaseMagicCard(CardColor.Green, 0);
+        BaseMagicCard card3 = new BaseMagicCard(CardColor.Blue, 0);
+
+        CardObject cardObject1 = ContentManager.Instance.LoadSpellCardObject(card1);
+        CardObject cardObject2 = ContentManager.Instance.LoadSpellCardObject(card2);
+        CardObject cardObject3 = ContentManager.Instance.LoadSpellCardObject(card3);
+
+        _handMap.Add(cardObject1, _cardLocators[0]);
+        _handMap.Add(cardObject2, _cardLocators[1]);
+        _handMap.Add(cardObject3, _cardLocators[2]);
+
+        foreach(var pair in _handMap)
         {
-            _handMap.Add(_cards[i], _cardLocators[i]);
+            var card = pair.Key;
+            var loc = pair.Value;
+
+            card.transform.position = loc.transform.position;
         }
 
         Events.Instance.AddListener<CardEvent>(OnCardEvent);

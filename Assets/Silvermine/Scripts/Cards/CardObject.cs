@@ -1,50 +1,35 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 using Silvermine.Battle.Core;
 using System;
 
 public class CardObject : MonoBehaviour
 {
+    public const string AssetName = "Card";
+
     private static bool _playerHoldsCard = false;
-
-    private enum CardState { None, InHand, Grabbed, Reseting};
-
     private const float OverSizePosOffset = 1.3f;
     private const float OverSizeScale = 1.5f;
 
     [SerializeField]
-    private PlayMakerFSM _cardFSM;
+    SpriteRenderer _cardFront;
     [SerializeField]
-    SpriteRenderer _renderer;
-    [SerializeField]
-    private CardColor _color;
-    [SerializeField]
-    private int _damange;
+    SortingGroup _sortingGroup;
 
     private BaseMagicCard _card;
     private BoardSceneManager _manager;
     private Vector2 _originalScale;
-    private CardState _state;
-
-    void Start()
+    
+    public void Init(BaseMagicCard card)
     {
-        _card = new BaseMagicCard(_color, _damange);
-        _manager = BoardSceneManager.Instance;
+        _card = card;
         _originalScale = transform.localScale;
-        _state = CardState.InHand;
-    }
-    
-    void Update()
-    {
-        if(_state != CardState.Grabbed)
-        {
-            return;
-        }
-        
-        Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        this.transform.position = position;
-    }
-    
+        _cardFront.color = CardUtilities.ToColor(_card.Color);
 
+        _manager = BoardSceneManager.Instance;
+        transform.localScale = _manager.GetHandCardScale();
+    }
+    
     public void HighlightCard()
     {
         Vector2 handPosition = _manager.GetCardHandPosition(this);
@@ -52,7 +37,7 @@ public class CardObject : MonoBehaviour
         LeanTween.scale(this.gameObject, new Vector2(OverSizeScale, OverSizeScale), 0.2f);
         LeanTween.move(this.gameObject, new Vector2(handPosition.x, handPosition.y + OverSizePosOffset), 0.2f);
 
-        _renderer.sortingOrder++;
+        _sortingGroup.sortingOrder++;
     }
     
     public void ResetCardInHand(Action callback = null)
@@ -66,7 +51,7 @@ public class CardObject : MonoBehaviour
             callback?.Invoke();
         });
 
-        _renderer.sortingOrder = 0;
+        _sortingGroup.sortingOrder = 0;
     }
 
     public void GrabCard()
@@ -94,6 +79,6 @@ public class CardObject : MonoBehaviour
             callback?.Invoke();
         });
 
-        _renderer.sortingOrder = 0;
+        _sortingGroup.sortingOrder = 0;
     }
 }

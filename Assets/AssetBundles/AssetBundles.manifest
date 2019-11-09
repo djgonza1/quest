@@ -1,0 +1,13 @@
+ManifestFileVersion: 0
+CRC: 691387533
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: art/cards/characters
+      Dependencies: {}
+    Info_1:
+      Name: art/cards/spells
+      Dependencies: {}
+    Info_2:
+      Name: gameobjects/cards
+      Dependencies: {}
