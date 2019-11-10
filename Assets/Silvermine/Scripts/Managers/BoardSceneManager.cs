@@ -1,46 +1,48 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 {
+    public FsmTemplate playerCardActions;
+    public FsmTemplate enemyCardActions;
+
     [SerializeField]
-    private Transform[] _cardLocators;
+    private Transform[] _playerCardLocators;
+    [SerializeField]
+    private Transform[] _enemyCardLocators;
     [SerializeField]
     private Transform _leftSpellBoardLocator;
     [SerializeField]
     private Transform _rightSpellBoardLocator;
 
-    private Dictionary<CardObject, Transform> _handMap;
+    private Dictionary<CardObject, Transform> _playerHandMap;
+    private Dictionary<CardObject, Transform> _enemyHandMap;
     public BoardSessionManager _session;
-
-    public CardObject tempCard;
+    
     // Start is called before the first frame update
     void Start()
     {
         _session = new BoardSessionManager();
 
-        _handMap = new Dictionary<CardObject, Transform>();
-
-        BaseMagicCard card1 = new BaseMagicCard(CardColor.Red, 0);
-        BaseMagicCard card2 = new BaseMagicCard(CardColor.Green, 0);
-        BaseMagicCard card3 = new BaseMagicCard(CardColor.Blue, 0);
-
-        CardObject cardObject1 = ContentManager.Instance.LoadSpellCardObject(card1);
-        CardObject cardObject2 = ContentManager.Instance.LoadSpellCardObject(card2);
-        CardObject cardObject3 = ContentManager.Instance.LoadSpellCardObject(card3);
-
-        _handMap.Add(cardObject1, _cardLocators[0]);
-        _handMap.Add(cardObject2, _cardLocators[1]);
-        _handMap.Add(cardObject3, _cardLocators[2]);
-
-        foreach(var pair in _handMap)
+        BaseMagicCard[] playerCards =
         {
-            var card = pair.Key;
-            var loc = pair.Value;
+            new BaseMagicCard(CardColor.Red, 0),
+            new BaseMagicCard(CardColor.Green, 0),
+            new BaseMagicCard(CardColor.Blue, 0)
+        };
 
-            card.transform.position = loc.transform.position;
-        }
+        BaseMagicCard[] enemyCards =
+        {
+            new BaseMagicCard(CardColor.None, 0),
+            new BaseMagicCard(CardColor.None, 0),
+            new BaseMagicCard(CardColor.None, 0)
+        };
+        
+
+        _playerHandMap = CreateHand(playerCards);
+        _enemyHandMap = CreateHand(enemyCards, false);
 
         Events.Instance.AddListener<CardEvent>(OnCardEvent);
     }
@@ -51,11 +53,44 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
         
     }
 
+    public Dictionary<CardObject, Transform> CreateHand(BaseMagicCard[] cards, bool isPlayerHand = true)
+    {
+        Dictionary<CardObject, Transform> handMap = new Dictionary<CardObject, Transform>();
+        
+        for (int i = 0; i < cards.Length; i++)
+        {
+            CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
+
+            FsmTemplate cardActions = isPlayerHand ? playerCardActions : enemyCardActions;
+            cardObject.CardFsm.SetFsmTemplate(cardActions);
+
+            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
+
+            handMap.Add(cardObject, handLoc);
+        }
+
+        foreach (var pair in handMap)
+        {
+            var card = pair.Key;
+            var loc = pair.Value;
+
+            card.transform.position = loc.transform.position;
+            card.transform.localScale = GetHandCardScale();
+        }
+
+        return handMap;
+    }
+    
     public Vector3 GetCardHandPosition(CardObject card)
     {
-        if (_handMap.ContainsKey(card))
+        if (_playerHandMap.ContainsKey(card))
         {
-            return _handMap[card].position;
+            return _playerHandMap[card].position;
+        }
+
+        if (_enemyHandMap.ContainsKey(card))
+        {
+            return _enemyHandMap[card].position;
         }
 
         Debug.LogError("No hand locator found for card object");

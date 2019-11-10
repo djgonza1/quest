@@ -6,15 +6,16 @@ using System;
 public class CardObject : MonoBehaviour
 {
     public const string AssetName = "Card";
-
-    private static bool _playerHoldsCard = false;
+    
     private const float OverSizePosOffset = 1.3f;
     private const float OverSizeScale = 1.5f;
 
+    public PlayMakerFSM CardFsm;
+
     [SerializeField]
-    SpriteRenderer _cardFront;
+    private SpriteRenderer _cardFront;
     [SerializeField]
-    SortingGroup _sortingGroup;
+    private SortingGroup _sortingGroup;
 
     private BaseMagicCard _card;
     private BoardSceneManager _manager;
@@ -27,7 +28,6 @@ public class CardObject : MonoBehaviour
         _cardFront.color = CardUtilities.ToColor(_card.Color);
 
         _manager = BoardSceneManager.Instance;
-        transform.localScale = _manager.GetHandCardScale();
     }
     
     public void HighlightCard()
@@ -56,7 +56,6 @@ public class CardObject : MonoBehaviour
 
     public void GrabCard()
     {
-        _playerHoldsCard = true;
         Vector2 handScale = _manager.GetHandCardScale();
         LeanTween.scale(this.gameObject, handScale, 0.2f);
     }
