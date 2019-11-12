@@ -77,8 +77,6 @@ public class CardObject : MonoBehaviour
         });
 
         _sortingGroup.sortingOrder = 0;
-
-
-        int temptInt = 0;
     }
+   
 }
