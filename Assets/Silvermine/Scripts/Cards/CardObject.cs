@@ -10,8 +10,6 @@ public class CardObject : MonoBehaviour
     private const float OverSizePosOffset = 1.3f;
     private const float OverSizeScale = 1.5f;
 
-    public PlayMakerFSM CardFsm;
-
     [SerializeField]
     private SpriteRenderer _cardFront;
     [SerializeField]
@@ -80,4 +78,5 @@ public class CardObject : MonoBehaviour
 
         _sortingGroup.sortingOrder = 0;
     }
+   
 }

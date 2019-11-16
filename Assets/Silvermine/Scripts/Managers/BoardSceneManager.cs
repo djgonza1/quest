@@ -5,9 +5,6 @@ using Silvermine.Battle.Core;
 
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 {
-    public FsmTemplate playerCardActions;
-    public FsmTemplate enemyCardActions;
-
     [SerializeField]
     private Transform[] _playerCardLocators;
     [SerializeField]
@@ -57,26 +54,26 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     {
         Dictionary<CardObject, Transform> handMap = new Dictionary<CardObject, Transform>();
         
-        for (int i = 0; i < cards.Length; i++)
-        {
-            CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
+        //for (int i = 0; i < cards.Length; i++)
+        //{
+        //    CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
 
-            FsmTemplate cardActions = isPlayerHand ? playerCardActions : enemyCardActions;
-            cardObject.CardFsm.SetFsmTemplate(cardActions);
+        //    FsmTemplate cardActions = isPlayerHand ? playerCardActions : enemyCardActions;
+        //    cardObject.CardFsm.SetFsmTemplate(cardActions);
 
-            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
+        //    Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            handMap.Add(cardObject, handLoc);
-        }
+        //    handMap.Add(cardObject, handLoc);
+        //}
 
-        foreach (var pair in handMap)
-        {
-            var card = pair.Key;
-            var loc = pair.Value;
+        //foreach (var pair in handMap)
+        //{
+        //    var card = pair.Key;
+        //    var loc = pair.Value;
 
-            card.transform.position = loc.transform.position;
-            card.transform.localScale = GetHandCardScale();
-        }
+        //    card.transform.position = loc.transform.position;
+        //    card.transform.localScale = GetHandCardScale();
+        //}
 
         return handMap;
     }
