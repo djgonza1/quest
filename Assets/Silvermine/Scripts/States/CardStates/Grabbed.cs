@@ -1,18 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Silvermine.Battle.Core;
 
-public class Grabbed : MonoBehaviour
+public class Grabbed : CardState
 {
-    // Start is called before the first frame update
-    void Start()
+    public override void Begin()
     {
-        
+        _context.GrabCard();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void Update()
     {
-        
+
+    }
+
+    public override void End()
+    {
+
     }
 }

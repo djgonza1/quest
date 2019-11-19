@@ -27,8 +27,7 @@ public class ContentManager : SingletonGameObject<ContentManager>
         var go = Instantiate(_cardAsset);
 
         CardObject cardObject = go.GetComponent<CardObject>();
-        cardObject.Init(spellCard);
-
+        
         return cardObject;
     }
 

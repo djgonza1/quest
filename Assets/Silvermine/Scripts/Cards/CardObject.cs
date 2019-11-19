@@ -18,16 +18,23 @@ public class CardObject : MonoBehaviour
     private BaseMagicCard _card;
     private BoardSceneManager _manager;
     private Vector2 _originalScale;
+    private ICardStateMachine _stateMachine;
     
-    public void Init(BaseMagicCard card)
+    public void Init(BaseMagicCard card, ICardStateMachine stateMachine)
     {
         _card = card;
         _originalScale = transform.localScale;
         _cardFront.color = CardUtilities.ToColor(_card.Color);
 
         _manager = BoardSceneManager.Instance;
+        _stateMachine = stateMachine;
     }
-    
+
+    private void Update()
+    {
+        _stateMachine.Update();
+    }
+
     public void HighlightCard()
     {
         Vector2 handPosition = _manager.GetCardHandPosition(this);
@@ -78,5 +85,36 @@ public class CardObject : MonoBehaviour
 
         _sortingGroup.sortingOrder = 0;
     }
-   
+
+    public void OnMouseEnter()
+    {
+        _stateMachine.OnCardEnter();
+    }
+
+    public void OnMouseExit()
+    {
+        _stateMachine.OnCardExit();
+    }
+
+    public void OnMouseDown()
+    {
+        _stateMachine.OnCardTapDown();
+    }
+
+    public void OnMouseUp()
+    {
+        _stateMachine.OnCardTapRelease();
+    }
+
+    public void OnMouseOver()
+    {
+        if (Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
+        {
+            _stateMachine.OnCardDrag();
+        }
+        else
+        {
+            _stateMachine.OnCardHover();
+        }
+    }
 }

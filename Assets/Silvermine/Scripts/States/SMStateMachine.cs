@@ -6,8 +6,9 @@ namespace Silvermine.Battle.Core
 {
     public class SMStateMachine<T>
     {
+        public SMState<T> CurrentState;
+
         private T _context;
-        private SMState<T> _currentState;
         private Dictionary<Type, SMState<T>> _stateMap;
 
         public SMStateMachine(T context, SMState<T>[] states)
@@ -21,13 +22,13 @@ namespace Silvermine.Battle.Core
                 _stateMap[state.GetType()] = state;
             }
 
-            _currentState = _stateMap[states[0].GetType()];
-            _currentState.Begin();
+            CurrentState = _stateMap[states[0].GetType()];
+            CurrentState.Begin();
         }
 
         public void Update()
         {
-            _currentState.Update();
+            CurrentState.Update();
         }
 
         public void ChangeState<S>() where S : SMState<T>
@@ -37,9 +38,9 @@ namespace Silvermine.Battle.Core
                 return;
             }
 
-            _currentState.End();
-            _currentState = _stateMap[typeof(S)];
-            _currentState.Begin();
+            CurrentState.End();
+            CurrentState = _stateMap[typeof(S)];
+            CurrentState.Begin();
         }
     }
 }

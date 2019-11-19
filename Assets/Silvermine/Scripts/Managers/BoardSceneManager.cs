@@ -53,27 +53,34 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     public Dictionary<CardObject, Transform> CreateHand(BaseMagicCard[] cards, bool isPlayerHand = true)
     {
         Dictionary<CardObject, Transform> handMap = new Dictionary<CardObject, Transform>();
-        
-        //for (int i = 0; i < cards.Length; i++)
-        //{
-        //    CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
 
-        //    FsmTemplate cardActions = isPlayerHand ? playerCardActions : enemyCardActions;
-        //    cardObject.CardFsm.SetFsmTemplate(cardActions);
+        for (int i = 0; i < cards.Length; i++)
+        {
+            CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
 
-        //    Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
+            CardState[] states =
+            {
+                new InHand(),
+                new Grabbed(),
+            };
 
-        //    handMap.Add(cardObject, handLoc);
-        //}
+            CardStateMachine machine = new CardStateMachine(cardObject, states);
 
-        //foreach (var pair in handMap)
-        //{
-        //    var card = pair.Key;
-        //    var loc = pair.Value;
+            cardObject.Init(cards[i], machine);
 
-        //    card.transform.position = loc.transform.position;
-        //    card.transform.localScale = GetHandCardScale();
-        //}
+            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
+
+            handMap.Add(cardObject, handLoc);
+        }
+
+        foreach (var pair in handMap)
+        {
+            var card = pair.Key;
+            var loc = pair.Value;
+
+            card.transform.position = loc.transform.position;
+            card.transform.localScale = GetHandCardScale();
+        }
 
         return handMap;
     }

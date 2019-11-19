@@ -4,29 +4,39 @@ using UnityEngine;
 
 namespace Silvermine.Battle.Core
 { 
-    public abstract class CardState : SMState<CardState>
+    public abstract class CardState : SMState<CardObject>
     {
-        public virtual void OnMouseEnter()
+        public virtual void OnCardEnter()
         {
 
         }
 
-        public virtual void OnMouseExit()
+        public virtual void OnCardExit()
         {
             
         }
 
-        public virtual void OnMouseDown()
+        public virtual void OnCardTapDown()
         {
 
         }
 
-        public virtual void OnMouseUp()
+        public virtual void OnCardTapRelease()
         {
 
         }
         
-        public virtual void OnMouseOver()
+        public virtual void OnCardHover()
+        {
+
+        }
+
+        public virtual void OnCardDragged()
+        {
+
+        }
+
+        public virtual void OnCardDrag()
         {
 
         }
