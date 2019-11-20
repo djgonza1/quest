@@ -18,7 +18,7 @@ public class CardObject : MonoBehaviour
     private BaseMagicCard _card;
     private BoardSceneManager _manager;
     private Vector2 _originalScale;
-    private ICardStateMachine _stateMachine;
+    public ICardStateMachine StateMachine { get; private set; }
     
     public void Init(BaseMagicCard card, ICardStateMachine stateMachine)
     {
@@ -27,12 +27,12 @@ public class CardObject : MonoBehaviour
         _cardFront.color = CardUtilities.ToColor(_card.Color);
 
         _manager = BoardSceneManager.Instance;
-        _stateMachine = stateMachine;
+        StateMachine = stateMachine;
     }
 
     private void Update()
     {
-        _stateMachine.Update();
+        StateMachine.Update();
     }
 
     public void HighlightCard()
@@ -88,33 +88,33 @@ public class CardObject : MonoBehaviour
 
     public void OnMouseEnter()
     {
-        _stateMachine.OnCardEnter();
+        Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.ENTER, this));
     }
 
     public void OnMouseExit()
     {
-        _stateMachine.OnCardExit();
+        Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.EXIT, this));
     }
 
     public void OnMouseDown()
     {
-        _stateMachine.OnCardTapDown();
+        Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.TAP_DOWN, this));
     }
 
     public void OnMouseUp()
     {
-        _stateMachine.OnCardTapRelease();
+        Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.TAP_RELEASE, this));
     }
 
     public void OnMouseOver()
     {
         if (Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
         {
-            _stateMachine.OnCardDrag();
+            Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.DRAG, this));
         }
-        else
+        else if(!Input.GetMouseButton(0))
         {
-            _stateMachine.OnCardHover();
+            Events.Instance.Raise<CardEvent>(new CardEvent(CardEvent.EventType.HOVER, this));
         }
     }
 }

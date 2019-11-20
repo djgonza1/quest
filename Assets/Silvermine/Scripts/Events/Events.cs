@@ -84,7 +84,7 @@ public class GameEvent { };
 
 public class CardEvent : GameEvent
 {
-    public enum EventType { CARD_PLAYED };
+    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG };
 
     public EventType type;
     public CardObject card;

@@ -124,7 +124,32 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
 
     public void OnCardEvent(CardEvent e)
     {
-        Debug.LogWarning("Handled event by " + e.card);
+        if (!_playerHandMap.ContainsKey(e.card))
+        {
+            return;
+        }
+
+        switch(e.type)
+        {
+            case CardEvent.EventType.ENTER:
+                e.card.StateMachine.OnCardEnter();
+                break;
+            case CardEvent.EventType.EXIT:
+                e.card.StateMachine.OnCardExit();
+                break;
+            case CardEvent.EventType.HOVER:
+                e.card.StateMachine.OnCardHover();
+                break;
+            case CardEvent.EventType.DRAG:
+                e.card.StateMachine.OnCardDrag();
+                break;
+            case CardEvent.EventType.TAP_DOWN:
+                e.card.StateMachine.OnCardTapDown();
+                break;
+            case CardEvent.EventType.TAP_RELEASE:
+                e.card.StateMachine.OnCardTapRelease();
+                break;
+        }
     }
 
     public bool TryPlayCard(BaseMagicCard card)
