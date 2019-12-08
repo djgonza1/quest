@@ -20,4 +20,9 @@ namespace Silvermine.Battle.Core
         void Update();
         void ChangeState<S>() where S : CardState;
     }
+
+    public interface IBoardSessionStateMachine
+    {
+        
+    }
 }
