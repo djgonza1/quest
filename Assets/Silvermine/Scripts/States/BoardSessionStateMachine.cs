@@ -8,9 +8,9 @@ namespace Silvermine.Battle.Core
     {
         private SMStateMachine<BoardSessionManager> _stateMachine;
 
-        public BoardSessionStateMachine(BoardSessionManager _context)
+        public BoardSessionStateMachine(BoardSessionManager context, SMState<BoardSessionManager>[] states)
         {
-            _stateMachine = new SMStateMachine<BoardSessionManager>(_context, null);
+            _stateMachine = new SMStateMachine<BoardSessionManager>(context, states);
         }
 
         public void Update()

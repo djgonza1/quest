@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChoosingPhase : MonoBehaviour
+namespace Silvermine.Battle.Core
 {
-    // Start is called before the first frame update
-    void Start()
+    public class ChoosingPhase : SMState<BoardSessionManager>
     {
-        
-    }
+        public override void Begin()
+        {
+            _context.SceneManager.OnBattleStart(OnChoosingPhaseEnd);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void OnChoosingPhaseEnd()
+        {
+            Debug.LogWarning("OnChoosingPhaseEnd");
+        }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
+public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
 {
     [SerializeField]
     private Transform[] _playerCardLocators;
@@ -21,7 +22,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     // Start is called before the first frame update
     void Start()
     {
-        _session = new BoardSessionManager();
+        _session = new BoardSessionManager(this);
 
         BaseMagicCard[] playerCards =
         {
@@ -151,6 +152,16 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
                 break;
         }
     }
+    
+    public void OnBattleStart(Action onComplete)
+    {
+        DelayCall(onComplete, 2f);
+    }
+
+    public void OnChoosingPhase(Action onComplete)
+    {
+        DelayCall(onComplete, 2f);
+    }
 
     public bool TryPlayCard(BaseMagicCard card)
     {
@@ -160,5 +171,20 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>
     private void OnDestroy()
     {
         Events.Instance.RemoveListener<CardEvent>(OnCardEvent);
+    }
+
+    public void DelayCall(Action callback, float delay)
+    {
+        StartCoroutine(DelayedAction(callback, delay));
+    }
+
+    private IEnumerator DelayedAction(Action callback, float delay)
+    {
+        if(delay > 0f)
+        {
+            yield return new WaitForSeconds(delay);
+        }
+
+        callback.Invoke();
     }
 }

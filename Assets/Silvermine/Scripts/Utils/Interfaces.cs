@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,8 +22,9 @@ namespace Silvermine.Battle.Core
         void ChangeState<S>() where S : CardState;
     }
 
-    public interface IBoardSessionStateMachine
+    public interface IBoardSceneManager
     {
-        
+        void OnBattleStart(Action onComplete);
+        void OnChoosingPhase(Action onComplete);
     }
 }
