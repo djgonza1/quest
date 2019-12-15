@@ -14,22 +14,12 @@ public class InHand : CardState
         handState = InHandState.Neutral;
     }
 
-    public override void Update()
-    {
-
-    }
-
-    public override void End()
-    {
-
-    }
-
     public override void OnCardEnter()
     {
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            _context.HighlightCard();
+            BoardSceneManager.Instance.HighlightCard(_context);
         }
     }
 
@@ -41,7 +31,7 @@ public class InHand : CardState
         }
 
         handState = InHandState.Reseting;
-        _context.ResetCardInHand(()=> 
+        BoardSceneManager.Instance.ResetCardInHand(_context, ()=> 
         {
             handState = InHandState.Neutral;
         });
@@ -52,7 +42,7 @@ public class InHand : CardState
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            _context.HighlightCard();
+            BoardSceneManager.Instance.HighlightCard(_context);
         }
     }
 

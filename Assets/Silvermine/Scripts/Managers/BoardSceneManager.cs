@@ -4,8 +4,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
+public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSessionUserInterface
 {
+    public const float CardOverSizePosOffset = 1.3f;
+    public const float CardOverSizeScale = 1.5f;
+
     [SerializeField]
     private Transform[] _playerCardLocators;
     [SerializeField]
@@ -15,8 +18,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     [SerializeField]
     private Transform _rightSpellBoardLocator;
 
-    private Dictionary<CardObject, Transform> _playerHandMap;
-    private Dictionary<CardObject, Transform> _enemyHandMap;
+    private Dictionary<CardObject, CardObjectSceneInfo> _playerHandMap;
+    private Dictionary<CardObject, CardObjectSceneInfo> _enemyHandMap;
     public BoardSessionManager _session;
     
     // Start is called before the first frame update
@@ -48,12 +51,15 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     // Update is called once per frame
     void Update()
     {
-        
+        foreach (var cardInfo in _playerHandMap.Values)
+        {
+            cardInfo.StateMachine.Update();
+        }
     }
 
-    public Dictionary<CardObject, Transform> CreateHand(BaseMagicCard[] cards, bool isPlayerHand = true)
+    private Dictionary<CardObject, CardObjectSceneInfo> CreateHand(BaseMagicCard[] cards, bool isPlayerHand = true)
     {
-        Dictionary<CardObject, Transform> handMap = new Dictionary<CardObject, Transform>();
+        Dictionary<CardObject, CardObjectSceneInfo> handMap = new Dictionary<CardObject, CardObjectSceneInfo>();
 
         for (int i = 0; i < cards.Length; i++)
         {
@@ -63,23 +69,26 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             {
                 new InHand(),
                 new Grabbed(),
+                new InPlay()
             };
 
             CardStateMachine machine = new CardStateMachine(cardObject, states);
 
-            cardObject.Init(cards[i], machine);
+            cardObject.Init(cards[i]);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            handMap.Add(cardObject, handLoc);
+            CardObjectSceneInfo cardInfo = new CardObjectSceneInfo(handLoc.position, machine);
+
+            handMap.Add(cardObject, cardInfo);
         }
 
         foreach (var pair in handMap)
         {
             var card = pair.Key;
-            var loc = pair.Value;
+            var position = pair.Value.HandPosition;
 
-            card.transform.position = loc.transform.position;
+            card.transform.position = position;
             card.transform.localScale = GetHandCardScale();
         }
 
@@ -90,12 +99,12 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         if (_playerHandMap.ContainsKey(card))
         {
-            return _playerHandMap[card].position;
+            return _playerHandMap[card].HandPosition;
         }
 
         if (_enemyHandMap.ContainsKey(card))
         {
-            return _enemyHandMap[card].position;
+            return _enemyHandMap[card].HandPosition;
         }
 
         Debug.LogError("No hand locator found for card object");
@@ -125,30 +134,30 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     public void OnCardEvent(CardEvent e)
     {
-        if (!_playerHandMap.ContainsKey(e.card))
+        if (!_playerHandMap.ContainsKey(e.Card))
         {
             return;
         }
 
-        switch(e.type)
+        switch(e.Type)
         {
             case CardEvent.EventType.ENTER:
-                e.card.StateMachine.OnCardEnter();
+                _playerHandMap[e.Card].StateMachine.OnCardEnter();
                 break;
             case CardEvent.EventType.EXIT:
-                e.card.StateMachine.OnCardExit();
+                _playerHandMap[e.Card].StateMachine.OnCardExit();
                 break;
             case CardEvent.EventType.HOVER:
-                e.card.StateMachine.OnCardHover();
+                _playerHandMap[e.Card].StateMachine.OnCardHover();
                 break;
             case CardEvent.EventType.DRAG:
-                e.card.StateMachine.OnCardDrag();
+                _playerHandMap[e.Card].StateMachine.OnCardDrag();
                 break;
             case CardEvent.EventType.TAP_DOWN:
-                e.card.StateMachine.OnCardTapDown();
+                _playerHandMap[e.Card].StateMachine.OnCardTapDown();
                 break;
             case CardEvent.EventType.TAP_RELEASE:
-                e.card.StateMachine.OnCardTapRelease();
+                _playerHandMap[e.Card].StateMachine.OnCardTapRelease();
                 break;
         }
     }
@@ -186,5 +195,17 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }
 
         callback.Invoke();
+    }
+
+    private struct CardObjectSceneInfo
+    {
+        public Vector3 HandPosition;
+        public CardStateMachine StateMachine;
+
+        public CardObjectSceneInfo(Vector3 handPosition, CardStateMachine stateMachine)
+        {
+            HandPosition = handPosition;
+            StateMachine = stateMachine;
+        }
     }
 }

@@ -154,8 +154,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c60af492216f5479def8ec5167616b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortingGroup: {fileID: 6160106609930153526}
   _cardFront: {fileID: 673025100839787419}
-  _sortingGroup: {fileID: 6160106609930153526}
 --- !u!61 &4102852982944753378
 BoxCollider2D:
   m_ObjectHideFlags: 0

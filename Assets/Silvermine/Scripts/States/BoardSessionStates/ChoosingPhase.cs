@@ -13,7 +13,7 @@ namespace Silvermine.Battle.Core
 
         private void OnChoosingPhaseEnd()
         {
-            Debug.LogWarning("OnChoosingPhaseEnd");
+
         }
     }
 }

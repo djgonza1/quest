@@ -7,7 +7,7 @@ public class Grabbed : CardState
 {
     public override void Begin()
     {
-        _context.GrabCard();
+        BoardSceneManager.Instance.GrabCard(_context);
     }
 
     public override void Update()
@@ -15,14 +15,24 @@ public class Grabbed : CardState
         _context.transform.position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
-    public override void End()
-    {
-        
-    }
-
     public override void OnCardTapRelease()
     {
-        _context.ResetCardInHand(() =>
+        RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward);
+
+        foreach (var hit in hits)
+        {
+            if (hit.collider.tag == "PlaySpace")
+            {
+                BoardSceneManager.Instance.PlayCard(_context, () =>
+                {
+                    _stateMachine.ChangeState<InPlay>();
+                });
+
+                return;
+            }
+        }
+
+        BoardSceneManager.Instance.ResetCardInHand(_context, () =>
         {
             _stateMachine.ChangeState<InHand>();
         });

@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Silvermine.Battle.Core
 {
@@ -35,6 +36,7 @@ namespace Silvermine.Battle.Core
         {
             if (!_stateMap.ContainsKey(typeof(S)))
             {
+                Debug.LogError("StateMachine does not contain state: " + typeof(S).ToString());
                 return;
             }
 

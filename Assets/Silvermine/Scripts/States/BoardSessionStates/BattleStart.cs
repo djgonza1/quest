@@ -13,7 +13,6 @@ namespace Silvermine.Battle.Core
 
         public void OnBattleStartEnd()
         {
-            Debug.LogWarning("OnBattleStartEnd");
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }

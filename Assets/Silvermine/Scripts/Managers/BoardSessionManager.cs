@@ -9,11 +9,10 @@ namespace Silvermine.Battle.Core
 
     public class BoardSessionManager
     {
-        public BoardSessionStateMachine StateMachine { get; }
-        public IBoardSceneManager SceneManager { get; }
+        public SMStateMachine<BoardSessionManager> StateMachine { get; }
+        public IBoardSessionUserInterface SceneManager { get; }
 
-
-        public BoardSessionManager(IBoardSceneManager sceneManager)
+        public BoardSessionManager(IBoardSessionUserInterface sceneManager)
         {
             SceneManager = sceneManager;
 
@@ -23,7 +22,7 @@ namespace Silvermine.Battle.Core
                 new ChoosingPhase()
             };
 
-            StateMachine = new BoardSessionStateMachine(this, states);
+            StateMachine = new SMStateMachine<BoardSessionManager>(this, states);
         }
 
         public bool TryPlayCard(Player player, BaseMagicCard card)
