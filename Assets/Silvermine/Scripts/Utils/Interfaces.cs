@@ -22,7 +22,7 @@ namespace Silvermine.Battle.Core
         void ChangeState<S>() where S : CardState;
     }
 
-    public interface IBoardSessionUserInterface
+    public interface IBoardSceneManager
     {
         void OnBattleStart(Action onComplete);
         void OnChoosingPhase(Action onComplete);

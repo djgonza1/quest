@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Events
 {
@@ -82,7 +83,7 @@ public class GameEvent { };
 
 public class CardEvent : GameEvent
 {
-    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG };
+    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG, PLAYED };
 
     public EventType Type;
     public CardObject Card;

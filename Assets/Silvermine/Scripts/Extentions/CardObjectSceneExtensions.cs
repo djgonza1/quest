@@ -35,10 +35,10 @@ public static class CardObjectSceneExtensions
         LeanTween.scale(card.gameObject, handScale, 0.2f);
     }
 
-    public static void PlayCard(this BoardSceneManager manage, CardObject card, Action callback = null)
+    public static void PlayCard(this BoardSceneManager manager, CardObject card, Action callback = null)
     {
-        Vector3 playPosition = manage.GetBoardPlayPosition(card);
-        Vector3 playScale = manage.GetPlayBoardCardScale();
+        Vector3 playPosition = manager.GetBoardPlayPosition(card);
+        Vector3 playScale = manager.GetPlayBoardCardScale();
 
         LeanTween.scale(card.gameObject, playScale, 0.3f);
 

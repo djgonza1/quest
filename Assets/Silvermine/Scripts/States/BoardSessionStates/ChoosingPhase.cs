@@ -8,12 +8,12 @@ namespace Silvermine.Battle.Core
     {
         public override void Begin()
         {
-            _context.SceneManager.OnBattleStart(OnChoosingPhaseEnd);
+            _context.SceneManager.OnChoosingPhase(OnChoosingPhaseEnd);
         }
 
         private void OnChoosingPhaseEnd()
         {
-
+            //TODO - add next state logic
         }
     }
 }

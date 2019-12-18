@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSessionUserInterface
+public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
 {
     public const float CardOverSizePosOffset = 1.3f;
     public const float CardOverSizeScale = 1.5f;
@@ -17,10 +18,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     private Transform _leftSpellBoardLocator;
     [SerializeField]
     private Transform _rightSpellBoardLocator;
+    [SerializeField]
+    private Text _battleText;
 
     private Dictionary<CardObject, CardObjectSceneInfo> _playerHandMap;
     private Dictionary<CardObject, CardObjectSceneInfo> _enemyHandMap;
-    public BoardSessionManager _session;
+    private BoardSessionManager _session;
+    private Action _onCardPlayed;
     
     // Start is called before the first frame update
     void Start()
@@ -44,6 +48,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
         _playerHandMap = CreateHand(playerCards);
         _enemyHandMap = CreateHand(enemyCards, false);
+        _onCardPlayed = null;
 
         Events.Instance.AddListener<CardEvent>(OnCardEvent);
     }
@@ -74,7 +79,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
             CardStateMachine machine = new CardStateMachine(cardObject, states);
 
-            cardObject.Init(cards[i]);
+            cardObject.Init(cards[i], false);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
@@ -159,22 +164,41 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             case CardEvent.EventType.TAP_RELEASE:
                 _playerHandMap[e.Card].StateMachine.OnCardTapRelease();
                 break;
+            case CardEvent.EventType.PLAYED:
+                _onCardPlayed?.Invoke();
+                _onCardPlayed = null;
+                break;
         }
     }
     
     public void OnBattleStart(Action onComplete)
     {
-        DelayCall(onComplete, 2f);
+        DelayCall(() =>
+        {
+            foreach (var card in _playerHandMap.Keys)
+            {
+                card.IsTappable = false;
+            }
+            
+            onComplete();
+        }, 2f);
     }
 
     public void OnChoosingPhase(Action onComplete)
     {
-        DelayCall(onComplete, 2f);
-    }
+        _battleText.text = "Choosing Phase";
 
-    public bool TryPlayCard(BaseMagicCard card)
-    {
-        return _session.TryPlayCard(Player.First, card);
+        DelayCall(() =>
+        {
+            foreach (var card in _playerHandMap.Keys)
+            {
+                card.IsTappable = true;
+            }
+
+            _battleText.gameObject.SetActive(false);
+        }, 2f);
+        
+        _onCardPlayed = onComplete;
     }
 
     private void OnDestroy()
