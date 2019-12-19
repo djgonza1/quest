@@ -24,33 +24,26 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     private Dictionary<CardObject, CardObjectSceneInfo> _playerHandMap;
     private Dictionary<CardObject, CardObjectSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
-    private Action _onCardPlayed;
     
     // Start is called before the first frame update
     void Start()
     {
         _session = new BoardSessionManager(this);
 
-        BaseMagicCard[] playerCards =
-        {
-            new BaseMagicCard(CardColor.Red, 0),
-            new BaseMagicCard(CardColor.Green, 0),
-            new BaseMagicCard(CardColor.Blue, 0)
-        };
+        List<BaseMagicCard> playerCards = _session.GetPlayerHand(Player.First);
 
-        BaseMagicCard[] enemyCards =
+        //TODO - Replace this with session cards but hide their colors from current player
+        List<BaseMagicCard> enemyCards = new List<BaseMagicCard>()
         {
             new BaseMagicCard(CardColor.None, 0),
             new BaseMagicCard(CardColor.None, 0),
             new BaseMagicCard(CardColor.None, 0)
         };
         
-
         _playerHandMap = CreateHand(playerCards);
         _enemyHandMap = CreateHand(enemyCards, false);
-        _onCardPlayed = null;
 
-        Events.Instance.AddListener<CardEvent>(OnCardEvent);
+        Events.Instance.AddListener<CardObjectEvent>(OnCardEvent);
     }
 
     // Update is called once per frame
@@ -62,11 +55,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }
     }
 
-    private Dictionary<CardObject, CardObjectSceneInfo> CreateHand(BaseMagicCard[] cards, bool isPlayerHand = true)
+    private Dictionary<CardObject, CardObjectSceneInfo> CreateHand(List<BaseMagicCard> cards, bool isPlayerHand = true)
     {
         Dictionary<CardObject, CardObjectSceneInfo> handMap = new Dictionary<CardObject, CardObjectSceneInfo>();
 
-        for (int i = 0; i < cards.Length; i++)
+        for (int i = 0; i < cards.Count; i++)
         {
             CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
 
@@ -137,7 +130,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         return GetHandCardScale();
     }
 
-    public void OnCardEvent(CardEvent e)
+    public void OnCardEvent(CardObjectEvent e)
     {
         if (!_playerHandMap.ContainsKey(e.Card))
         {
@@ -146,27 +139,23 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
         switch(e.Type)
         {
-            case CardEvent.EventType.ENTER:
+            case CardObjectEvent.EventType.ENTER:
                 _playerHandMap[e.Card].StateMachine.OnCardEnter();
                 break;
-            case CardEvent.EventType.EXIT:
+            case CardObjectEvent.EventType.EXIT:
                 _playerHandMap[e.Card].StateMachine.OnCardExit();
                 break;
-            case CardEvent.EventType.HOVER:
+            case CardObjectEvent.EventType.HOVER:
                 _playerHandMap[e.Card].StateMachine.OnCardHover();
                 break;
-            case CardEvent.EventType.DRAG:
+            case CardObjectEvent.EventType.DRAG:
                 _playerHandMap[e.Card].StateMachine.OnCardDrag();
                 break;
-            case CardEvent.EventType.TAP_DOWN:
+            case CardObjectEvent.EventType.TAP_DOWN:
                 _playerHandMap[e.Card].StateMachine.OnCardTapDown();
                 break;
-            case CardEvent.EventType.TAP_RELEASE:
+            case CardObjectEvent.EventType.TAP_RELEASE:
                 _playerHandMap[e.Card].StateMachine.OnCardTapRelease();
-                break;
-            case CardEvent.EventType.PLAYED:
-                _onCardPlayed?.Invoke();
-                _onCardPlayed = null;
                 break;
         }
     }
@@ -184,7 +173,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }, 2f);
     }
 
-    public void OnChoosingPhase(Action onComplete)
+    public void OnChoosingPhase()
     {
         _battleText.text = "Choosing Phase";
 
@@ -197,13 +186,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
             _battleText.gameObject.SetActive(false);
         }, 2f);
-        
-        _onCardPlayed = onComplete;
     }
 
     private void OnDestroy()
     {
-        Events.Instance.RemoveListener<CardEvent>(OnCardEvent);
+        Events.Instance.RemoveListener<CardObjectEvent>(OnCardEvent);
     }
 
     public void DelayCall(Action callback, float delay)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Silvermine.Battle.Core;
 
 public class Events
 {
@@ -81,14 +82,28 @@ public class Events
 
 public class GameEvent { };
 
-public class CardEvent : GameEvent
+public class CardObjectEvent : GameEvent
 {
-    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG, PLAYED };
+    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG };
 
     public EventType Type;
     public CardObject Card;
 
-    public CardEvent(EventType type, CardObject card)
+    public CardObjectEvent(EventType type, CardObject card)
+    {
+        this.Type = type;
+        this.Card = card;
+    }
+}
+
+public class SessionCardEvent : GameEvent
+{
+    public enum EventType { PLAYED };
+
+    public EventType Type; 
+    public BaseMagicCard Card;
+
+    public SessionCardEvent(EventType type, BaseMagicCard card)
     {
         this.Type = type;
         this.Card = card;

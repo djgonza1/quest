@@ -13,27 +13,27 @@ public class CardObject : MonoBehaviour
     private SpriteRenderer _cardFront;
 
     public bool IsTappable { get; set; }
+    public BaseMagicCard Card { get; private set; }
 
-    private BaseMagicCard _card;
     private Vector2 _originalScale;
 
     public void Init(BaseMagicCard card, bool isTappable = true)
     {
-        _card = card;
+        Card = card;
         _originalScale = transform.localScale;
-        _cardFront.color = CardUtilities.ToColor(_card.Color);
+        _cardFront.color = CardUtilities.ToColor(Card.Color);
 
         IsTappable = isTappable;
     }
 
     public void OnMouseEnter()
     {
-        Events.Instance.Raise(new CardEvent(CardEvent.EventType.ENTER, this));
+        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.ENTER, this));
     }
 
     public void OnMouseExit()
     {
-        Events.Instance.Raise(new CardEvent(CardEvent.EventType.EXIT, this));
+        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.EXIT, this));
     }
 
     public void OnMouseDown()
@@ -43,7 +43,7 @@ public class CardObject : MonoBehaviour
             return;
         }
 
-        Events.Instance.Raise(new CardEvent(CardEvent.EventType.TAP_DOWN, this));
+        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.TAP_DOWN, this));
     }
 
     public void OnMouseUp()
@@ -53,18 +53,18 @@ public class CardObject : MonoBehaviour
             return;
         }
 
-        Events.Instance.Raise(new CardEvent(CardEvent.EventType.TAP_RELEASE, this));
+        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.TAP_RELEASE, this));
     }
 
     public void OnMouseOver()
     {
         if (IsTappable && Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
         {
-            Events.Instance.Raise(new CardEvent(CardEvent.EventType.DRAG, this));
+            Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.DRAG, this));
         }
         else if(!Input.GetMouseButton(0))
         {
-            Events.Instance.Raise(new CardEvent(CardEvent.EventType.HOVER, this));
+            Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.HOVER, this));
         }
     }
 }
