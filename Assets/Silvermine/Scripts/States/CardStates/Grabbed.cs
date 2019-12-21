@@ -25,7 +25,7 @@ public class Grabbed : CardState
             {
                 BoardSceneManager.Instance.PlayCard(_context, () =>
                 {
-                    Events.Instance.Raise(new SessionCardEvent(SessionCardEvent.EventType.PLAYED, _context.Card));
+                    Events.Instance.Raise(new SessionCardEvent(SessionCardEvent.EventType.PLAYED, _context.Card, Player.First));
                     _stateMachine.ChangeState<InPlay>();
                 });
 

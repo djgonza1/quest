@@ -25,6 +25,6 @@ namespace Silvermine.Battle.Core
     public interface IBoardSceneManager
     {
         void OnBattleStart(Action onComplete);
-        void OnChoosingPhase();
+        void OnChoosingPhase(Action<SessionCardEvent> onFirstCardChosen, Action<SessionCardEvent> onSecondCardChosen);
     }
 }

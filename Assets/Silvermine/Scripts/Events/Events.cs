@@ -24,9 +24,9 @@ public class Events
         _delegates = new Dictionary<Type, Delegate>();
     }
 
-    public delegate void EventDelegate<T>(T e) where T : GameEvent;
+    //public delegate void EventDelegate<T>(T e) where T : GameEvent;
 
-    public void AddListener<T>(EventDelegate<T> listener) where T : GameEvent
+    public void AddListener<T>(Action<T> listener) where T : GameEvent
     {
         Type type = typeof(T);
 
@@ -42,7 +42,7 @@ public class Events
         }
     }
 
-    public void RemoveListener<T>(EventDelegate<T> listener) where T : GameEvent
+    public void RemoveListener<T>(Action<T> listener) where T : GameEvent
     {
         Type type = typeof(T);
 
@@ -72,11 +72,21 @@ public class Events
         Delegate d;
         if (_delegates.TryGetValue(typeof(T), out d))
         {
-            if(d is EventDelegate<T> callback)
+            if(d is Action<T> callback)
             {
                 callback(e);
             }
         }
+    }
+
+    public void AddOneTimeListener<T>(Action<T> listener) where T : GameEvent
+    {
+        listener += (ev) =>
+        {
+            RemoveListener<T>(listener);
+        };
+
+        AddListener<T>(listener);
     }
 }
 
@@ -102,10 +112,12 @@ public class SessionCardEvent : GameEvent
 
     public EventType Type; 
     public BaseMagicCard Card;
+    public Player Player;
 
-    public SessionCardEvent(EventType type, BaseMagicCard card)
+    public SessionCardEvent(EventType type, BaseMagicCard card, Player player)
     {
         this.Type = type;
         this.Card = card;
+        this.Player = player;
     }
 }

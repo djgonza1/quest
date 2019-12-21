@@ -7,30 +7,26 @@ namespace Silvermine.Battle.Core
 {
     public class ChoosingPhase : SMState<BoardSessionManager>
     {
+        bool firstChosen;
+        bool secondSchosen;
+
         public override void Begin()
         {
-            _context.SceneManager.OnChoosingPhase();
-            Events.Instance.AddListener<SessionCardEvent>(OnCardEvent);
+            firstChosen = false;
+            secondSchosen = false;
+            _context.SceneManager.OnChoosingPhase(OnCardChosen, OnCardChosen);
         }
-
-        public override void End()
-        {
-            Events.Instance.RemoveListener<SessionCardEvent>(OnCardEvent);
-        }
-
-        private void OnCardEvent(SessionCardEvent msg)
-        {
-            if (msg.Type == SessionCardEvent.EventType.PLAYED)
-            {
-                
-            }
-        }
-
         
-
-        private void OnChoosingPhaseEnd()
+        private void OnCardChosen(SessionCardEvent card)
         {
-            //TODO - add next state logic
+            switch(card.Player)
+            {
+                case Player.First:
+                    Debug.LogWarning("Player card chosen");
+                    break;
+                case Player.Second:
+                    break;
+            }
         }
     }
 }

@@ -173,9 +173,12 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }, 2f);
     }
 
-    public void OnChoosingPhase()
+    public void OnChoosingPhase(Action<SessionCardEvent> onFirstCardChosen, Action<SessionCardEvent> onSecondCardChosen)
     {
         _battleText.text = "Choosing Phase";
+
+        Events.Instance.AddOneTimeListener(onFirstCardChosen);
+        Events.Instance.AddOneTimeListener(onSecondCardChosen);
 
         DelayCall(() =>
         {
