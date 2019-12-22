@@ -132,7 +132,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     public void OnCardEvent(CardObjectEvent e)
     {
-        if (!_playerHandMap.ContainsKey(e.Card))
+        if (!_playerHandMap.ContainsKey(e.CardObject))
         {
             return;
         }
@@ -140,22 +140,22 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         switch(e.Type)
         {
             case CardObjectEvent.EventType.ENTER:
-                _playerHandMap[e.Card].StateMachine.OnCardEnter();
+                _playerHandMap[e.CardObject].StateMachine.OnCardEnter();
                 break;
             case CardObjectEvent.EventType.EXIT:
-                _playerHandMap[e.Card].StateMachine.OnCardExit();
+                _playerHandMap[e.CardObject].StateMachine.OnCardExit();
                 break;
             case CardObjectEvent.EventType.HOVER:
-                _playerHandMap[e.Card].StateMachine.OnCardHover();
+                _playerHandMap[e.CardObject].StateMachine.OnCardHover();
                 break;
             case CardObjectEvent.EventType.DRAG:
-                _playerHandMap[e.Card].StateMachine.OnCardDrag();
+                _playerHandMap[e.CardObject].StateMachine.OnCardDrag();
                 break;
             case CardObjectEvent.EventType.TAP_DOWN:
-                _playerHandMap[e.Card].StateMachine.OnCardTapDown();
+                _playerHandMap[e.CardObject].StateMachine.OnCardTapDown();
                 break;
             case CardObjectEvent.EventType.TAP_RELEASE:
-                _playerHandMap[e.Card].StateMachine.OnCardTapRelease();
+                _playerHandMap[e.CardObject].StateMachine.OnCardTapRelease();
                 break;
         }
     }
@@ -173,13 +173,31 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }, 2f);
     }
 
-    public void OnChoosingPhase(Action<SessionCardEvent> onFirstCardChosen, Action<SessionCardEvent> onSecondCardChosen)
+    public void OnChoosingPhase(Action<BaseMagicCard> onFirstCardChosen, Action<BaseMagicCard> onSecondCardChosen, Action onComplete)
     {
         _battleText.text = "Choosing Phase";
 
-        Events.Instance.AddOneTimeListener(onFirstCardChosen);
-        Events.Instance.AddOneTimeListener(onSecondCardChosen);
+        CallbackCounter callbackCount = new CallbackCounter(2);
 
+        Action<CardObjectEvent> onPlayerCardChosen = null;
+        onPlayerCardChosen = (msg) =>
+        {
+            if (msg.Player == Player.First)
+            {
+                Events.Instance.RemoveListener(onPlayerCardChosen);
+                onFirstCardChosen(msg.CardObject.Card);
+                callbackCount--;
+            }
+        };
+        
+        Events.Instance.AddListener(onPlayerCardChosen);
+
+        //TODO - Replace with enemy card pick logic
+        onSecondCardChosen(null);
+        callbackCount--;
+
+        WaitForCallbacks(callbackCount, onComplete);
+        
         DelayCall(() =>
         {
             foreach (var card in _playerHandMap.Keys)
@@ -209,6 +227,21 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }
 
         callback.Invoke();
+    }
+
+    public void WaitForCallbacks(CallbackCounter counter, Action onComplete)
+    {
+        StartCoroutine(WaitForCallbacksRoutine(counter, onComplete));
+    }
+
+    private IEnumerator WaitForCallbacksRoutine(CallbackCounter counter, Action onComplete)
+    {
+        while (counter.Count > 0)
+        {
+            yield return null;
+        }
+
+        onComplete();
     }
 
     private struct CardObjectSceneInfo

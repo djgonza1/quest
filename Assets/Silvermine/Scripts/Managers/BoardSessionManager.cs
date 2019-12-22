@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Silvermine.Battle.Core
 {
-    public enum Player { First, Second };
+    public enum Player { None, First, Second };
 
     public class BoardSessionManager
     {

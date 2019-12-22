@@ -94,15 +94,17 @@ public class GameEvent { };
 
 public class CardObjectEvent : GameEvent
 {
-    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG };
+    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG, PLAYED };
 
     public EventType Type;
-    public CardObject Card;
+    public CardObject CardObject;
+    public Player Player;
 
-    public CardObjectEvent(EventType type, CardObject card)
+    public CardObjectEvent(EventType type, CardObject card, Player player = Player.None)
     {
         this.Type = type;
-        this.Card = card;
+        this.CardObject = card;
+        this.Player = player;
     }
 }
 
