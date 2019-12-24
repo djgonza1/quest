@@ -177,7 +177,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         _battleText.text = "Choosing Phase";
 
-        CallbackCounter callbackCount = new CallbackCounter(2);
+        CallbackCounter callbackCount = new CallbackCounter(2, onComplete);
 
         Action<CardObjectEvent> onPlayerCardChosen = null;
         onPlayerCardChosen = (msg) =>
@@ -195,8 +195,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         //TODO - Replace with enemy card pick logic
         onSecondCardChosen(null);
         callbackCount--;
-
-        WaitForCallbacks(callbackCount, onComplete);
         
         DelayCall(() =>
         {
@@ -227,21 +225,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }
 
         callback.Invoke();
-    }
-
-    public void WaitForCallbacks(CallbackCounter counter, Action onComplete)
-    {
-        StartCoroutine(WaitForCallbacksRoutine(counter, onComplete));
-    }
-
-    private IEnumerator WaitForCallbacksRoutine(CallbackCounter counter, Action onComplete)
-    {
-        while (counter.Count > 0)
-        {
-            yield return null;
-        }
-
-        onComplete();
     }
 
     private struct CardObjectSceneInfo
