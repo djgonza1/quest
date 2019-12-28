@@ -26,6 +26,13 @@ public class CardObject : MonoBehaviour
         IsTappable = isTappable;
     }
 
+    public void FlipCard(bool showFront)
+    {
+        CardColor color = showFront ? Card.Color : CardColor.None;
+
+        _cardFront.color = CardUtilities.ToColor(color);
+    }
+
     public void OnMouseEnter()
     {
         Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.ENTER, this));

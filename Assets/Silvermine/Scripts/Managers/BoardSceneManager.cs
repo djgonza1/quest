@@ -24,24 +24,16 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     private Dictionary<CardObject, CardObjectSceneInfo> _playerHandMap;
     private Dictionary<CardObject, CardObjectSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
+    private EnemyPlayerController _enemyAI;
     
     // Start is called before the first frame update
     void Start()
     {
         _session = new BoardSessionManager(this);
+        _enemyAI = new EnemyPlayerController(_session.GameBoard, Player.Second);
 
-        List<BaseMagicCard> playerCards = _session.GetPlayerHand(Player.First);
-
-        //TODO - Replace this with session cards but hide their colors from current player
-        List<BaseMagicCard> enemyCards = new List<BaseMagicCard>()
-        {
-            new BaseMagicCard(CardColor.None, 0),
-            new BaseMagicCard(CardColor.None, 0),
-            new BaseMagicCard(CardColor.None, 0)
-        };
-        
-        _playerHandMap = CreateHand(playerCards);
-        _enemyHandMap = CreateHand(enemyCards, false);
+        _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
+        _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
 
         Events.Instance.AddListener<CardObjectEvent>(OnCardEvent);
     }
@@ -73,6 +65,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             CardStateMachine machine = new CardStateMachine(cardObject, states);
 
             cardObject.Init(cards[i], false);
+            cardObject.FlipCard(isPlayerHand);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
@@ -111,9 +104,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     public Vector3 GetBoardPlayPosition(CardObject card)
     {
-        if (_leftSpellBoardLocator)
+        if (_playerHandMap.ContainsKey(card))
         {
             return _leftSpellBoardLocator.position;
+        }
+        else if (_enemyHandMap.ContainsKey(card))
+        {
+            return _rightSpellBoardLocator.position;
         }
 
         Debug.LogError("No play locator found for card object");
@@ -182,19 +179,35 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         Action<CardObjectEvent> onPlayerCardChosen = null;
         onPlayerCardChosen = (msg) =>
         {
-            if (msg.Player == Player.First)
+            if (msg.Player != Player.First)
             {
-                Events.Instance.RemoveListener(onPlayerCardChosen);
-                onFirstCardChosen(msg.CardObject.Card);
-                callbackCount--;
+                return;
             }
+
+            Events.Instance.RemoveListener(onPlayerCardChosen);
+            onFirstCardChosen(msg.CardObject.Card);
+            callbackCount--;
+
+            BaseMagicCard enemyCard = _enemyAI.ChooseCardToPlay();
+            CardObject enemyCO = null;
+            foreach (var cardObject in _enemyHandMap.Keys)
+            {
+                if (cardObject.Card == enemyCard)
+                {
+                    enemyCO = cardObject;
+                    break;
+                }
+            }
+
+            this.PlayCard(enemyCO, () =>
+            {
+                //TODO - Replace with enemy card pick logic
+                onSecondCardChosen(enemyCO.Card);
+                callbackCount--;
+            });
         };
         
         Events.Instance.AddListener(onPlayerCardChosen);
-
-        //TODO - Replace with enemy card pick logic
-        onSecondCardChosen(null);
-        callbackCount--;
         
         DelayCall(() =>
         {
