@@ -8,7 +8,7 @@ namespace Silvermine.Battle.Core
     {
         public override void Begin()
         {
-            _context.SceneManager.OnBattleStart(OnBattleStartEnd);
+            _context.SceneManager.BoardOpen(OnBattleStartEnd);
         }
 
         public void OnBattleStartEnd()

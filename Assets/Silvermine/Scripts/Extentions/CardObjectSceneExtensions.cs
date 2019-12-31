@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class CardObjectSceneExtensions
 {
-    public static void HighlightCard(this BoardSceneManager manager, CardObject card)
+    public static void HighlightCard(this BoardSceneManager manager, CardGO card)
     {
         Vector2 handPosition = manager.GetCardHandPosition(card);
 
@@ -15,7 +15,7 @@ public static class CardObjectSceneExtensions
         card.SortingGroup.sortingOrder++;
     }
 
-    public static void ResetCardInHand(this BoardSceneManager manager, CardObject card, Action callback = null)
+    public static void ResetCardInHand(this BoardSceneManager manager, CardGO card, Action callback = null)
     {
         Vector2 handPosition = manager.GetCardHandPosition(card);
         Vector2 handScale = manager.GetHandCardScale();
@@ -29,13 +29,13 @@ public static class CardObjectSceneExtensions
         card.SortingGroup.sortingOrder = 0;
     }
 
-    public static void GrabCard(this BoardSceneManager manager, CardObject card)
+    public static void GrabCard(this BoardSceneManager manager, CardGO card)
     {
         Vector2 handScale = manager.GetHandCardScale();
         LeanTween.scale(card.gameObject, handScale, 0.2f);
     }
 
-    public static void PlayCard(this BoardSceneManager manager, CardObject card, Action callback = null)
+    public static void PlayCard(this BoardSceneManager manager, CardGO card, Action callback = null)
     {
         Vector3 playPosition = manager.GetBoardPlayPosition(card);
         Vector3 playScale = manager.GetPlayBoardCardScale();

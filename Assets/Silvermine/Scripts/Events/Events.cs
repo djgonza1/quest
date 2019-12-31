@@ -97,10 +97,10 @@ public class CardObjectEvent : GameEvent
     public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG, PLAYED };
 
     public EventType Type;
-    public CardObject CardObject;
+    public CardGO CardObject;
     public Player Player;
 
-    public CardObjectEvent(EventType type, CardObject card, Player player = Player.None)
+    public CardObjectEvent(EventType type, CardGO card, Player player = Player.None)
     {
         this.Type = type;
         this.CardObject = card;
@@ -113,10 +113,10 @@ public class SessionCardEvent : GameEvent
     public enum EventType { PLAYED };
 
     public EventType Type; 
-    public BaseMagicCard Card;
+    public AbilityCard Card;
     public Player Player;
 
-    public SessionCardEvent(EventType type, BaseMagicCard card, Player player)
+    public SessionCardEvent(EventType type, AbilityCard card, Player player)
     {
         this.Type = type;
         this.Card = card;

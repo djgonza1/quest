@@ -35,18 +35,18 @@ namespace Silvermine.Battle.Core
         
         private void CreatePlayerHands()
         {
-            playerOne.Hand = new List<BaseMagicCard>()
+            playerOne.Hand = new List<AbilityCard>()
             {
-                new BaseMagicCard(CardColor.Red, 0),
-                new BaseMagicCard(CardColor.Green, 0),
-                new BaseMagicCard(CardColor.Blue, 0)
+                new AbilityCard(CardColor.Red, 0),
+                new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Blue, 0)
             };
 
-            playerTwo.Hand = new List<BaseMagicCard>(playerOne.Hand);
+            playerTwo.Hand = playerOne.Hand.ConvertAll(card => new AbilityCard(card));
         }
 
         //Returns a copy
-        public List<BaseMagicCard> GetPlayerHand(Player player)
+        public List<AbilityCard> GetPlayerHand(Player player)
         {
             switch (player)
             {
@@ -59,17 +59,18 @@ namespace Silvermine.Battle.Core
             }
         }
 
-        public void SetPlayerChoice(Player player, BaseMagicCard card)
+        public void SetPlayerChoice(Player player, AbilityCard card)
         {
-
+            this[player].BattleChoice = card;
+            this[player].Hand.Remove(card);
         }
     }
 
     public class PlayerInfo
     {
         public float Health;
-        public List<BaseMagicCard> Hand;
-        public BaseMagicCard BattleChoice;
+        public List<AbilityCard> Hand;
+        public AbilityCard BattleChoice;
 
         public PlayerInfo()
         {

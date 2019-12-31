@@ -15,9 +15,9 @@ namespace Silvermine.Battle.Core
             _info = _gameBoard[player];
         }
 
-        public BaseMagicCard ChooseCardToPlay()
+        public AbilityCard ChooseCardToPlay()
         {
-            BaseMagicCard chosenCard = null;
+            AbilityCard chosenCard = null;
 
             foreach (var card in _info.Hand)
             {

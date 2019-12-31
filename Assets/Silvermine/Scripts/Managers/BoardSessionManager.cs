@@ -13,8 +13,8 @@ namespace Silvermine.Battle.Core
         public SMStateMachine<BoardSessionManager> StateMachine { get; }
         public IBoardSceneManager SceneManager { get; }
         
-        private List<BaseMagicCard> _playerOneHand;
-        private List<BaseMagicCard> _playerTwoHand;
+        private List<AbilityCard> _playerOneHand;
+        private List<AbilityCard> _playerTwoHand;
 
         public BoardSessionManager(IBoardSceneManager sceneManager)
         {
@@ -25,42 +25,28 @@ namespace Silvermine.Battle.Core
             SMState<BoardSessionManager>[] states =
             {
                 new BattleStart(),
-                new ChoosingPhase()
+                new ChoosingPhase(),
+                new BattlePhase()
             };
 
             StateMachine = new SMStateMachine<BoardSessionManager>(this, states);
-            
         }
 
         private void CreatePlayerHands()
         {
-            _playerOneHand = new List<BaseMagicCard>()
+            _playerOneHand = new List<AbilityCard>()
             {
-                new BaseMagicCard(CardColor.Red, 0),
-                new BaseMagicCard(CardColor.Green, 0),
-                new BaseMagicCard(CardColor.Blue, 0)
+                new AbilityCard(CardColor.Red, 0),
+                new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Blue, 0)
             };
 
-            _playerTwoHand = new List<BaseMagicCard>()
+            _playerTwoHand = new List<AbilityCard>()
             {
-                new BaseMagicCard(CardColor.Red, 0),
-                new BaseMagicCard(CardColor.Green, 0),
-                new BaseMagicCard(CardColor.Blue, 0)
+                new AbilityCard(CardColor.Red, 0),
+                new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Blue, 0)
             };
-        }
-
-        //Returns a copy
-        public List<BaseMagicCard> GetPlayerHand(Player player)
-        {
-            switch(player)
-            {
-                case Player.First:
-                    return _playerOneHand.ConvertAll(card => new BaseMagicCard(card));
-                case Player.Second:
-                    return _playerTwoHand.ConvertAll(card => new BaseMagicCard(card));
-                default:
-                    return null;
-            }
         }
     }
 }

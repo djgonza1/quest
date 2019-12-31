@@ -7,6 +7,9 @@ namespace Silvermine.Battle.Core
 {
     public class BattlePhase : SMState<BoardSessionManager>
     {
-
+        public override void Begin()
+        {
+            _context.SceneManager.StartBattlePhase(Player.First);
+        }
     }
 }

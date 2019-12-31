@@ -14,22 +14,25 @@ namespace Silvermine.Battle.Core
         {
             firstChosen = false;
             secondSchosen = false;
-            _context.SceneManager.OnChoosingPhase(OnPlayerOneCardChosen, OnPlayerTwoCardChosen, OnChoosingPhaseEnd);
+            _context.SceneManager.ChooseCards(OnPlayerOneCardChosen, OnPlayerTwoCardChosen, OnChoosingPhaseEnd);
         }
         
-        private void OnPlayerOneCardChosen(BaseMagicCard firstCard)
+        private void OnPlayerOneCardChosen(AbilityCard card)
         {
+            _context.GameBoard.SetPlayerChoice(Player.First, card);
             Debug.LogWarning("OnPlayerOneCardChosen");
         }
 
-        private void OnPlayerTwoCardChosen(BaseMagicCard secondCard)
+        private void OnPlayerTwoCardChosen(AbilityCard card)
         {
             Debug.LogWarning("OnPlayerTwoCardChosen");
+            _context.GameBoard.SetPlayerChoice(Player.Second, card);
         }
 
         private void OnChoosingPhaseEnd()
         {
             Debug.LogWarning("ChoosingPhase End");
+            _stateMachine.ChangeState<BattlePhase>();
         }
     }
 }

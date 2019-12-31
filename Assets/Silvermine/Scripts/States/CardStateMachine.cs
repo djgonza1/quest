@@ -6,11 +6,11 @@ namespace Silvermine.Battle.Core
 {
     public class CardStateMachine : ICardStateMachine
     {
-        private SMStateMachine<CardObject> _stateMachine;
+        private SMStateMachine<CardGO> _stateMachine;
 
-        public CardStateMachine(CardObject context, CardState[] cardStates)
+        public CardStateMachine(CardGO context, CardState[] cardStates)
         {
-            _stateMachine = new SMStateMachine<CardObject>(context, cardStates);
+            _stateMachine = new SMStateMachine<CardGO>(context, cardStates);
         }
 
         public void Update()

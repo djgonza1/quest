@@ -25,6 +25,7 @@ public class Grabbed : CardState
             {
                 BoardSceneManager.Instance.PlayCard(_context, () =>
                 {
+                    _context.FlipCard(false);
                     Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.PLAYED, _context, Player.First));
                     _stateMachine.ChangeState<InPlay>();
                 });

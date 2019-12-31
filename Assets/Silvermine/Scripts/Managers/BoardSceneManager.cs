@@ -21,8 +21,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     [SerializeField]
     private Text _battleText;
 
-    private Dictionary<CardObject, CardObjectSceneInfo> _playerHandMap;
-    private Dictionary<CardObject, CardObjectSceneInfo> _enemyHandMap;
+    private Dictionary<AbilityCard, CardObjectSceneInfo> _playerHandMap;
+    private Dictionary<AbilityCard, CardObjectSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
     private EnemyPlayerController _enemyAI;
     
@@ -31,7 +31,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         _session = new BoardSessionManager(this);
         _enemyAI = new EnemyPlayerController(_session.GameBoard, Player.Second);
-
+        
         _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
         _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
 
@@ -47,13 +47,18 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }
     }
 
-    private Dictionary<CardObject, CardObjectSceneInfo> CreateHand(List<BaseMagicCard> cards, bool isPlayerHand = true)
+    private Dictionary<AbilityCard, CardObjectSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
     {
-        Dictionary<CardObject, CardObjectSceneInfo> handMap = new Dictionary<CardObject, CardObjectSceneInfo>();
+        Dictionary<AbilityCard, CardObjectSceneInfo> handMap = new Dictionary<AbilityCard, CardObjectSceneInfo>();
 
         for (int i = 0; i < cards.Count; i++)
         {
-            CardObject cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
+            CardGO cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
+            
+            cardObject.Init(cards[i], false);
+            cardObject.FlipCard(isPlayerHand);
+
+            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
             CardState[] states =
             {
@@ -64,51 +69,46 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
             CardStateMachine machine = new CardStateMachine(cardObject, states);
 
-            cardObject.Init(cards[i], false);
-            cardObject.FlipCard(isPlayerHand);
-
-            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
-
-            CardObjectSceneInfo cardInfo = new CardObjectSceneInfo(handLoc.position, machine);
-
-            handMap.Add(cardObject, cardInfo);
+            CardObjectSceneInfo cardInfo = new CardObjectSceneInfo(cardObject, handLoc.position, machine);
+            
+            handMap.Add(cards[i], cardInfo);
         }
 
-        foreach (var pair in handMap)
+        foreach (var cInfo in handMap.Values)
         {
-            var card = pair.Key;
-            var position = pair.Value.HandPosition;
+            var position = cInfo.HandPosition;
 
-            card.transform.position = position;
-            card.transform.localScale = GetHandCardScale();
+            cInfo.CardGO.transform.position = position;
+            cInfo.CardGO.transform.localScale = GetHandCardScale();
         }
 
         return handMap;
     }
     
-    public Vector3 GetCardHandPosition(CardObject card)
+    public Vector3 GetCardHandPosition(CardGO cardGO)
     {
-        if (_playerHandMap.ContainsKey(card))
+
+        if (_playerHandMap.ContainsKey(cardGO.Card))
         {
-            return _playerHandMap[card].HandPosition;
+            return _playerHandMap[cardGO.Card].HandPosition;
         }
 
-        if (_enemyHandMap.ContainsKey(card))
+        if (_enemyHandMap.ContainsKey(cardGO.Card))
         {
-            return _enemyHandMap[card].HandPosition;
+            return _enemyHandMap[cardGO.Card].HandPosition;
         }
 
         Debug.LogError("No hand locator found for card object");
         return Vector2.zero;
     }
 
-    public Vector3 GetBoardPlayPosition(CardObject card)
+    public Vector3 GetBoardPlayPosition(CardGO cardGO)
     {
-        if (_playerHandMap.ContainsKey(card))
+        if (_playerHandMap.ContainsKey(cardGO.Card))
         {
             return _leftSpellBoardLocator.position;
         }
-        else if (_enemyHandMap.ContainsKey(card))
+        else if (_enemyHandMap.ContainsKey(cardGO.Card))
         {
             return _rightSpellBoardLocator.position;
         }
@@ -129,48 +129,52 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     public void OnCardEvent(CardObjectEvent e)
     {
-        if (!_playerHandMap.ContainsKey(e.CardObject))
+        AbilityCard card = e.CardObject.Card;
+
+        if (!_playerHandMap.ContainsKey(card))
         {
             return;
         }
 
+        CardStateMachine stateMachine = _playerHandMap[card].StateMachine;
+
         switch(e.Type)
         {
             case CardObjectEvent.EventType.ENTER:
-                _playerHandMap[e.CardObject].StateMachine.OnCardEnter();
+                stateMachine.OnCardEnter();
                 break;
             case CardObjectEvent.EventType.EXIT:
-                _playerHandMap[e.CardObject].StateMachine.OnCardExit();
+                stateMachine.OnCardExit();
                 break;
             case CardObjectEvent.EventType.HOVER:
-                _playerHandMap[e.CardObject].StateMachine.OnCardHover();
+                stateMachine.OnCardHover();
                 break;
             case CardObjectEvent.EventType.DRAG:
-                _playerHandMap[e.CardObject].StateMachine.OnCardDrag();
+                stateMachine.OnCardDrag();
                 break;
             case CardObjectEvent.EventType.TAP_DOWN:
-                _playerHandMap[e.CardObject].StateMachine.OnCardTapDown();
+                stateMachine.OnCardTapDown();
                 break;
             case CardObjectEvent.EventType.TAP_RELEASE:
-                _playerHandMap[e.CardObject].StateMachine.OnCardTapRelease();
+                stateMachine.OnCardTapRelease();
                 break;
         }
     }
     
-    public void OnBattleStart(Action onComplete)
+    public void BoardOpen(Action onComplete)
     {
-        DelayCall(() =>
+        DelayCall(2f, () =>
         {
-            foreach (var card in _playerHandMap.Keys)
+            foreach (var cInfo in _playerHandMap.Values)
             {
-                card.IsTappable = false;
+                cInfo.CardGO.IsTappable = false;
             }
             
             onComplete();
-        }, 2f);
+        });
     }
 
-    public void OnChoosingPhase(Action<BaseMagicCard> onFirstCardChosen, Action<BaseMagicCard> onSecondCardChosen, Action onComplete)
+    public void ChooseCards(Action<AbilityCard> onFirstCardChosen, Action<AbilityCard> onSecondCardChosen, Action onComplete)
     {
         _battleText.text = "Choosing Phase";
 
@@ -179,7 +183,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         Action<CardObjectEvent> onPlayerCardChosen = null;
         onPlayerCardChosen = (msg) =>
         {
-            if (msg.Player != Player.First)
+            if (msg.Player != Player.First || msg.Type != CardObjectEvent.EventType.PLAYED)
             {
                 return;
             }
@@ -188,36 +192,49 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             onFirstCardChosen(msg.CardObject.Card);
             callbackCount--;
 
-            BaseMagicCard enemyCard = _enemyAI.ChooseCardToPlay();
-            CardObject enemyCO = null;
-            foreach (var cardObject in _enemyHandMap.Keys)
-            {
-                if (cardObject.Card == enemyCard)
-                {
-                    enemyCO = cardObject;
-                    break;
-                }
-            }
+            AbilityCard enemyCard = _enemyAI.ChooseCardToPlay();
+            CardGO enemyGO = _enemyHandMap[enemyCard].CardGO;
 
-            this.PlayCard(enemyCO, () =>
+            this.PlayCard(enemyGO, () =>
             {
-                //TODO - Replace with enemy card pick logic
-                onSecondCardChosen(enemyCO.Card);
+                onSecondCardChosen(enemyGO.Card);
                 callbackCount--;
             });
         };
         
         Events.Instance.AddListener(onPlayerCardChosen);
-        
-        DelayCall(() =>
+
+        DelayCall(2f, () =>
         {
-            foreach (var card in _playerHandMap.Keys)
+            foreach (var cInfo in _playerHandMap.Values)
             {
-                card.IsTappable = true;
+                cInfo.CardGO.IsTappable = true;
             }
 
             _battleText.gameObject.SetActive(false);
-        }, 2f);
+        });
+    }
+
+    public void StartBattlePhase(Player winner)
+    {
+        _battleText.text = "Choosing Phase";
+        _battleText.gameObject.SetActive(true);
+
+        DelayCall(1f, () =>
+        {
+            _battleText.gameObject.SetActive(false);
+        });
+
+        DelayCall(2f, () =>
+        {
+            AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
+            CardGO cardGO = _enemyHandMap[card].CardGO;
+            cardGO.FlipCard(true);
+
+            card = _session.GameBoard.playerOne.BattleChoice;
+            cardGO = _playerHandMap[card].CardGO;
+            cardGO.FlipCard(true);
+        });
     }
 
     private void OnDestroy()
@@ -225,12 +242,12 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         Events.Instance.RemoveListener<CardObjectEvent>(OnCardEvent);
     }
 
-    public void DelayCall(Action callback, float delay)
+    public void DelayCall(float delay, Action callback)
     {
-        StartCoroutine(DelayedAction(callback, delay));
+        StartCoroutine(DelayedAction(delay, callback));
     }
-
-    private IEnumerator DelayedAction(Action callback, float delay)
+    
+    private IEnumerator DelayedAction(float delay, Action callback)
     {
         if(delay > 0f)
         {
@@ -242,11 +259,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     private struct CardObjectSceneInfo
     {
+        public CardGO CardGO;
         public Vector3 HandPosition;
         public CardStateMachine StateMachine;
 
-        public CardObjectSceneInfo(Vector3 handPosition, CardStateMachine stateMachine)
+        public CardObjectSceneInfo(CardGO cardGO, Vector3 handPosition, CardStateMachine stateMachine)
         {
+            CardGO = cardGO;
             HandPosition = handPosition;
             StateMachine = stateMachine;
         }

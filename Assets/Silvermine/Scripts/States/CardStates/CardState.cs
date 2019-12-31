@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Silvermine.Battle.Core
 { 
-    public abstract class CardState : SMState<CardObject>
+    public abstract class CardState : SMState<CardGO>
     {
         public virtual void OnCardEnter()
         {

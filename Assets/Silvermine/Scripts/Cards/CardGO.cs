@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 using Silvermine.Battle.Core;
 using System;
 
-public class CardObject : MonoBehaviour
+public class CardGO : MonoBehaviour
 {
     public const string AssetName = "Card";
 
@@ -13,11 +13,11 @@ public class CardObject : MonoBehaviour
     private SpriteRenderer _cardFront;
 
     public bool IsTappable { get; set; }
-    public BaseMagicCard Card { get; private set; }
+    public AbilityCard Card { get; private set; }
 
     private Vector2 _originalScale;
 
-    public void Init(BaseMagicCard card, bool isTappable = true)
+    public void Init(AbilityCard card, bool isTappable = true)
     {
         Card = card;
         _originalScale = transform.localScale;
