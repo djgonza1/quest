@@ -92,7 +92,7 @@ public class Events
 
 public class GameEvent { };
 
-public class CardObjectEvent : GameEvent
+public class CardGOEvent : GameEvent
 {
     public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG, PLAYED };
 
@@ -100,7 +100,7 @@ public class CardObjectEvent : GameEvent
     public CardGO CardObject;
     public Player Player;
 
-    public CardObjectEvent(EventType type, CardGO card, Player player = Player.None)
+    public CardGOEvent(EventType type, CardGO card, Player player = Player.None)
     {
         this.Type = type;
         this.CardObject = card;

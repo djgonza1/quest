@@ -10,18 +10,6 @@ namespace Silvermine.Battle.Core
         string AssetName { get; }
     }
 
-    public interface ICardStateMachine
-    {
-        void OnCardEnter();
-        void OnCardExit();
-        void OnCardTapDown();
-        void OnCardTapRelease();
-        void OnCardHover();
-        void OnCardDrag();
-        void Update();
-        void ChangeState<S>() where S : CardState;
-    }
-
     public interface IBoardSceneManager
     {
         void BoardOpen(Action onComplete);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class InHand : CardState
+public class InHand : SMState<CardGO>
 {
     private enum InHandState { Neutral, Reseting, Highlighted};
 
@@ -11,10 +11,42 @@ public class InHand : CardState
 
     public override void Begin()
     {
+
         handState = InHandState.Neutral;
+
+        Events.Instance.AddListener<CardGOEvent>(OnCardEvent);
     }
 
-    public override void OnCardEnter()
+    public override void End()
+    {
+        Events.Instance.RemoveListener<CardGOEvent>(OnCardEvent);
+    }
+
+    private void OnCardEvent(CardGOEvent msg)
+    {
+        if (msg.CardObject != _context)
+        {
+            return;
+        }
+
+        switch (msg.Type)
+        {
+            case CardGOEvent.EventType.ENTER:
+                OnCardEnter();
+                break;
+            case CardGOEvent.EventType.EXIT:
+                OnCardExit();
+                break;
+            case CardGOEvent.EventType.HOVER:
+                OnCardHover();
+                break;
+            case CardGOEvent.EventType.DRAG:
+                OnCardDrag();
+                break;
+        }
+    }
+
+    private void OnCardEnter()
     {
         if (handState == InHandState.Neutral)
         {
@@ -23,7 +55,7 @@ public class InHand : CardState
         }
     }
 
-    public override void OnCardExit()
+    private void OnCardExit()
     {
         if (handState != InHandState.Highlighted)
         {
@@ -37,7 +69,7 @@ public class InHand : CardState
         });
     }
 
-    public override void OnCardHover()
+    private void OnCardHover()
     {
         if (handState == InHandState.Neutral)
         {
@@ -46,7 +78,7 @@ public class InHand : CardState
         }
     }
 
-    public override void OnCardDrag()
+    private void OnCardDrag()
     {
         _stateMachine.ChangeState<Grabbed>();
     }

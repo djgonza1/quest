@@ -35,12 +35,12 @@ public class CardGO : MonoBehaviour
 
     public void OnMouseEnter()
     {
-        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.ENTER, this));
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.ENTER, this));
     }
 
     public void OnMouseExit()
     {
-        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.EXIT, this));
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.EXIT, this));
     }
 
     public void OnMouseDown()
@@ -50,7 +50,7 @@ public class CardGO : MonoBehaviour
             return;
         }
 
-        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.TAP_DOWN, this));
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.TAP_DOWN, this));
     }
 
     public void OnMouseUp()
@@ -60,18 +60,18 @@ public class CardGO : MonoBehaviour
             return;
         }
 
-        Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.TAP_RELEASE, this));
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.TAP_RELEASE, this));
     }
 
     public void OnMouseOver()
     {
         if (IsTappable && Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
         {
-            Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.DRAG, this));
+            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.DRAG, this));
         }
         else if(!Input.GetMouseButton(0))
         {
-            Events.Instance.Raise(new CardObjectEvent(CardObjectEvent.EventType.HOVER, this));
+            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.HOVER, this));
         }
     }
 }

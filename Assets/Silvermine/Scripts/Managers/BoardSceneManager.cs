@@ -34,8 +34,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         
         _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
         _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
-
-        Events.Instance.AddListener<CardObjectEvent>(OnCardEvent);
     }
 
     // Update is called once per frame
@@ -60,14 +58,14 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            CardState[] states =
+            SMState<CardGO>[] states =
             {
                 new InHand(),
                 new Grabbed(),
                 new InPlay()
             };
 
-            CardStateMachine machine = new CardStateMachine(cardObject, states);
+            SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
 
             CardObjectSceneInfo cardInfo = new CardObjectSceneInfo(cardObject, handLoc.position, machine);
             
@@ -126,40 +124,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         return GetHandCardScale();
     }
-
-    public void OnCardEvent(CardObjectEvent e)
-    {
-        AbilityCard card = e.CardObject.Card;
-
-        if (!_playerHandMap.ContainsKey(card))
-        {
-            return;
-        }
-
-        CardStateMachine stateMachine = _playerHandMap[card].StateMachine;
-
-        switch(e.Type)
-        {
-            case CardObjectEvent.EventType.ENTER:
-                stateMachine.OnCardEnter();
-                break;
-            case CardObjectEvent.EventType.EXIT:
-                stateMachine.OnCardExit();
-                break;
-            case CardObjectEvent.EventType.HOVER:
-                stateMachine.OnCardHover();
-                break;
-            case CardObjectEvent.EventType.DRAG:
-                stateMachine.OnCardDrag();
-                break;
-            case CardObjectEvent.EventType.TAP_DOWN:
-                stateMachine.OnCardTapDown();
-                break;
-            case CardObjectEvent.EventType.TAP_RELEASE:
-                stateMachine.OnCardTapRelease();
-                break;
-        }
-    }
     
     public void BoardOpen(Action onComplete)
     {
@@ -180,10 +144,10 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
         CallbackCounter callbackCount = new CallbackCounter(2, onComplete);
 
-        Action<CardObjectEvent> onPlayerCardChosen = null;
+        Action<CardGOEvent> onPlayerCardChosen = null;
         onPlayerCardChosen = (msg) =>
         {
-            if (msg.Player != Player.First || msg.Type != CardObjectEvent.EventType.PLAYED)
+            if (msg.Player != Player.First || msg.Type != CardGOEvent.EventType.PLAYED)
             {
                 return;
             }
@@ -217,7 +181,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     public void StartBattlePhase(Player winner)
     {
-        _battleText.text = "Choosing Phase";
+        _battleText.text = "Flip Cards";
         _battleText.gameObject.SetActive(true);
 
         DelayCall(1f, () =>
@@ -235,11 +199,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             cardGO = _playerHandMap[card].CardGO;
             cardGO.FlipCard(true);
         });
-    }
-
-    private void OnDestroy()
-    {
-        Events.Instance.RemoveListener<CardObjectEvent>(OnCardEvent);
     }
 
     public void DelayCall(float delay, Action callback)
@@ -261,9 +220,9 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         public CardGO CardGO;
         public Vector3 HandPosition;
-        public CardStateMachine StateMachine;
+        public SMStateMachine<CardGO> StateMachine;
 
-        public CardObjectSceneInfo(CardGO cardGO, Vector3 handPosition, CardStateMachine stateMachine)
+        public CardObjectSceneInfo(CardGO cardGO, Vector3 handPosition, SMStateMachine<CardGO> stateMachine)
         {
             CardGO = cardGO;
             HandPosition = handPosition;
