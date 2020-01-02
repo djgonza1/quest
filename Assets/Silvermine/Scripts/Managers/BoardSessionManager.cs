@@ -10,7 +10,7 @@ namespace Silvermine.Battle.Core
     public class BoardSessionManager
     {
         public Board GameBoard { get; private set; }
-        public SMStateMachine<BoardSessionManager> StateMachine { get; }
+        public SMStateMachine<BoardSessionManager> StateMachine { get; private set; }
         public IBoardSceneManager SceneManager { get; }
         
         private List<AbilityCard> _playerOneHand;
@@ -21,7 +21,10 @@ namespace Silvermine.Battle.Core
             SceneManager = sceneManager;
 
             GameBoard = new Board();
+        }
 
+        public void StartSession()
+        {
             SMState<BoardSessionManager>[] states =
             {
                 new BattleStart(),

@@ -21,6 +21,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     [SerializeField]
     private Text _battleText;
 
+    public CallbackQueue EffectsQueue;
+
     private Dictionary<AbilityCard, CardObjectSceneInfo> _playerHandMap;
     private Dictionary<AbilityCard, CardObjectSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
@@ -31,9 +33,12 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         _session = new BoardSessionManager(this);
         _enemyAI = new EnemyPlayerController(_session.GameBoard, Player.Second);
+        EffectsQueue = new CallbackQueue();
         
         _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
         _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
+
+        _session.StartSession();
     }
 
     // Update is called once per frame
@@ -53,7 +58,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         {
             CardGO cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
             
-            cardObject.Init(cards[i], false);
+            cardObject.Init(cards[i], isPlayerHand);
             cardObject.FlipCard(isPlayerHand);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
@@ -125,71 +130,102 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         return GetHandCardScale();
     }
     
-    public void BoardOpen(Action onComplete)
+    public void BoardOpen()
     {
-        DelayCall(2f, () =>
+        Action<Action> boardOpenStart = (boardOpenEnd) =>
         {
+            _battleText.text = "GameStart";
+            _battleText.gameObject.SetActive(true);
+
             foreach (var cInfo in _playerHandMap.Values)
             {
                 cInfo.CardGO.IsTappable = false;
             }
-            
-            onComplete();
-        });
-    }
 
-    public void ChooseCards(Action<AbilityCard> onFirstCardChosen, Action<AbilityCard> onSecondCardChosen, Action onComplete)
-    {
-        _battleText.text = "Choosing Phase";
-
-        CallbackCounter callbackCount = new CallbackCounter(2, onComplete);
-
-        Action<CardGOEvent> onPlayerCardChosen = null;
-        onPlayerCardChosen = (msg) =>
-        {
-            if (msg.Player != Player.First || msg.Type != CardGOEvent.EventType.PLAYED)
+            DelayCall(2f, () =>
             {
-                return;
-            }
-
-            Events.Instance.RemoveListener(onPlayerCardChosen);
-            onFirstCardChosen(msg.CardObject.Card);
-            callbackCount--;
-
-            AbilityCard enemyCard = _enemyAI.ChooseCardToPlay();
-            CardGO enemyGO = _enemyHandMap[enemyCard].CardGO;
-
-            this.PlayCard(enemyGO, () =>
-            {
-                onSecondCardChosen(enemyGO.Card);
-                callbackCount--;
+                _battleText.gameObject.SetActive(false);
+                boardOpenEnd();
             });
         };
-        
-        Events.Instance.AddListener(onPlayerCardChosen);
 
-        DelayCall(2f, () =>
+        EffectsQueue.QueuedCall(boardOpenStart);
+    }
+
+    public void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen)
+    {
+        Action<Action> popupStart = (popupEnd) =>
         {
-            foreach (var cInfo in _playerHandMap.Values)
-            {
-                cInfo.CardGO.IsTappable = true;
-            }
+            _battleText.text = "Choose Card";
+            _battleText.gameObject.SetActive(true);
 
-            _battleText.gameObject.SetActive(false);
-        });
+            DelayCall(2f, () =>
+            {
+                foreach (var cInfo in _playerHandMap.Values)
+                {
+                    cInfo.CardGO.IsTappable = true;
+                }
+
+                _battleText.gameObject.SetActive(false);
+                popupEnd();
+            });
+        };
+
+        Action<Action> chooseCardsStart = (chooseCardsEnd) =>
+        {
+            AbilityCard firstChoice = null;
+            AbilityCard secondChoice = null;
+
+            Action<CardGOEvent> onPlayerCardChosen = null;
+            onPlayerCardChosen = (msg) =>
+            {
+                if (msg.Player != Player.First || msg.Type != CardGOEvent.EventType.CHOSEN)
+                {
+                    return;
+                }
+
+                foreach (var cInfo in _playerHandMap.Values)
+                {
+                    cInfo.CardGO.IsTappable = false;
+                }
+
+                Events.Instance.RemoveListener(onPlayerCardChosen);
+
+                firstChoice = msg.CardObject.Card;
+                secondChoice = _enemyAI.ChooseCardToPlay();
+                onCardsChosen(firstChoice, secondChoice);
+
+                CardGO enemyGO = _enemyHandMap[secondChoice].CardGO;
+                this.PlayCard(enemyGO, () =>
+                {
+                    Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, Player.First));
+                    _enemyHandMap[secondChoice].StateMachine.ChangeState<InPlay>();
+                    chooseCardsEnd();
+                });
+            };
+            Events.Instance.AddListener(onPlayerCardChosen);
+        };
+
+        EffectsQueue.QueuedCall(popupStart)
+                    .QueuedCall(chooseCardsStart);
     }
 
     public void StartBattlePhase(Player winner)
     {
-        _battleText.text = "Flip Cards";
-        _battleText.gameObject.SetActive(true);
-
-        DelayCall(1f, () =>
+        Action<Action> phaseStart = (phaseEnd) =>
         {
-            _battleText.gameObject.SetActive(false);
-        });
+            _battleText.text = "Flip Cards";
+            _battleText.gameObject.SetActive(true);
 
-        DelayCall(2f, () =>
+            DelayCall(2f, () =>
+            {
+                _battleText.text = "Flip Cards";
+                _battleText.gameObject.SetActive(false);
+                phaseEnd();
+            });
+        };
+
+        Action<Action> flipStart = (flipEnd) =>
         {
             AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
             CardGO cardGO = _enemyHandMap[card].CardGO;
@@ -198,7 +234,15 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             card = _session.GameBoard.playerOne.BattleChoice;
             cardGO = _playerHandMap[card].CardGO;
             cardGO.FlipCard(true);
-        });
+
+            DelayCall(1f, () =>
+            {
+                flipEnd();
+            });
+        };
+
+        EffectsQueue.QueuedCall(phaseStart)
+                    .QueuedCall(flipStart);
     }
 
     public void DelayCall(float delay, Action callback)

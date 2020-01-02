@@ -94,7 +94,7 @@ public class GameEvent { };
 
 public class CardGOEvent : GameEvent
 {
-    public enum EventType { ENTER, EXIT, HOVER, TAP_DOWN, TAP_RELEASE, DRAG, PLAYED };
+    public enum EventType { MOUSE_ENTER, MOUSE_EXIT, MOUSE_HOVER, TAP_DOWN, TAP_RELEASE, MOUSE_DRAG, CHOSEN, PLAYED };
 
     public EventType Type;
     public CardGO CardObject;
@@ -104,22 +104,6 @@ public class CardGOEvent : GameEvent
     {
         this.Type = type;
         this.CardObject = card;
-        this.Player = player;
-    }
-}
-
-public class SessionCardEvent : GameEvent
-{
-    public enum EventType { PLAYED };
-
-    public EventType Type; 
-    public AbilityCard Card;
-    public Player Player;
-
-    public SessionCardEvent(EventType type, AbilityCard card, Player player)
-    {
-        this.Type = type;
-        this.Card = card;
         this.Player = player;
     }
 }

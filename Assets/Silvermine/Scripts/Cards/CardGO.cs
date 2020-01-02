@@ -35,12 +35,12 @@ public class CardGO : MonoBehaviour
 
     public void OnMouseEnter()
     {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.ENTER, this));
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_ENTER, this));
     }
 
     public void OnMouseExit()
     {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.EXIT, this));
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_EXIT, this));
     }
 
     public void OnMouseDown()
@@ -67,11 +67,11 @@ public class CardGO : MonoBehaviour
     {
         if (IsTappable && Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
         {
-            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.DRAG, this));
+            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_DRAG, this));
         }
         else if(!Input.GetMouseButton(0))
         {
-            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.HOVER, this));
+            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_HOVER, this));
         }
     }
 }

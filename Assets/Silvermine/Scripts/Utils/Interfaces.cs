@@ -12,10 +12,8 @@ namespace Silvermine.Battle.Core
 
     public interface IBoardSceneManager
     {
-        void BoardOpen(Action onComplete);
-        void ChooseCards(Action<AbilityCard> choosePlayerOneCard, 
-                             Action<AbilityCard> choosePlayerTwoCard,
-                             Action onComplete);
+        void BoardOpen();
+        void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen);
         void StartBattlePhase(Player winner);
     }
 }

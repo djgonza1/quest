@@ -31,16 +31,16 @@ public class InHand : SMState<CardGO>
 
         switch (msg.Type)
         {
-            case CardGOEvent.EventType.ENTER:
+            case CardGOEvent.EventType.MOUSE_ENTER:
                 OnCardEnter();
                 break;
-            case CardGOEvent.EventType.EXIT:
+            case CardGOEvent.EventType.MOUSE_EXIT:
                 OnCardExit();
                 break;
-            case CardGOEvent.EventType.HOVER:
+            case CardGOEvent.EventType.MOUSE_HOVER:
                 OnCardHover();
                 break;
-            case CardGOEvent.EventType.DRAG:
+            case CardGOEvent.EventType.MOUSE_DRAG:
                 OnCardDrag();
                 break;
         }
