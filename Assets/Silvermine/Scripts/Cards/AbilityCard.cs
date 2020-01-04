@@ -6,21 +6,26 @@ namespace Silvermine.Battle.Core
 {
     public enum CardColor { None, Red, Green, Blue };
 
-    public class BaseMagicCard
+    public class AbilityCard
     {
         public CardColor Color { get; private set; }
-        public int Damage { get; private set; }
+        public int Power { get; private set; }
 
-        public BaseMagicCard()
+        public AbilityCard()
         {
             Color = CardColor.None;
-            Damage = 0;
+            Power = 0;
         }
 
-        public BaseMagicCard(CardColor color, int power)
+        public AbilityCard(CardColor color, int power)
         {
             this.Color = color;
-            this.Damage = power;
+            this.Power = power;
+        }
+
+        public AbilityCard(AbilityCard card) : this(card.Color, card.Power)
+        {
+
         }
     }
 }

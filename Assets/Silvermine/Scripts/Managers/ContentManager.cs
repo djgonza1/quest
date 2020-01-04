@@ -17,18 +17,17 @@ public class ContentManager : SingletonGameObject<ContentManager>
         _cardsBundle = AssetBundle.LoadFromFile(cardBundlePath);
     }
     
-    public CardObject LoadSpellCardObject(BaseMagicCard spellCard)
+    public CardGO LoadSpellCardObject(AbilityCard spellCard)
     {
         if (_cardAsset == null)
         {
-            _cardAsset = _cardsBundle.LoadAsset<GameObject>(CardObject.AssetName);
+            _cardAsset = _cardsBundle.LoadAsset<GameObject>(CardGO.AssetName);
         }
         
         var go = Instantiate(_cardAsset);
 
-        CardObject cardObject = go.GetComponent<CardObject>();
-        cardObject.Init(spellCard);
-
+        CardGO cardObject = go.GetComponent<CardGO>();
+        
         return cardObject;
     }
 

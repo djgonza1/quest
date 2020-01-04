@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Silvermine.Battle.Core;
 
 public class Events
 {
@@ -24,9 +24,9 @@ public class Events
         _delegates = new Dictionary<Type, Delegate>();
     }
 
-    public delegate void EventDelegate<T>(T e) where T : GameEvent;
+    //public delegate void EventDelegate<T>(T e) where T : GameEvent;
 
-    public void AddListener<T>(EventDelegate<T> listener) where T : GameEvent
+    public void AddListener<T>(Action<T> listener) where T : GameEvent
     {
         Type type = typeof(T);
 
@@ -42,7 +42,7 @@ public class Events
         }
     }
 
-    public void RemoveListener<T>(EventDelegate<T> listener) where T : GameEvent
+    public void RemoveListener<T>(Action<T> listener) where T : GameEvent
     {
         Type type = typeof(T);
 
@@ -72,26 +72,38 @@ public class Events
         Delegate d;
         if (_delegates.TryGetValue(typeof(T), out d))
         {
-            if(d is EventDelegate<T> callback)
+            if(d is Action<T> callback)
             {
                 callback(e);
             }
         }
     }
+
+    public void AddOneTimeListener<T>(Action<T> listener) where T : GameEvent
+    {
+        listener += (ev) =>
+        {
+            RemoveListener<T>(listener);
+        };
+
+        AddListener<T>(listener);
+    }
 }
 
 public class GameEvent { };
 
-public class CardEvent : GameEvent
+public class CardGOEvent : GameEvent
 {
-    public enum EventType { CARD_PLAYED };
+    public enum EventType { MOUSE_ENTER, MOUSE_EXIT, MOUSE_HOVER, TAP_DOWN, TAP_RELEASE, MOUSE_DRAG, CHOSEN, PLAYED };
 
-    public EventType type;
-    public CardObject card;
+    public EventType Type;
+    public CardGO CardObject;
+    public Player Player;
 
-    public CardEvent(EventType type, CardObject card)
+    public CardGOEvent(EventType type, CardGO card, Player player = Player.None)
     {
-        this.type = type;
-        this.card = card;
+        this.Type = type;
+        this.CardObject = card;
+        this.Player = player;
     }
 }

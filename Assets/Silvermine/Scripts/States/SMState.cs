@@ -9,9 +9,20 @@ namespace Silvermine.Battle.Core
         protected SMStateMachine<T> _stateMachine;
         protected T _context;
         
-        public abstract void Begin();
-        public abstract void Update();
-        public abstract void End();
+        public virtual void Begin()
+        {
+
+        }
+
+        public virtual void Update()
+        {
+
+        }
+
+        public virtual void End()
+        {
+
+        }
 
         public void SetMachineAndContext(SMStateMachine<T> stateMachine, T context)
         {
