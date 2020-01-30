@@ -23,8 +23,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     public CallbackQueue EffectsQueue;
 
-    private Dictionary<AbilityCard, CardObjectSceneInfo> _playerHandMap;
-    private Dictionary<AbilityCard, CardObjectSceneInfo> _enemyHandMap;
+    private Dictionary<AbilityCard, CardGOSceneInfo> _playerHandMap;
+    private Dictionary<AbilityCard, CardGOSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
     private EnemyPlayerController _enemyAI;
     
@@ -50,9 +50,9 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         }
     }
 
-    private Dictionary<AbilityCard, CardObjectSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
+    private Dictionary<AbilityCard, CardGOSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
     {
-        Dictionary<AbilityCard, CardObjectSceneInfo> handMap = new Dictionary<AbilityCard, CardObjectSceneInfo>();
+        Dictionary<AbilityCard, CardGOSceneInfo> handMap = new Dictionary<AbilityCard, CardGOSceneInfo>();
 
         for (int i = 0; i < cards.Count; i++)
         {
@@ -72,7 +72,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
             SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
 
-            CardObjectSceneInfo cardInfo = new CardObjectSceneInfo(cardObject, handLoc.position, machine);
+            CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
             
             handMap.Add(cards[i], cardInfo);
         }
@@ -260,13 +260,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         callback.Invoke();
     }
 
-    private struct CardObjectSceneInfo
+    private struct CardGOSceneInfo
     {
         public CardGO CardGO;
         public Vector3 HandPosition;
         public SMStateMachine<CardGO> StateMachine;
 
-        public CardObjectSceneInfo(CardGO cardGO, Vector3 handPosition, SMStateMachine<CardGO> stateMachine)
+        public CardGOSceneInfo(CardGO cardGO, Vector3 handPosition, SMStateMachine<CardGO> stateMachine)
         {
             CardGO = cardGO;
             HandPosition = handPosition;
