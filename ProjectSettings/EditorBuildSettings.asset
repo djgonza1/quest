@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Silvermine/Scenes/start_scene.unity
+    guid: 99e781b0f8f77e4498002bc78b0334ec
+  - enabled: 1
+    path: Assets/Silvermine/Scenes/board_scene.unity
+    guid: ebddd9b692cb90e44a2a52fc9fa92248
   m_configObjects: {}
