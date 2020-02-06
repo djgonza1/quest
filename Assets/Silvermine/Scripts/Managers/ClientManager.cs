@@ -5,11 +5,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClientManager : MonoBehaviour
+public class ClientManager : SingletonGameObject<ClientManager>
 {
     private const int PORT_NUMBER = 3074;
 
-    void Start()
+    private Action _onConnectComplete;
+
+    public ClientManager ConnectToServer()
     {
         IPAddress serverAddress = IPAddress.Parse("192.168.1.101");
 
@@ -19,8 +21,10 @@ public class ClientManager : MonoBehaviour
                                      SocketType.Stream, ProtocolType.Tcp);
 
         client.BeginConnect(serverEP, new AsyncCallback(ConnectCallback), client);
+
+        return this;
     }
-    
+
     private void ConnectCallback(IAsyncResult re)
     {
         Socket server = re.AsyncState as Socket;
@@ -29,9 +33,16 @@ public class ClientManager : MonoBehaviour
         {
             Debug.LogWarning("null server socket");
         }
-
         
-
         Debug.Log("connected?: " + !server.Poll(10, SelectMode.SelectRead));
+
+        _onConnectComplete?.Invoke();
+    }
+
+    public ClientManager SetOnConnectComplete(Action onComplete)
+    {
+        _onConnectComplete = onComplete;
+
+        return this;
     }
 }
