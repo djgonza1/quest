@@ -25,8 +25,10 @@ public class StartSceneManager : SingletonGameObject<StartSceneManager>
     {
         if (_loadBoard)
         {
-            LoadBoardScene();
+            SceneManager.LoadScene("board_scene");
         }
+
+        _loadBoard = false;
     }
 
     public void OnVsAIButtonClick()
@@ -46,10 +48,5 @@ public class StartSceneManager : SingletonGameObject<StartSceneManager>
                               .SetOnConnectComplete(()=> {
                                   _loadBoard = true;
                               });
-    }
-
-    private void LoadBoardScene()
-    {
-        SceneManager.LoadScene("board_scene");
     }
 }

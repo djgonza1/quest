@@ -7,13 +7,8 @@ namespace Silvermine.Battle.Core
 {
     public class ChoosingPhase : SMState<BoardSessionManager>
     {
-        bool firstChosen;
-        bool secondSchosen;
-
         public override void Begin()
         {
-            firstChosen = false;
-            secondSchosen = false;
             _context.SceneManager.ChooseCards(OnCardsChosen);
         }
 
