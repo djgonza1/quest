@@ -36,54 +36,56 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         EffectsQueue = new CallbackQueue();
         
         _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
-        _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
+        //_enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
 
-        _session.StartSession();
+        //_session.StartSession();
     }
 
     // Update is called once per frame
     void Update()
     {
-        foreach (var cardInfo in _playerHandMap.Values)
-        {
-            cardInfo.StateMachine.Update();
-        }
+        //foreach (var cardInfo in _playerHandMap.Values)
+        //{
+        //    cardInfo.StateMachine.Update();
+        //}
     }
 
     private Dictionary<AbilityCard, CardGOSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
     {
         Dictionary<AbilityCard, CardGOSceneInfo> handMap = new Dictionary<AbilityCard, CardGOSceneInfo>();
 
-        for (int i = 0; i < cards.Count; i++)
-        {
-            CardGO cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
+        ContentManager.Instance.LoadSpellCardObject(cards[0]);
+
+        //for (int i = 0; i < cards.Count; i++)
+        //{
+        //    CardGO cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
             
-            cardObject.Init(cards[i], isPlayerHand);
-            cardObject.FlipCard(isPlayerHand);
+        //    cardObject.Init(cards[i], isPlayerHand);
+        //    cardObject.FlipCard(isPlayerHand);
 
-            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
+        //    Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            SMState<CardGO>[] states =
-            {
-                new InHand(),
-                new Grabbed(),
-                new InPlay()
-            };
+        //    SMState<CardGO>[] states =
+        //    {
+        //        new InHand(),
+        //        new Grabbed(),
+        //        new InPlay()
+        //    };
 
-            SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
+        //    SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
 
-            CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
+        //    CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
             
-            handMap.Add(cards[i], cardInfo);
-        }
+        //    handMap.Add(cards[i], cardInfo);
+        //}
 
-        foreach (var cInfo in handMap.Values)
-        {
-            var position = cInfo.HandPosition;
+        //foreach (var cInfo in handMap.Values)
+        //{
+        //    var position = cInfo.HandPosition;
 
-            cInfo.CardGO.transform.position = position;
-            cInfo.CardGO.transform.localScale = GetHandCardScale();
-        }
+        //    cInfo.CardGO.transform.position = position;
+        //    cInfo.CardGO.transform.localScale = GetHandCardScale();
+        //}
 
         return handMap;
     }

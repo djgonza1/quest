@@ -11,4 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Silvermine/Scenes/board_scene.unity
     guid: ebddd9b692cb90e44a2a52fc9fa92248
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 1a2e48a6b5489494b9f1f2a8e7c36fef,
+      type: 2}
