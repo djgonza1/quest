@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -9,31 +10,30 @@ public class ContentManager : SingletonGameObject<ContentManager>
 {
     [SerializeField]
     private CardCollection _cardCollection;
-    private GameObject _cardAsset;
-
-    // Start is called before the first frame update
-    void Start()
+    private GameObject _cardPrefab;
+    
+    public void LoadAbilityCardsPrefabs(Action onComplete = null)
     {
-        _cardCollection.Cards[0].InstantiateAsync().Completed += (handle) =>
+        var operation = _cardCollection.Cards[0].LoadAssetAsync<GameObject>();
+
+        operation.Completed += (handle) =>
         {
-            var go = handle.Result;
-            var card = go.GetComponent<CardGO>();
-            Debug.LogWarning("loaded: " + card.gameObject.name);
+            _cardPrefab = handle.Result;
+
+            var cardColors = Enum.GetValues(typeof(CardColor));
+            
+            onComplete?.Invoke();
         };
     }
     
-    public CardGO LoadSpellCardObject(AbilityCard spellCard)
+    public CardGO CreateCardObject(AbilityCard card)
     {
-        //if (_cardAsset == null)
-        //{
-        //    _cardAsset = _cardsBundle.LoadAsset<GameObject>(CardGO.AssetName);
-        //}
-        
-        //var go = Instantiate(_cardAsset);
+        var go = Instantiate(_cardPrefab.gameObject);
 
-        //CardGO cardObject = go.GetComponent<CardGO>();
-        
-        return null;
+        CardGO cardObject = go.GetComponent<CardGO>();
+        cardObject.Init(card);
+
+        return cardObject;
     }
 
     public static string GetAssetBundlesPath()

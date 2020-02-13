@@ -21,7 +21,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     [SerializeField]
     private Text _battleText;
 
-    public CallbackQueue EffectsQueue;
+    public CallbackQueue CallbackQueue;
 
     private Dictionary<AbilityCard, CardGOSceneInfo> _playerHandMap;
     private Dictionary<AbilityCard, CardGOSceneInfo> _enemyHandMap;
@@ -33,59 +33,67 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         _session = new BoardSessionManager(this);
         _enemyAI = new EnemyPlayerController(_session.GameBoard, Player.Second);
-        EffectsQueue = new CallbackQueue();
+        CallbackQueue = new CallbackQueue();
         
-        _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
-        //_enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
-
-        //_session.StartSession();
+        ContentManager.Instance.LoadAbilityCardsPrefabs(StartBoardGameSession);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //foreach (var cardInfo in _playerHandMap.Values)
-        //{
-        //    cardInfo.StateMachine.Update();
-        //}
+        if (_playerHandMap == null)
+        {
+            return;
+        }
+
+        foreach (var cardInfo in _playerHandMap.Values)
+        {
+            cardInfo.StateMachine.Update();
+        }
+    }
+
+    private void StartBoardGameSession()
+    {
+        _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
+        _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
+        
+        _session.StartSession();
     }
 
     private Dictionary<AbilityCard, CardGOSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
     {
         Dictionary<AbilityCard, CardGOSceneInfo> handMap = new Dictionary<AbilityCard, CardGOSceneInfo>();
+        
+        for (int i = 0; i < cards.Count; i++)
+        {
+            CardGO cardObject = ContentManager.Instance.CreateCardObject(cards[i]);
 
-        ContentManager.Instance.LoadSpellCardObject(cards[0]);
+            cardObject.IsTappable = isPlayerHand;
+            cardObject.FlipCard(isPlayerHand);
 
-        //for (int i = 0; i < cards.Count; i++)
-        //{
-        //    CardGO cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
-            
-        //    cardObject.Init(cards[i], isPlayerHand);
-        //    cardObject.FlipCard(isPlayerHand);
+            Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-        //    Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
+            SMState<CardGO>[] states =
+            {
+                new InHand(),
+                new Grabbed(),
+                new InPlay()
+            };
 
-        //    SMState<CardGO>[] states =
-        //    {
-        //        new InHand(),
-        //        new Grabbed(),
-        //        new InPlay()
-        //    };
+            SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
 
-        //    SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
+            CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
 
-        //    CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
-            
-        //    handMap.Add(cards[i], cardInfo);
-        //}
+            handMap.Add(cards[i], cardInfo);
+        }
 
-        //foreach (var cInfo in handMap.Values)
-        //{
-        //    var position = cInfo.HandPosition;
+        foreach (var cInfo in handMap.Values)
+        {
+            var position = cInfo.HandPosition;
 
-        //    cInfo.CardGO.transform.position = position;
-        //    cInfo.CardGO.transform.localScale = GetHandCardScale();
-        //}
+            cInfo.CardGO.transform.position = position;
+            cInfo.CardGO.transform.localScale = GetHandCardScale();
+        }
 
         return handMap;
     }
@@ -151,7 +159,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             });
         };
 
-        EffectsQueue.QueuedCall(boardOpenStart);
+        CallbackQueue.QueuedCall(boardOpenStart);
     }
 
     public void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen)
@@ -208,7 +216,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             Events.Instance.AddListener(onPlayerCardChosen);
         };
 
-        EffectsQueue.QueuedCall(popupStart)
+        CallbackQueue.QueuedCall(popupStart)
                     .QueuedCall(chooseCardsStart);
     }
 
@@ -243,7 +251,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             });
         };
 
-        EffectsQueue.QueuedCall(phaseStart)
+        CallbackQueue.QueuedCall(phaseStart)
                     .QueuedCall(flipStart);
     }
 
