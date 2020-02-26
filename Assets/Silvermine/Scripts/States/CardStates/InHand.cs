@@ -51,7 +51,7 @@ public class InHand : SMState<PlayableCardGO>
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            (_context as ICardGO).Highlight(1.5f);
+            (_context as ICardGO).Highlight(BoardSceneManager.CardOverSizeScale);
         }
     }
 
@@ -74,7 +74,7 @@ public class InHand : SMState<PlayableCardGO>
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            (_context as ICardGO).Highlight(1.5f);
+            (_context as ICardGO).Highlight(BoardSceneManager.CardOverSizeScale);
         }
     }
 
