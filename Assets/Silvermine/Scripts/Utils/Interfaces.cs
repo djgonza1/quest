@@ -16,4 +16,10 @@ namespace Silvermine.Battle.Core
         void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen);
         void StartBattlePhase(Player winner);
     }
+
+    public interface ICardGO
+    {
+        void SetSortingOrder(int order);
+        void Highlight(float scaleRatio);
+    }
 }

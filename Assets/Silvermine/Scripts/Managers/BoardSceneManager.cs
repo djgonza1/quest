@@ -66,21 +66,21 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         
         for (int i = 0; i < cards.Count; i++)
         {
-            CardGO cardObject = ContentManager.Instance.CreateCardObject(cards[i]);
+            PlayableCardGO cardObject = ContentManager.Instance.CreateCardObject(cards[i]);
 
             cardObject.IsTappable = isPlayerHand;
             cardObject.FlipCard(isPlayerHand);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            SMState<CardGO>[] states =
+            SMState<PlayableCardGO>[] states =
             {
                 new InHand(),
                 new Grabbed(),
                 new InPlay()
             };
 
-            SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
+            SMStateMachine<PlayableCardGO> machine = new SMStateMachine<PlayableCardGO>(cardObject, states);
 
             CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
 
@@ -98,7 +98,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         return handMap;
     }
     
-    public Vector3 GetCardHandPosition(CardGO cardGO)
+    public Vector3 GetCardHandPosition(PlayableCardGO cardGO)
     {
 
         if (_playerHandMap.ContainsKey(cardGO.Card))
@@ -115,7 +115,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         return Vector2.zero;
     }
 
-    public Vector3 GetBoardPlayPosition(CardGO cardGO)
+    public Vector3 GetBoardPlayPosition(PlayableCardGO cardGO)
     {
         if (_playerHandMap.ContainsKey(cardGO.Card))
         {
@@ -205,7 +205,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
                 secondChoice = _enemyAI.ChooseCardToPlay();
                 onCardsChosen(firstChoice, secondChoice);
 
-                CardGO enemyGO = _enemyHandMap[secondChoice].CardGO;
+                PlayableCardGO enemyGO = _enemyHandMap[secondChoice].CardGO;
                 this.PlayCard(enemyGO, () =>
                 {
                     Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, Player.First));
@@ -238,7 +238,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         Action<Action> flipStart = (flipEnd) =>
         {
             AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
-            CardGO cardGO = _enemyHandMap[card].CardGO;
+            PlayableCardGO cardGO = _enemyHandMap[card].CardGO;
             cardGO.FlipCard(true);
 
             card = _session.GameBoard.playerOne.BattleChoice;
@@ -272,11 +272,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
 
     private struct CardGOSceneInfo
     {
-        public CardGO CardGO;
+        public PlayableCardGO CardGO;
         public Vector3 HandPosition;
-        public SMStateMachine<CardGO> StateMachine;
+        public SMStateMachine<PlayableCardGO> StateMachine;
 
-        public CardGOSceneInfo(CardGO cardGO, Vector3 handPosition, SMStateMachine<CardGO> stateMachine)
+        public CardGOSceneInfo(PlayableCardGO cardGO, Vector3 handPosition, SMStateMachine<PlayableCardGO> stateMachine)
         {
             CardGO = cardGO;
             HandPosition = handPosition;

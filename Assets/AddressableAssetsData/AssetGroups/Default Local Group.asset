@@ -16,7 +16,13 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 76dfbccf58742a44a9df4a4ee4f6ba3e
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 1b687c5af09ac1b4f9b16082b9a29e2d
+    m_Address: Cards/Spells/PlayableCard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_mainAssetType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0b29e0f6c36e40848b161d7b04cc9dfc, type: 2}
   m_SchemaSet:

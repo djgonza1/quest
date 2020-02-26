@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class InHand : SMState<CardGO>
+public class InHand : SMState<PlayableCardGO>
 {
     private enum InHandState { Neutral, Reseting, Highlighted};
 
@@ -51,7 +51,7 @@ public class InHand : SMState<CardGO>
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            BoardSceneManager.Instance.HighlightCard(_context);
+            (_context as ICardGO).Highlight(1.5f);
         }
     }
 
@@ -74,7 +74,7 @@ public class InHand : SMState<CardGO>
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            BoardSceneManager.Instance.HighlightCard(_context);
+            (_context as ICardGO).Highlight(1.5f);
         }
     }
 

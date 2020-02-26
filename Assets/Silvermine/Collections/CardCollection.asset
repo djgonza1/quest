@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CardCollection
   m_EditorClassIdentifier: 
   Cards:
-  - m_AssetGUID: 0503630321082cd44bdd0212dc0f06c8
+  - m_AssetGUID: 1b687c5af09ac1b4f9b16082b9a29e2d
     m_SubObjectName: 
