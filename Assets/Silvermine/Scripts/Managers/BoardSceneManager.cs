@@ -8,18 +8,13 @@ using Silvermine.Battle.Core;
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
 {
     public const float CardOverSizePosOffset = 1.3f;
-    public const float CardOverSizeScale = 1.5f;
+    public const float CardOverSizeScale = 3f;
 
-    [SerializeField]
-    private Transform[] _playerCardLocators;
-    [SerializeField]
-    private Transform[] _enemyCardLocators;
-    [SerializeField]
-    private Transform _leftSpellBoardLocator;
-    [SerializeField]
-    private Transform _rightSpellBoardLocator;
-    [SerializeField]
-    private Text _battleText;
+    [SerializeField] private Transform[] _playerCardLocators;
+    [SerializeField] private Transform[] _enemyCardLocators;
+    [SerializeField] private Transform _leftSpellBoardLocator;
+    [SerializeField] private Transform _rightSpellBoardLocator;
+    [SerializeField] private Text _battleText;
 
     public CallbackQueue CallbackQueue;
 
