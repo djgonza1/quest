@@ -7,7 +7,7 @@ using Silvermine.Battle.Core;
 
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
 {
-    public const float CardOverSizePosOffset = 1.3f;
+    public const float CardOverSizePosOffset = 3f;
     public const float CardOverSizeScale = 3f;
 
     [SerializeField] private Transform[] _playerCardLocators;

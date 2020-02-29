@@ -20,6 +20,6 @@ namespace Silvermine.Battle.Core
     public interface ICardGO
     {
         void SetSortingOrder(int order);
-        void Highlight(float scaleRatio);
+        void Highlight(bool enable);
     }
 }

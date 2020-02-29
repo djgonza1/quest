@@ -28,11 +28,22 @@ public class CardGO : MonoBehaviour, ICardGO
         SortingGroup.sortingOrder = order;
     }
 
-    public void Highlight(float scale)
+    public void Highlight(bool enable)
     {
-        Vector2 handPosition = gameObject.transform.position;
+        if (enable)
+        {
+            float scale = BoardSceneManager.CardOverSizeScale;
+            Vector2 handPosition = gameObject.transform.position;
+            
+            gameObject.transform.localPosition = new Vector3(0f, BoardSceneManager.CardOverSizePosOffset);
+            gameObject.transform.localScale = new Vector3(scale, scale);
+        }
+        else
+        {
+            LeanTween.cancel(gameObject);
 
-        LeanTween.move(gameObject, new Vector2(handPosition.x, handPosition.y + BoardSceneManager.CardOverSizePosOffset), 0.2f);
-        LeanTween.scale(gameObject, new Vector2(scale, scale), 0f);
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localScale = Vector3.one;
+        }
     }
 }

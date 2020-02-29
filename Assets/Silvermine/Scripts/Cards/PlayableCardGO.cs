@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using Silvermine.Battle.Core;
 using System;
 
-public class PlayableCardGO : MonoBehaviour, ICardGO
+public class PlayableCardGO : MonoBehaviour, ICardGO 
 {
-    [SerializeField] private CardGO _cardGO;
-
     public const string AssetName = "Card";
 
+    [SerializeField] private CardGO _cardGO;
+    
     public bool IsTappable { get; set; }
     public AbilityCard Card { get; private set; }
 
@@ -25,6 +26,8 @@ public class PlayableCardGO : MonoBehaviour, ICardGO
     {
         _cardGO.FlipCard(showFront);
     }
+
+    #region Mouse Events
 
     public void OnMouseEnter()
     {
@@ -68,6 +71,8 @@ public class PlayableCardGO : MonoBehaviour, ICardGO
         }
     }
 
+    #endregion
+
     #region ICardGO Implementation
 
     public void SetSortingOrder(int order)
@@ -75,9 +80,10 @@ public class PlayableCardGO : MonoBehaviour, ICardGO
         _cardGO.SetSortingOrder(order);
     }
 
-    public void Highlight(float scaleRatio)
+    public void Highlight(bool enable)
     {
-        _cardGO.Highlight(scaleRatio);
+        _cardGO.Highlight(enable);
+        _cardGO.SetSortingOrder(1);
     }
     
     #endregion
