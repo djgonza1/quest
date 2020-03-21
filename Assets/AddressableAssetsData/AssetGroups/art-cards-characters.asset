@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: art-cards-characters
+  m_EditorClassIdentifier: 
+  m_GroupName: art-cards-characters
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 4978df06490df4e4b85df9541e91e28c
+  m_SerializeEntries:
+  - m_GUID: 06dc0e6299a551b4f931d725adb42e91
+    m_Address: Assets/Silvermine/Art/Sprites/Cards/Character/CH_Test_A01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_mainAssetType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0b29e0f6c36e40848b161d7b04cc9dfc, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 04bf7e00724effe4cbcbfbd7a7876e69, type: 2}
+    - {fileID: 11400000, guid: 46a37b1d4003ace4a8a7343bd220dd81, type: 2}

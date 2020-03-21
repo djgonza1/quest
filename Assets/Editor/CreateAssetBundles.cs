@@ -1,20 +1,20 @@
-﻿using UnityEditor;
-using System.IO;
+﻿//using UnityEditor;
+//using System.IO;
 
-public class CreateAssetBundles
-{
-    [MenuItem("Assets/Build AssetBundles")]
-    static void BuildAllAssetBundles()
-    {
-        string assetBundleDirectory = ContentManager.GetAssetBundlesPath();
+//public class CreateAssetBundles
+//{
+//    [MenuItem("Assets/Build AssetBundles")]
+//    static void BuildAllAssetBundles()
+//    {
+//        string assetBundleDirectory = ContentManager.GetAssetBundlesPath();
 
-        if (!Directory.Exists(assetBundleDirectory))
-        {
-            Directory.CreateDirectory(assetBundleDirectory);
-        }
+//        if (!Directory.Exists(assetBundleDirectory))
+//        {
+//            Directory.CreateDirectory(assetBundleDirectory);
+//        }
 
-        BuildPipeline.BuildAssetBundles(assetBundleDirectory,
-                                        BuildAssetBundleOptions.None,
-                                        BuildTarget.StandaloneWindows);
-    }
-}
+//        BuildPipeline.BuildAssetBundles(assetBundleDirectory,
+//                                        BuildAssetBundleOptions.None,
+//                                        BuildTarget.StandaloneWindows);
+//    }
+//}

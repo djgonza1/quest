@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: art-cards-spells
+  m_EditorClassIdentifier: 
+  m_GroupName: art-cards-spells
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 24513888b4c5d784cbf071a63bd08f55
+  m_SerializeEntries:
+  - m_GUID: 400c9561903a51446bd4d89e81a42157
+    m_Address: Assets/Silvermine/Art/Sprites/Cards/Spell/SP_TypeA_A01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_mainAssetType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - m_GUID: 86f0f43445a6c0f4b828501c52ed3736
+    m_Address: Assets/Silvermine/Art/Sprites/Cards/Spell/SP_TypeA_B01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_mainAssetType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  - m_GUID: 896fc71b5e22f584dbc1bbda70da224b
+    m_Address: Assets/Silvermine/Art/Sprites/Cards/Spell/SP_TypeA_C01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_mainAssetType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0b29e0f6c36e40848b161d7b04cc9dfc, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 149d6272a3cfcb1439a1ceceb9759beb, type: 2}
+    - {fileID: 11400000, guid: 32e59616196479f4b809f03b42ee9adb, type: 2}

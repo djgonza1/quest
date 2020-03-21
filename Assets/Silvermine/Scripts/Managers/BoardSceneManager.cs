@@ -7,24 +7,19 @@ using Silvermine.Battle.Core;
 
 public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
 {
-    public const float CardOverSizePosOffset = 1.3f;
-    public const float CardOverSizeScale = 1.5f;
+    public const float CardOverSizePosOffset = 3f;
+    public const float CardOverSizeScale = 3f;
 
-    [SerializeField]
-    private Transform[] _playerCardLocators;
-    [SerializeField]
-    private Transform[] _enemyCardLocators;
-    [SerializeField]
-    private Transform _leftSpellBoardLocator;
-    [SerializeField]
-    private Transform _rightSpellBoardLocator;
-    [SerializeField]
-    private Text _battleText;
+    [SerializeField] private Transform[] _playerCardLocators;
+    [SerializeField] private Transform[] _enemyCardLocators;
+    [SerializeField] private Transform _leftSpellBoardLocator;
+    [SerializeField] private Transform _rightSpellBoardLocator;
+    [SerializeField] private Text _battleText;
 
-    public CallbackQueue EffectsQueue;
+    public CallbackQueue CallbackQueue;
 
-    private Dictionary<AbilityCard, CardObjectSceneInfo> _playerHandMap;
-    private Dictionary<AbilityCard, CardObjectSceneInfo> _enemyHandMap;
+    private Dictionary<AbilityCard, CardGOSceneInfo> _playerHandMap;
+    private Dictionary<AbilityCard, CardGOSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
     private EnemyPlayerController _enemyAI;
     
@@ -33,47 +28,57 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     {
         _session = new BoardSessionManager(this);
         _enemyAI = new EnemyPlayerController(_session.GameBoard, Player.Second);
-        EffectsQueue = new CallbackQueue();
+        CallbackQueue = new CallbackQueue();
         
-        _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
-        _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
-
-        _session.StartSession();
+        ContentManager.Instance.LoadAbilityCardsPrefabs(StartBoardGameSession);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (_playerHandMap == null)
+        {
+            return;
+        }
+
         foreach (var cardInfo in _playerHandMap.Values)
         {
             cardInfo.StateMachine.Update();
         }
     }
 
-    private Dictionary<AbilityCard, CardObjectSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
+    private void StartBoardGameSession()
     {
-        Dictionary<AbilityCard, CardObjectSceneInfo> handMap = new Dictionary<AbilityCard, CardObjectSceneInfo>();
+        _playerHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.First));
+        _enemyHandMap = CreateHand(_session.GameBoard.GetPlayerHand(Player.Second), false);
+        
+        _session.StartSession();
+    }
 
+    private Dictionary<AbilityCard, CardGOSceneInfo> CreateHand(List<AbilityCard> cards, bool isPlayerHand = true)
+    {
+        Dictionary<AbilityCard, CardGOSceneInfo> handMap = new Dictionary<AbilityCard, CardGOSceneInfo>();
+        
         for (int i = 0; i < cards.Count; i++)
         {
-            CardGO cardObject = ContentManager.Instance.LoadSpellCardObject(cards[i]);
-            
-            cardObject.Init(cards[i], isPlayerHand);
+            PlayableCardGO cardObject = ContentManager.Instance.CreateCardObject(cards[i]);
+
+            cardObject.IsTappable = isPlayerHand;
             cardObject.FlipCard(isPlayerHand);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            SMState<CardGO>[] states =
+            SMState<PlayableCardGO>[] states =
             {
                 new InHand(),
                 new Grabbed(),
                 new InPlay()
             };
 
-            SMStateMachine<CardGO> machine = new SMStateMachine<CardGO>(cardObject, states);
+            SMStateMachine<PlayableCardGO> machine = new SMStateMachine<PlayableCardGO>(cardObject, states);
 
-            CardObjectSceneInfo cardInfo = new CardObjectSceneInfo(cardObject, handLoc.position, machine);
-            
+            CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
+
             handMap.Add(cards[i], cardInfo);
         }
 
@@ -88,7 +93,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         return handMap;
     }
     
-    public Vector3 GetCardHandPosition(CardGO cardGO)
+    public Vector3 GetCardHandPosition(PlayableCardGO cardGO)
     {
 
         if (_playerHandMap.ContainsKey(cardGO.Card))
@@ -105,7 +110,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         return Vector2.zero;
     }
 
-    public Vector3 GetBoardPlayPosition(CardGO cardGO)
+    public Vector3 GetBoardPlayPosition(PlayableCardGO cardGO)
     {
         if (_playerHandMap.ContainsKey(cardGO.Card))
         {
@@ -149,7 +154,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             });
         };
 
-        EffectsQueue.QueuedCall(boardOpenStart);
+        CallbackQueue.QueuedCall(boardOpenStart);
     }
 
     public void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen)
@@ -195,7 +200,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
                 secondChoice = _enemyAI.ChooseCardToPlay();
                 onCardsChosen(firstChoice, secondChoice);
 
-                CardGO enemyGO = _enemyHandMap[secondChoice].CardGO;
+                PlayableCardGO enemyGO = _enemyHandMap[secondChoice].CardGO;
                 this.PlayCard(enemyGO, () =>
                 {
                     Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, Player.First));
@@ -206,7 +211,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             Events.Instance.AddListener(onPlayerCardChosen);
         };
 
-        EffectsQueue.QueuedCall(popupStart)
+        CallbackQueue.QueuedCall(popupStart)
                     .QueuedCall(chooseCardsStart);
     }
 
@@ -228,7 +233,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         Action<Action> flipStart = (flipEnd) =>
         {
             AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
-            CardGO cardGO = _enemyHandMap[card].CardGO;
+            PlayableCardGO cardGO = _enemyHandMap[card].CardGO;
             cardGO.FlipCard(true);
 
             card = _session.GameBoard.playerOne.BattleChoice;
@@ -241,7 +246,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
             });
         };
 
-        EffectsQueue.QueuedCall(phaseStart)
+        CallbackQueue.QueuedCall(phaseStart)
                     .QueuedCall(flipStart);
     }
 
@@ -260,13 +265,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         callback.Invoke();
     }
 
-    private struct CardObjectSceneInfo
+    private struct CardGOSceneInfo
     {
-        public CardGO CardGO;
+        public PlayableCardGO CardGO;
         public Vector3 HandPosition;
-        public SMStateMachine<CardGO> StateMachine;
+        public SMStateMachine<PlayableCardGO> StateMachine;
 
-        public CardObjectSceneInfo(CardGO cardGO, Vector3 handPosition, SMStateMachine<CardGO> stateMachine)
+        public CardGOSceneInfo(PlayableCardGO cardGO, Vector3 handPosition, SMStateMachine<PlayableCardGO> stateMachine)
         {
             CardGO = cardGO;
             HandPosition = handPosition;

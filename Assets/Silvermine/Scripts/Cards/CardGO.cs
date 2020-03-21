@@ -1,77 +1,49 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering;
 using Silvermine.Battle.Core;
-using System;
 
-public class CardGO : MonoBehaviour
+public class CardGO : MonoBehaviour, ICardGO
 {
-    public const string AssetName = "Card";
-
-    [SerializeField]
-    public SortingGroup SortingGroup;
-    [SerializeField]
-    private SpriteRenderer _cardFront;
-
-    public bool IsTappable { get; set; }
-    public AbilityCard Card { get; private set; }
-
-    private Vector2 _originalScale;
-
-    public void Init(AbilityCard card, bool isTappable = true)
+    [SerializeField] public SortingGroup SortingGroup;
+    [SerializeField] private SpriteRenderer _cardFront;
+    [SerializeField] private SpriteRenderer _portrait;
+    [SerializeField] private SpriteRenderer _cardBack;
+    
+    public void SetColor(CardColor color)
     {
-        Card = card;
-        _originalScale = transform.localScale;
-        _cardFront.color = CardUtilities.ToColor(Card.Color);
-
-        IsTappable = isTappable;
+        _cardFront.color = CardUtilities.ToColor(color);
     }
 
     public void FlipCard(bool showFront)
     {
-        CardColor color = showFront ? Card.Color : CardColor.None;
-
-        _cardFront.color = CardUtilities.ToColor(color);
+        _cardFront.gameObject.SetActive(showFront);
+        _portrait.gameObject.SetActive(showFront);
+        _cardBack.gameObject.SetActive(!showFront);
     }
 
-    public void OnMouseEnter()
+    public void SetSortingOrder(int order)
     {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_ENTER, this));
+        SortingGroup.sortingOrder = order;
     }
 
-    public void OnMouseExit()
+    public void Highlight(bool enable)
     {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_EXIT, this));
-    }
-
-    public void OnMouseDown()
-    {
-        if (!IsTappable)
+        if (enable)
         {
-            return;
+            float scale = BoardSceneManager.CardOverSizeScale;
+            Vector2 handPosition = gameObject.transform.position;
+            
+            gameObject.transform.localPosition = new Vector3(0f, BoardSceneManager.CardOverSizePosOffset);
+            gameObject.transform.localScale = new Vector3(scale, scale);
         }
-
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.TAP_DOWN, this));
-    }
-
-    public void OnMouseUp()
-    {
-        if (!IsTappable)
+        else
         {
-            return;
-        }
+            LeanTween.cancel(gameObject);
 
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.TAP_RELEASE, this));
-    }
-
-    public void OnMouseOver()
-    {
-        if (IsTappable && Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
-        {
-            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_DRAG, this));
-        }
-        else if(!Input.GetMouseButton(0))
-        {
-            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_HOVER, this));
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localScale = Vector3.one;
         }
     }
 }

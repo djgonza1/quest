@@ -1,33 +1,38 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using System.IO;
 using Silvermine.Battle.Core;
 
 public class ContentManager : SingletonGameObject<ContentManager>
 {
-    private AssetBundle _cardsBundle;
-    private GameObject _cardAsset;
+    [SerializeField]
+    private CardCollection _cardCollection;
+    private GameObject _cardPrefab;
     
-    // Start is called before the first frame update
-    void Start()
+    public void LoadAbilityCardsPrefabs(Action onComplete = null)
     {
-        string cardBundlePath = GetCardsBundlePath();
+        var operation = _cardCollection.Cards[0].LoadAssetAsync<GameObject>();
 
-        _cardsBundle = AssetBundle.LoadFromFile(cardBundlePath);
+        operation.Completed += (handle) =>
+        {
+            _cardPrefab = handle.Result;
+
+            var cardColors = Enum.GetValues(typeof(CardColor));
+            
+            onComplete?.Invoke();
+        };
     }
     
-    public CardGO LoadSpellCardObject(AbilityCard spellCard)
+    public PlayableCardGO CreateCardObject(AbilityCard card)
     {
-        if (_cardAsset == null)
-        {
-            _cardAsset = _cardsBundle.LoadAsset<GameObject>(CardGO.AssetName);
-        }
-        
-        var go = Instantiate(_cardAsset);
+        var go = Instantiate(_cardPrefab.gameObject);
 
-        CardGO cardObject = go.GetComponent<CardGO>();
-        
+        PlayableCardGO cardObject = go.GetComponent<PlayableCardGO>();
+        cardObject.Init(card);
+
         return cardObject;
     }
 

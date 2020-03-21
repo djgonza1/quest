@@ -38,7 +38,10 @@ namespace Silvermine.Battle.Core
             playerOne.Hand = new List<AbilityCard>()
             {
                 new AbilityCard(CardColor.Red, 0),
+                new AbilityCard(CardColor.Red, 0),
                 new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Blue, 0),
                 new AbilityCard(CardColor.Blue, 0)
             };
 
