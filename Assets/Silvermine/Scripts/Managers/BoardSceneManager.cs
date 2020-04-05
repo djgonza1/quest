@@ -26,8 +26,13 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     // Start is called before the first frame update
     void Start()
     {
-        _session = new BoardSessionManager(this);
-        _enemyAI = new EnemyPlayerController(_session.GameBoard, Player.Second);
+        PlayerInfo playerOneInfo = new PlayerInfo();
+        PlayerInfo playerTwoInfo = new PlayerInfo();
+
+        Board gameBoard = new Board(playerOneInfo, playerTwoInfo);
+
+        _session = new BoardSessionManager(gameBoard, this);
+        _enemyAI = new EnemyPlayerController(gameBoard, Player.Second);
         CallbackQueue = new CallbackQueue();
         
         ContentManager.Instance.LoadAbilityCardsPrefabs(StartBoardGameSession);

@@ -13,8 +13,12 @@ namespace Silvermine.Battle.Core
         {
             playerOne = new PlayerInfo();
             playerTwo = new PlayerInfo();
+        }
 
-            CreatePlayerHands();
+        public Board(PlayerInfo playerOneInfo, PlayerInfo playerTwoInfo)
+        {
+            playerOne = playerOneInfo;
+            playerTwo = playerTwoInfo;
         }
 
         public PlayerInfo this[Player player]
@@ -31,21 +35,6 @@ namespace Silvermine.Battle.Core
                         return null;
                 }
             }
-        }
-        
-        private void CreatePlayerHands()
-        {
-            playerOne.Hand = new List<AbilityCard>()
-            {
-                new AbilityCard(CardColor.Red, 0),
-                new AbilityCard(CardColor.Red, 0),
-                new AbilityCard(CardColor.Green, 0),
-                new AbilityCard(CardColor.Green, 0),
-                new AbilityCard(CardColor.Blue, 0),
-                new AbilityCard(CardColor.Blue, 0)
-            };
-
-            playerTwo.Hand = playerOne.Hand.ConvertAll(card => new AbilityCard(card));
         }
 
         //Returns a copy
@@ -78,6 +67,22 @@ namespace Silvermine.Battle.Core
         public PlayerInfo()
         {
             Health = 100f;
+            BattleChoice = null;
+
+            CreateDefaultPlayerHand();
+        }
+        
+        private void CreateDefaultPlayerHand()
+        {
+            Hand = new List<AbilityCard>()
+            {
+                new AbilityCard(CardColor.Red, 0),
+                new AbilityCard(CardColor.Red, 0),
+                new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Green, 0),
+                new AbilityCard(CardColor.Blue, 0),
+                new AbilityCard(CardColor.Blue, 0)
+            };
         }
     }
 }
