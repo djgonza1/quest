@@ -8,21 +8,26 @@ using UnityEngine;
 
 public class ServerManager : MonoBehaviour
 {
-    private int PORT_NUMBER = 3074;
+    private int PORT_NUMBER = 11000;
 
     private void Start()
     {
         IPHostEntry hostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress localAddress = IPAddress.Parse("192.168.1.101");
+        IPAddress localAddress = null;
 
         foreach (var ip in hostInfo.AddressList)
         {
-            Debug.Log("ip: " + ip);
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                Debug.Log("ip: " + ip);
+                localAddress = ip;
+                break;
+            }
         }
 
         Debug.Log("hostEntry: " + Dns.GetHostName());
 
-        IPEndPoint localEndPoint = new IPEndPoint(localAddress, PORT_NUMBER);
+        IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, PORT_NUMBER);
 
         Debug.LogWarning("AddressFamily: " + localAddress.AddressFamily);
         Socket listener = new Socket(localAddress.AddressFamily,
@@ -30,6 +35,14 @@ public class ServerManager : MonoBehaviour
         listener.Bind(localEndPoint);
         listener.Listen(100);
         listener.BeginAccept(new AsyncCallback(OnCientAccepted), listener);
+
+        //--ClientTesting
+        // IPEndPoint serverEP = new IPEndPoint(IPAddress.Loopback, PORT_NUMBER);
+
+        // Socket client = new Socket(AddressFamily.InterNetwork,
+        //                            SocketType.Stream, ProtocolType.Tcp);
+
+        // client.BeginConnect(serverEP, new AsyncCallback(ConnectCallback), client);
     }
     
     private void OnCientAccepted(IAsyncResult re)
@@ -38,4 +51,17 @@ public class ServerManager : MonoBehaviour
 
         Debug.Log("accepted");
     }
+
+    //--ClientTesting
+    // private void ConnectCallback(IAsyncResult re)
+    // {
+    //     Socket server = re.AsyncState as Socket;
+
+    //     if (server == null)
+    //     {
+    //         Debug.LogWarning("null server socket");
+    //     }
+        
+    //     Debug.Log("connected?: " + !server.Poll(10, SelectMode.SelectRead));
+    // }
 }
