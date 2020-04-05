@@ -16,11 +16,10 @@ namespace Silvermine.Battle.Core
         private List<AbilityCard> _playerOneHand;
         private List<AbilityCard> _playerTwoHand;
 
-        public BoardSessionManager(IBoardSceneManager sceneManager)
+        public BoardSessionManager(Board gameBoard, IBoardSceneManager sceneManager)
         {
+            GameBoard = gameBoard;
             SceneManager = sceneManager;
-
-            GameBoard = new Board();
         }
 
         public void StartSession()
