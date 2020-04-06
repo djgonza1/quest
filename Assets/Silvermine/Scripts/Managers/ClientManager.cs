@@ -7,16 +7,17 @@ using UnityEngine;
 
 public class ClientManager : SingletonGameObject<ClientManager>
 {
-    private const int PORT_NUMBER = 3074;
+    private const int PORT_NUMBER = 11000;
 
     private Action _onConnectComplete;
 
     public ClientManager ConnectToServer()
     {
-        IPAddress serverAddress = IPAddress.Parse("192.168.1.101");
+        IPAddress serverAddress = IPAddress.Parse("192.168.1.102");
 
         IPEndPoint serverEP = new IPEndPoint(serverAddress, PORT_NUMBER);
-
+        
+        Debug.LogWarning("server family: " + serverAddress.AddressFamily);
         Socket client = new Socket(serverAddress.AddressFamily,
                                      SocketType.Stream, ProtocolType.Tcp);
 
@@ -28,11 +29,6 @@ public class ClientManager : SingletonGameObject<ClientManager>
     private void ConnectCallback(IAsyncResult re)
     {
         Socket server = re.AsyncState as Socket;
-
-        if (server == null)
-        {
-            Debug.LogWarning("null server socket");
-        }
         
         Debug.Log("connected?: " + !server.Poll(10, SelectMode.SelectRead));
 
