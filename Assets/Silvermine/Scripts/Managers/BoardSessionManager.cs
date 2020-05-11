@@ -12,9 +12,6 @@ namespace Silvermine.Battle.Core
         public Board GameBoard { get; private set; }
         public SMStateMachine<BoardSessionManager> StateMachine { get; private set; }
         public IBoardSceneManager SceneManager { get; }
-        
-        private List<AbilityCard> _playerOneHand;
-        private List<AbilityCard> _playerTwoHand;
 
         public BoardSessionManager(Board gameBoard, IBoardSceneManager sceneManager)
         {
@@ -32,23 +29,6 @@ namespace Silvermine.Battle.Core
             };
 
             StateMachine = new SMStateMachine<BoardSessionManager>(this, states);
-        }
-
-        private void CreatePlayerHands()
-        {
-            _playerOneHand = new List<AbilityCard>()
-            {
-                new AbilityCard(CardColor.Red, 0),
-                new AbilityCard(CardColor.Green, 0),
-                new AbilityCard(CardColor.Blue, 0)
-            };
-
-            _playerTwoHand = new List<AbilityCard>()
-            {
-                new AbilityCard(CardColor.Red, 0),
-                new AbilityCard(CardColor.Green, 0),
-                new AbilityCard(CardColor.Blue, 0)
-            };
         }
     }
 }

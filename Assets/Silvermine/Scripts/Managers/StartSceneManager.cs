@@ -44,9 +44,10 @@ public class StartSceneManager : SingletonGameObject<StartSceneManager>
         _onlineText.gameObject.SetActive(true);
         _onlineText.text = "Connecting to Server...";
 
-        ClientManager.Instance.ConnectToServer()
-                              .SetOnConnectComplete(()=> {
-                                  _loadBoard = true;
-                              });
+        ClientManager.Instance.SetOnConnectComplete(()=> 
+                                {
+                                    _loadBoard = true;
+                                })
+                                .ConnectToServer();
     }
 }

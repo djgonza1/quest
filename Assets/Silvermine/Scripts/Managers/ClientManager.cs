@@ -8,6 +8,7 @@ using UnityEngine;
 public class ClientManager : SingletonGameObject<ClientManager>
 {
     private const int PORT_NUMBER = 11000;
+    public Socket Client;
 
     private Action _onConnectComplete;
 
@@ -18,19 +19,23 @@ public class ClientManager : SingletonGameObject<ClientManager>
         IPEndPoint serverEP = new IPEndPoint(serverAddress, PORT_NUMBER);
         
         Debug.LogWarning("server family: " + serverAddress.AddressFamily);
-        Socket client = new Socket(serverAddress.AddressFamily,
+        Client = new Socket(serverAddress.AddressFamily,
                                      SocketType.Stream, ProtocolType.Tcp);
 
-        client.BeginConnect(serverEP, new AsyncCallback(ConnectCallback), client);
+        Client.BeginConnect(serverEP, new AsyncCallback(ConnectCallback), Client);
 
         return this;
     }
 
     private void ConnectCallback(IAsyncResult re)
     {
-        Socket server = re.AsyncState as Socket;
+        Client = re.AsyncState as Socket;
         
-        Debug.Log("connected?: " + !server.Poll(10, SelectMode.SelectRead));
+        Debug.Log("connected?: " + !Client.Poll(10, SelectMode.SelectRead));
+
+        Client.EndConnect(re);
+
+        Client.BeginSend("HELLO");
 
         _onConnectComplete?.Invoke();
     }
