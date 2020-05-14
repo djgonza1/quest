@@ -8,11 +8,30 @@ using UnityEngine;
 public class ClientManager : SingletonGameObject<ClientManager>
 {
     private const int PORT_NUMBER = 11000;
+
     public Socket Client;
+    public event Action OnConnectComplete;
+    public event Action<string> OnOpponentFound;
 
-    private Action _onConnectComplete;
+    private bool _connectCompleted;
+    private bool _opponentFound;
+    
+    void Update()
+    {
+        if (_connectCompleted)
+        {
+            _connectCompleted = false;
+            OnConnectComplete?.Invoke();
+        }
 
-    public ClientManager ConnectToServer()
+        if (_opponentFound)
+        {
+            _opponentFound = false;
+            //OnOpponentFound?.Invoke("name");
+        }
+    }
+
+    public void ConnectToServer()
     {
         IPAddress serverAddress = IPAddress.Parse("192.168.1.102");
 
@@ -23,8 +42,6 @@ public class ClientManager : SingletonGameObject<ClientManager>
                                      SocketType.Stream, ProtocolType.Tcp);
 
         Client.BeginConnect(serverEP, new AsyncCallback(ConnectCallback), Client);
-
-        return this;
     }
 
     private void ConnectCallback(IAsyncResult re)
@@ -33,17 +50,23 @@ public class ClientManager : SingletonGameObject<ClientManager>
         
         Debug.Log("connected?: " + !Client.Poll(10, SelectMode.SelectRead));
 
+        _connectCompleted = true;
         Client.EndConnect(re);
-
-        Client.BeginSend("HELLO");
-
-        _onConnectComplete?.Invoke();
     }
 
-    public ClientManager SetOnConnectComplete(Action onComplete)
+    public void FindOpponent()
     {
-        _onConnectComplete = onComplete;
+        Client.BeginSend("FIND_OPPONENT", FoundCallback);
+    }
+    
+    private void FoundCallback(IAsyncResult re)
+    {
+        Debug.LogWarning("Client FoundCallback");
+        
+        Client = re.AsyncState as Socket;
 
-        return this;
+        Client.EndSend(re);
+        Debug.LogWarning("After EndSend");
+        OnOpponentFound?.Invoke("name");
     }
 }

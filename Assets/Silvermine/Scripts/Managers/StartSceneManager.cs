@@ -44,10 +44,18 @@ public class StartSceneManager : SingletonGameObject<StartSceneManager>
         _onlineText.gameObject.SetActive(true);
         _onlineText.text = "Connecting to Server...";
 
-        ClientManager.Instance.SetOnConnectComplete(()=> 
-                                {
-                                    _loadBoard = true;
-                                })
-                                .ConnectToServer();
+        ClientManager.Instance.OnConnectComplete += ()=> 
+        {
+            Debug.LogWarning("Client OnConnectComplete");
+            _onlineText.text = "Finding Opponent...";
+            ClientManager.Instance.FindOpponent();
+        };
+
+        ClientManager.Instance.OnOpponentFound += (name)=>
+        {
+            _loadBoard = true;
+        };
+
+        ClientManager.Instance.ConnectToServer();
     }
 }
