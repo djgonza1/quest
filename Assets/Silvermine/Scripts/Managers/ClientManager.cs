@@ -65,7 +65,6 @@ public class ClientManager : SingletonGameObject<ClientManager>
         
         Client = re.AsyncState as Socket;
 
-        Client.EndSend(re);
         Debug.LogWarning("After EndSend");
         OnOpponentFound?.Invoke("name");
     }

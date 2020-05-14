@@ -34,12 +34,12 @@ namespace CommandTerminal
         [Header("Input")]
         [SerializeField] Font ConsoleFont;
         [SerializeField] string InputCaret        = ">";
-        [SerializeField] bool ShowGUIButtons;
-        [SerializeField] bool RightAlignButtons;
+        [SerializeField] bool ShowGUIButtons      = false;
+        [SerializeField] bool RightAlignButtons   = false;
 
         [Header("Theme")]
         [Range(0, 1)]
-        [SerializeField] float InputContrast;
+        [SerializeField] float InputContrast = 0;
 
         [SerializeField] Color BackgroundColor    = Color.black;
         [SerializeField] Color ForegroundColor    = Color.white;

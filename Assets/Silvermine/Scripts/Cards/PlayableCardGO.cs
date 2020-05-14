@@ -7,7 +7,7 @@ public class PlayableCardGO : MonoBehaviour, ICardGO
 {
     public const string AssetName = "Card";
 
-    [SerializeField] private CardGO _cardGO;
+    [SerializeField] private CardGO _cardGO = null;
     
     public bool IsTappable { get; set; }
     public AbilityCard Card { get; private set; }

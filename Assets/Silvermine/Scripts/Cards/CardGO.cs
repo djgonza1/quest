@@ -6,10 +6,10 @@ using Silvermine.Battle.Core;
 
 public class CardGO : MonoBehaviour, ICardGO
 {
-    [SerializeField] public SortingGroup SortingGroup;
-    [SerializeField] private SpriteRenderer _cardFront;
-    [SerializeField] private SpriteRenderer _portrait;
-    [SerializeField] private SpriteRenderer _cardBack;
+    [SerializeField] public SortingGroup SortingGroup = null;
+    [SerializeField] private SpriteRenderer _cardFront = null;
+    [SerializeField] private SpriteRenderer _portrait = null;
+    [SerializeField] private SpriteRenderer _cardBack = null;
     
     public void SetColor(CardColor color)
     {

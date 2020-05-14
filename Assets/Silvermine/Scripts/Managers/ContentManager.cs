@@ -8,8 +8,8 @@ using Silvermine.Battle.Core;
 
 public class ContentManager : SingletonGameObject<ContentManager>
 {
-    [SerializeField]
-    private CardCollection _cardCollection;
+    [SerializeField] private CardCollection _cardCollection = null;
+
     private GameObject _cardPrefab;
     
     public void LoadAbilityCardsPrefabs(Action onComplete = null)
