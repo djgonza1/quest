@@ -102,14 +102,9 @@ public class ServerManager : MonoBehaviour
         } 
         catch (Exception e) 
         {  
-            Debug.LogWarning(e.ToString());  
+            Debug.LogException(e);  
         }  
     }
-
-    private void HandleMessage(string message)
-    {
-
-    }  
 
     //--ClientTesting`
     // private void ConnectCallback(IAsyncResult re)
