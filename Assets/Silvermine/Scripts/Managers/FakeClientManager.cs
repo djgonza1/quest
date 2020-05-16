@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClientManager : SingletonGameObject<ClientManager>
+public class FakeClientManager : SingletonGameObject<ClientManager>
 {
     private const int PORT_NUMBER = 11000;
 
@@ -37,6 +37,7 @@ public class ClientManager : SingletonGameObject<ClientManager>
 
         IPEndPoint serverEP = new IPEndPoint(serverAddress, PORT_NUMBER);
         
+        Debug.LogWarning("server family: " + serverAddress.AddressFamily);
         Client = new Socket(serverAddress.AddressFamily,
                                      SocketType.Stream, ProtocolType.Tcp);
 
@@ -47,7 +48,7 @@ public class ClientManager : SingletonGameObject<ClientManager>
     {
         Client = re.AsyncState as Socket;
         
-        Debug.Log("ORIGINAL connected?: " + !Client.Poll(10, SelectMode.SelectRead));
+        Debug.Log("FAKE connected?: " + !Client.Poll(10, SelectMode.SelectRead));
 
         _connectCompleted = true;
         Client.EndConnect(re);
@@ -60,7 +61,7 @@ public class ClientManager : SingletonGameObject<ClientManager>
     
     private void FoundCallback(IAsyncResult re)
     {
-        Debug.LogWarning("ORIGINAL FoundCallback");
+        Debug.LogWarning("FAKE FoundCallback");
         
         Client = re.AsyncState as Socket;
 

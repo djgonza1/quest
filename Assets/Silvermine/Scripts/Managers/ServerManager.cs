@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class ServerManager : MonoBehaviour
 {
-    public class StateObject 
+    private class StateObject 
     {  
         // Client socket.  
         public Socket workSocket = null;  
@@ -48,6 +48,7 @@ public class ServerManager : MonoBehaviour
         listener.Bind(localEndPoint);
         listener.Listen(100);
         listener.BeginAccept(new AsyncCallback(OnCientAccepted), listener);
+        //listener.BeginAccept(new AsyncCallback(OnCientAccepted), listener);
 
         //--ClientTesting
         // IPEndPoint serverEP = new IPEndPoint(IPAddress.Loopback, PORT_NUMBER);
