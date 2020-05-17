@@ -6,12 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class StartSceneManager : SingletonGameObject<StartSceneManager>
 {
-    [SerializeField]
-    private Button _vsAIbutton;
-    [SerializeField]
-    private Button _onlineButton;
-    [SerializeField]
-    private Text _onlineText;
+    [SerializeField] private Button _vsAIbutton = null;
+    [SerializeField] private Button _onlineButton = null;
+    [SerializeField] private Text _onlineText = null;
 
     private bool _loadBoard;
 
