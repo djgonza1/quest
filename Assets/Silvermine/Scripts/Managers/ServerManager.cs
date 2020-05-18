@@ -23,8 +23,14 @@ public class ServerManager : MonoBehaviour
 
     private int PORT_NUMBER = 11000;
 
+    private List<Socket> waitingClients;
+    private Dictionary<Socket, Socket> matchedClients;
+
     private void Start()
     {
+        waitingClients = new List<Socket>();
+        matchedClients = new Dictionary<Socket, Socket>();
+
         IPHostEntry hostInfo = Dns.GetHostEntry(Dns.GetHostName());
         IPAddress localAddress = null;
 
@@ -72,7 +78,7 @@ public class ServerManager : MonoBehaviour
             new AsyncCallback(ReadCallback), state);
 
         Debug.Log("SERVER accepted client");
-        //listener.BeginAccept(new AsyncCallback(OnCientAccepted), listener);
+        listener.BeginAccept(new AsyncCallback(OnCientAccepted), listener);
     }
 
     private void ReadCallback( IAsyncResult ar ) 
@@ -98,8 +104,23 @@ public class ServerManager : MonoBehaviour
 
                 if (message == "FIND_OPPONENT")
                 {
-                    Debug.LogWarning("Server added client to matchmaking queue");
-                    client.BeginSend("FOUND_OPPONENT");  
+                    if (waitingClients.Count > 0)
+                    {
+                        var opponent = waitingClients[0];
+                        waitingClients.RemoveAt(0);
+
+                        //matched opponents keep track of eachother
+                        matchedClients[client] = opponent;
+                        matchedClients[opponent] = client;
+
+                        client.BeginSend("FOUND_OPPONENT");  
+                        opponent.BeginSend("FOUND_OPPONENT");  
+                    }
+                    else
+                    {
+                        waitingClients.Add(client);
+                        Debug.LogWarning("Server added client to matchmaking queue");
+                    }
                 }
   
                 // Get the rest of the data.  

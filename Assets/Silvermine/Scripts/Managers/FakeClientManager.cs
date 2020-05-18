@@ -66,15 +66,7 @@ public class FakeClientManager : SingletonGameObject<ClientManager>
         Client = re.AsyncState as Socket;
         Client.EndConnect(re);
         
-
         _connectSuccess = !Client.Poll(10, SelectMode.SelectRead);
-
-        Debug.Log("ORIGINAL connected?: " + _connectSuccess);
-
-        if (!_connectSuccess)
-        {
-            Debug.LogError("Failed to join server");
-        }
     }
 
     public void FindOpponent()
