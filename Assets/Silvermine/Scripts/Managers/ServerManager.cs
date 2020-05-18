@@ -68,16 +68,17 @@ public class ServerManager : MonoBehaviour
         StateObject state = new StateObject();  
         state.workSocket = handler;
 
-        Debug.LogWarning("Server BeginReceive");  
         handler.BeginReceive( state.buffer, 0, 256, 0,  
             new AsyncCallback(ReadCallback), state);
 
-        Debug.Log("accepted");
+        Debug.Log("SERVER accepted client");
+        //listener.BeginAccept(new AsyncCallback(OnCientAccepted), listener);
     }
 
-    private static void ReadCallback( IAsyncResult ar ) {  
-        try {  
-            Debug.LogWarning("Server ReadCallback");
+    private void ReadCallback( IAsyncResult ar ) 
+    {  
+        try 
+        {  
             // Retrieve the state object and the client socket
             // from the asynchronous state object.  
             StateObject state = (StateObject) ar.AsyncState;  
@@ -88,9 +89,18 @@ public class ServerManager : MonoBehaviour
   
             if (bytesRead > 0)
              {  
-                Debug.Log("bytes to read: " + Encoding.ASCII.GetString(state.buffer,0,bytesRead));  
                 // There might be more data, so store the data received so far.  
-                state.sb.Append(Encoding.ASCII.GetString(state.buffer,0,bytesRead));  
+                //state.sb.Append(Encoding.ASCII.GetString(state.buffer,0,bytesRead));  
+
+                string message = Encoding.ASCII.GetString(state.buffer,0,bytesRead);
+
+                Debug.Log("SERVER received message: " + message);  
+
+                if (message == "FIND_OPPONENT")
+                {
+                    Debug.LogWarning("Server added client to matchmaking queue");
+                    client.BeginSend("FOUND_OPPONENT");  
+                }
   
                 // Get the rest of the data.  
                 client.BeginReceive(state.buffer,0,StateObject.BufferSize,0,  
@@ -106,17 +116,4 @@ public class ServerManager : MonoBehaviour
             Debug.LogException(e);  
         }  
     }
-
-    //--ClientTesting`
-    // private void ConnectCallback(IAsyncResult re)
-    // {
-    //     Socket server = re.AsyncState as Socket;
-
-    //     if (server == null)
-    //     {
-    //         Debug.LogWarning("null server socket");
-    //     }
-        
-    //     Debug.Log("connected?: " + !server.Poll(10, SelectMode.SelectRead));
-    // }
 }

@@ -22,9 +22,8 @@ public static class SocketExtensions
     
                 // Complete sending the data to the remote device.  
                 int bytesSent = client.EndSend(ar);  
-                Debug.Log("Sent " + bytesSent + " bytes to server.");  
     
-                callback.Invoke(ar);  
+                callback?.Invoke(ar);  
             } 
             catch (Exception e) 
             {  

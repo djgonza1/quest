@@ -107,3 +107,15 @@ public class CardGOEvent : GameEvent
         this.Player = player;
     }
 }
+
+public class OnlineEvent : GameEvent
+{
+    public enum EventType { REQUEST_SERVER_JOIN, JOINED_SERVER, SERVER_FAIL, REQUEST_FIND_OPPONENT, FOUND_OPPONENT};
+
+    public EventType Type;
+
+    public OnlineEvent(EventType type)
+    {
+        Type = type;
+    }
+}
