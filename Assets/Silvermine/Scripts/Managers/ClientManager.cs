@@ -24,29 +24,24 @@ public class ClientManager : SingletonGameObject<ClientManager>
     private const int PORT_NUMBER = 11000;
 
     public Socket Client;
-    public event Action OnConnectComplete;
+    public event Action OnJoinedServer;
     public event Action<string> OnOpponentFound;
 
     private bool _connectSuccess;
     private bool _opponentFound;
-
-    void Start()
-    {
-        Events.Instance.AddListener<OnlineEvent>(OnOnlineEvent);
-    }
     
     void Update()
     {
         if (_connectSuccess)
         {
             _connectSuccess = false;
-            Events.Instance.Raise<OnlineEvent>(new OnlineEvent(OnlineEvent.EventType.JOINED_SERVER));
+            OnJoinedServer?.Invoke();
         }
 
         if (_opponentFound)
         {
             _opponentFound = false;
-            Events.Instance.Raise<OnlineEvent>(new OnlineEvent(OnlineEvent.EventType.FOUND_OPPONENT));
+            OnOpponentFound?.Invoke("name");
         }
     }
 
@@ -85,7 +80,6 @@ public class ClientManager : SingletonGameObject<ClientManager>
     {
         Client = re.AsyncState as Socket;
 
-        OnOpponentFound?.Invoke("name");
     }
 
     private void ReadCallback(IAsyncResult ar) 
@@ -122,20 +116,5 @@ public class ClientManager : SingletonGameObject<ClientManager>
         {  
             Debug.LogException(e);  
         }  
-    }
-
-    private void OnOnlineEvent(OnlineEvent e)
-    {
-        switch (e.Type)
-        {
-            case OnlineEvent.EventType.REQUEST_SERVER_JOIN:
-                ConnectToServer();
-                break;
-            case OnlineEvent.EventType.REQUEST_FIND_OPPONENT:
-                FindOpponent();
-                break;
-            default:
-                break;
-        }
     }
 }

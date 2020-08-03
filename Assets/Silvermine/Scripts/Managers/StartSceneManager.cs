@@ -16,8 +16,6 @@ public class StartSceneManager : SingletonGameObject<StartSceneManager>
     {
         _loadBoard = false;
         _onlineText.gameObject.SetActive(false);
-
-        Events.Instance.AddListener<OnlineEvent>(OnOnlineEvent);
     }
 
     private void Update()
@@ -43,19 +41,25 @@ public class StartSceneManager : SingletonGameObject<StartSceneManager>
         _onlineText.gameObject.SetActive(true);
         _onlineText.text = "Connecting to Server...";
 
-        Events.Instance.Raise<OnlineEvent>(new OnlineEvent(OnlineEvent.EventType.REQUEST_SERVER_JOIN));
+        //Events.Instance.Raise<OnlineEvent>(new OnlineEvent(OnlineEvent.EventType.REQUEST_SERVER_JOIN));
+        ClientManager.Instance.OnJoinedServer += OnJoinedServer;
+        ClientManager.Instance.ConnectToServer();
     }
 
-    private void OnOnlineEvent(OnlineEvent e)
+    private void OnJoinedServer()
     {
-        if (e.Type == OnlineEvent.EventType.JOINED_SERVER)
-        {
-            _onlineText.text = "Finding Opponent...";
-            Events.Instance.Raise<OnlineEvent>(new OnlineEvent(OnlineEvent.EventType.REQUEST_FIND_OPPONENT));
-        }
-        else if (e.Type == OnlineEvent.EventType.FOUND_OPPONENT)
-        {
-            _loadBoard = true;
-        }
+        Debug.LogWarning("StartScene Joined Server");
+
+        ClientManager.Instance.OnJoinedServer -= OnJoinedServer;
+
+        ClientManager.Instance.OnOpponentFound += OnOpponentFound;
+        ClientManager.Instance.FindOpponent();
+    }
+
+    private void OnOpponentFound(string name)
+    {
+        Debug.LogWarning("StartScene Found Opponent");
+
+        ClientManager.Instance.OnOpponentFound -= OnOpponentFound;
     }
 }
