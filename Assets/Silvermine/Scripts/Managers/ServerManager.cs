@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ServerManager : MonoBehaviour
+public class ServerManager : SingletonGameObject<ServerManager>
 {
     private class StateObject 
     {  
@@ -25,12 +25,10 @@ public class ServerManager : MonoBehaviour
 
     private List<Socket> waitingClients;
     private Dictionary<Socket, Socket> matchedClients;
+    public event Action<Socket, string> OnMessageReceived;
 
     private void Start()
     {
-        waitingClients = new List<Socket>();
-        matchedClients = new Dictionary<Socket, Socket>();
-
         IPHostEntry hostInfo = Dns.GetHostEntry(Dns.GetHostName());
         IPAddress localAddress = null;
 
@@ -101,27 +99,8 @@ public class ServerManager : MonoBehaviour
                 string message = Encoding.ASCII.GetString(state.buffer,0,bytesRead);
 
                 Debug.Log("SERVER received message: " + message);  
-
-                if (message == "FIND_OPPONENT")
-                {
-                    if (waitingClients.Count > 0)
-                    {
-                        var opponent = waitingClients[0];
-                        waitingClients.RemoveAt(0);
-
-                        //matched opponents keep track of eachother
-                        matchedClients[client] = opponent;
-                        matchedClients[opponent] = client;
-
-                        client.BeginSend("FOUND_OPPONENT");  
-                        opponent.BeginSend("FOUND_OPPONENT");  
-                    }
-                    else
-                    {
-                        waitingClients.Add(client);
-                        Debug.LogWarning("Server added client to matchmaking queue");
-                    }
-                }
+                
+                OnMessageReceived?.Invoke(client, message);
   
                 // Get the rest of the data.  
                 client.BeginReceive(state.buffer,0,StateObject.BufferSize,0,  
