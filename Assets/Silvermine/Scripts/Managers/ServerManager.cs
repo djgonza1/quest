@@ -22,13 +22,14 @@ public class ServerManager : SingletonGameObject<ServerManager>
     }  
 
     private int PORT_NUMBER = 11000;
+    private Queue<KeyValuePair<Socket,string>> _messageQueue;
 
-    private List<Socket> waitingClients;
-    private Dictionary<Socket, Socket> matchedClients;
     public event Action<Socket, string> OnMessageReceived;
 
     private void Start()
     {
+        _messageQueue = new Queue<KeyValuePair<Socket,string>>();
+
         IPHostEntry hostInfo = Dns.GetHostEntry(Dns.GetHostName());
         IPAddress localAddress = null;
 
@@ -61,6 +62,18 @@ public class ServerManager : SingletonGameObject<ServerManager>
         //                            SocketType.Stream, ProtocolType.Tcp);
 
         // client.BeginConnect(serverEP, new AsyncCallback(ConnectCallback), client);
+    }
+
+    private void Update()
+    {
+        while (_messageQueue.Count > 0)
+        {
+            var pair = _messageQueue.Dequeue();
+            var socket = pair.Key;
+            var message = pair.Value;
+
+            OnMessageReceived?.Invoke(socket, message);
+        }
     }
     
     private void OnCientAccepted(IAsyncResult re)
@@ -99,8 +112,9 @@ public class ServerManager : SingletonGameObject<ServerManager>
                 string message = Encoding.ASCII.GetString(state.buffer,0,bytesRead);
 
                 Debug.Log("SERVER received message: " + message);  
-                
-                OnMessageReceived?.Invoke(client, message);
+
+                var pair = new KeyValuePair<Socket,string>(client, message);
+                _messageQueue.Enqueue(pair);
   
                 // Get the rest of the data.  
                 client.BeginReceive(state.buffer,0,StateObject.BufferSize,0,  
