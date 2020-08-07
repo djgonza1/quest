@@ -4,14 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class BoardServerSceneManager : MonoBehaviour, IBoardSceneManager
+public class BoardServerSceneManager : MonoBehaviour, IBattleEventManager
 {
     public void BoardOpen()
     {
 
     }
 
-    public void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen)
+    public void RequestPlayerOneChoice(Action<AbilityCard> onCardsChosen)
+    {
+
+    }
+
+    public void RequestPlayerTwoChoice(Action<AbilityCard> onCardsChosen)
     {
 
     }

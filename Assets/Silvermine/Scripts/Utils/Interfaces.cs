@@ -12,10 +12,11 @@ namespace Silvermine.Battle.Core
         string AssetName { get; }
     }
 
-    public interface IBoardSceneManager
+    public interface IBattleEventManager
     {
         void BoardOpen();
-        void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen);
+        void RequestPlayerOneChoice(Action<AbilityCard> onCardsChosen);
+        void RequestPlayerTwoChoice(Action<AbilityCard> onCardsChosen);
         void StartBattlePhase(Player winner);
     }
 

@@ -11,12 +11,12 @@ namespace Silvermine.Battle.Core
     {
         public Board GameBoard { get; private set; }
         public SMStateMachine<BoardSessionManager> StateMachine { get; private set; }
-        public IBoardSceneManager SceneManager { get; }
+        public IBattleEventManager EventsManager { get; }
 
-        public BoardSessionManager(Board gameBoard, IBoardSceneManager sceneManager)
+        public BoardSessionManager(Board gameBoard, IBattleEventManager eventsManager)
         {
             GameBoard = gameBoard;
-            SceneManager = sceneManager;
+            EventsManager = eventsManager;
         }
 
         public void StartSession()
@@ -29,6 +29,11 @@ namespace Silvermine.Battle.Core
             };
 
             StateMachine = new SMStateMachine<BoardSessionManager>(this, states);
+        }
+
+        public void Update()
+        {
+            StateMachine.Update();
         }
     }
 }

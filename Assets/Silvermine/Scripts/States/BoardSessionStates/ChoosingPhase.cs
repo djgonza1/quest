@@ -7,17 +7,38 @@ namespace Silvermine.Battle.Core
 {
     public class ChoosingPhase : SMState<BoardSessionManager>
     {
+        private bool _playerOneCardChosen;
+        private bool _playerTwoCardChosen;
+
         public override void Begin()
         {
-            _context.SceneManager.ChooseCards(OnCardsChosen);
+            _playerOneCardChosen = false;
+            _playerTwoCardChosen = false;
+
+            _context.EventsManager.RequestPlayerOneChoice(OnPlayerOneCardChosen);
+            _context.EventsManager.RequestPlayerTwoChoice(OnPlayerTwoCardChosen);
         }
 
-        private void OnCardsChosen(AbilityCard playerOneChoice, AbilityCard playerTwoChoice)
+        private void OnPlayerOneCardChosen(AbilityCard cardChoice)
         {
-            _context.GameBoard.SetPlayerChoice(Player.First, playerOneChoice);
-            _context.GameBoard.SetPlayerChoice(Player.Second, playerTwoChoice);
+            _context.GameBoard.SetPlayerChoice(Player.First, cardChoice);
+            _playerOneCardChosen = true;
 
-            _stateMachine.ChangeState<BattlePhase>();
+            if (_playerOneCardChosen && _playerTwoCardChosen)
+            {
+                _stateMachine.ChangeState<BattlePhase>();
+            }
+        }
+
+        private void OnPlayerTwoCardChosen(AbilityCard playerTwoChoice)
+        {
+            _context.GameBoard.SetPlayerChoice(Player.Second, playerTwoChoice);
+            _playerTwoCardChosen = true;
+
+            if (_playerOneCardChosen && _playerTwoCardChosen)
+            {
+                _stateMachine.ChangeState<BattlePhase>();
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Silvermine.Battle.Core
     {
         public override void Begin()
         {
-            _context.SceneManager.BoardOpen();
+            _context.EventsManager.BoardOpen();
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }

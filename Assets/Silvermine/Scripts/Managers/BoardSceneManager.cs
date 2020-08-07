@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardSceneManager
+public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattleEventManager
 {
     public const float CardOverSizePosOffset = 3f;
     public const float CardOverSizeScale = 3f;
@@ -22,10 +22,16 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
     private Dictionary<AbilityCard, CardGOSceneInfo> _enemyHandMap;
     private BoardSessionManager _session;
     private EnemyPlayerController _enemyAI;
+    private bool _playerOneCardChosen;
+    private bool _playerTwoCardChosen;
     
     // Start is called before the first frame update
     void Start()
     {
+        _playerOneCardChosen = false;
+        _playerTwoCardChosen = false;
+
+
         PlayerInfo playerOneInfo = new PlayerInfo();
         PlayerInfo playerTwoInfo = new PlayerInfo();
 
@@ -162,29 +168,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
         CallbackQueue.QueuedCall(boardOpenStart);
     }
 
-    public void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen)
+    public void RequestPlayerOneChoice(Action<AbilityCard> onCardChosen)
     {
-        Action<Action> popupStart = (popupEnd) =>
-        {
-            _battleText.text = "Choose Card";
-            _battleText.gameObject.SetActive(true);
-
-            DelayCall(2f, () =>
-            {
-                foreach (var cInfo in _playerHandMap.Values)
-                {
-                    cInfo.CardGO.IsTappable = true;
-                }
-
-                _battleText.gameObject.SetActive(false);
-                popupEnd();
-            });
-        };
-
-        Action<Action> chooseCardsStart = (chooseCardsEnd) =>
+        Action<Action> chooseCardsStart = (chooseCardEnd) =>
         {
             AbilityCard firstChoice = null;
-            AbilityCard secondChoice = null;
 
             Action<CardGOEvent> onPlayerCardChosen = null;
             onPlayerCardChosen = (msg) =>
@@ -202,22 +190,57 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBoardS
                 Events.Instance.RemoveListener(onPlayerCardChosen);
 
                 firstChoice = msg.CardObject.Card;
+                onCardChosen(firstChoice);
+
+                chooseCardEnd();
+            };
+            Events.Instance.AddListener(onPlayerCardChosen);
+        };
+
+        CallbackQueue.QueuedCall(OpenChooseCardPopup)
+                    .QueuedCall(chooseCardsStart);
+    }
+
+    public void RequestPlayerTwoChoice(Action<AbilityCard> onCardChosen)
+    {
+        Action<Action> chooseCardsStart = (chooseCardEnd) =>
+        {
+            AbilityCard secondChoice = null;
+
+            Action<CardGOEvent> onAICardChosen = null;
+            onAICardChosen = (msg) =>
+            {
                 secondChoice = _enemyAI.ChooseCardToPlay();
-                onCardsChosen(firstChoice, secondChoice);
+                onCardChosen(secondChoice);
 
                 PlayableCardGO enemyGO = _enemyHandMap[secondChoice].CardGO;
                 this.PlayCard(enemyGO, () =>
                 {
                     Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, Player.First));
                     _enemyHandMap[secondChoice].StateMachine.ChangeState<InPlay>();
-                    chooseCardsEnd();
+                    chooseCardEnd();
                 });
             };
-            Events.Instance.AddListener(onPlayerCardChosen);
         };
 
-        CallbackQueue.QueuedCall(popupStart)
-                    .QueuedCall(chooseCardsStart);
+        CallbackQueue.QueuedCall(chooseCardsStart);
+    }
+
+    private void OpenChooseCardPopup(Action popupEnd)
+    {
+        _battleText.text = "Choose Card";
+        _battleText.gameObject.SetActive(true);
+
+        DelayCall(2f, () =>
+        {
+            foreach (var cInfo in _playerHandMap.Values)
+            {
+                cInfo.CardGO.IsTappable = true;
+            }
+
+            _battleText.gameObject.SetActive(false);
+            popupEnd();
+        });
     }
 
     public void StartBattlePhase(Player winner)
