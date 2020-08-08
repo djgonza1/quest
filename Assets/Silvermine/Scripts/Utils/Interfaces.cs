@@ -14,16 +14,20 @@ namespace Silvermine.Battle.Core
 
     public interface IBattleEventManager
     {
-        void BoardOpen();
-        void RequestPlayerOneChoice(Action<AbilityCard> onCardsChosen);
-        void RequestPlayerTwoChoice(Action<AbilityCard> onCardsChosen);
-        void StartBattlePhase(Player winner);
+        void OnBoardOpen();
+        void OnChoosingPhaseStart();
+        void OnBattlePhaseStart(PlayerType winner);
     }
 
     public interface ICardGO
     {
         void SetSortingOrder(int order);
         void Highlight(bool enable);
+    }
+
+    public interface IPlayer
+    {
+        void RequestCardChoice(Action<AbilityCard> onCardChosen);
     }
 
     public interface IOnlinePlayer

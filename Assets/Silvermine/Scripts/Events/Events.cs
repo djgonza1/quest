@@ -98,9 +98,9 @@ public class CardGOEvent : GameEvent
 
     public EventType Type;
     public PlayableCardGO CardObject;
-    public Player Player;
+    public PlayerType Player;
 
-    public CardGOEvent(EventType type, PlayableCardGO card, Player player = Player.None)
+    public CardGOEvent(EventType type, PlayableCardGO card, PlayerType player = PlayerType.None)
     {
         this.Type = type;
         this.CardObject = card;

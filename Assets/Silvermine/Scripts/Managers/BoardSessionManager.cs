@@ -5,17 +5,21 @@ using UnityEngine;
 
 namespace Silvermine.Battle.Core
 {
-    public enum Player { None, First, Second };
+    public enum PlayerType { None, First, Second };
 
     public class BoardSessionManager
     {
         public Board GameBoard { get; private set; }
+        public IPlayer PlayerOne;
+        public IPlayer PlayerTwo;
         public SMStateMachine<BoardSessionManager> StateMachine { get; private set; }
         public IBattleEventManager EventsManager { get; }
 
-        public BoardSessionManager(Board gameBoard, IBattleEventManager eventsManager)
+        public BoardSessionManager(Board gameBoard, IPlayer playerOne, IPlayer playerTwo, IBattleEventManager eventsManager)
         {
             GameBoard = gameBoard;
+            PlayerOne = playerOne;
+            PlayerTwo = playerTwo;
             EventsManager = eventsManager;
         }
 

@@ -37,13 +37,13 @@ public class Grabbed : SMState<PlayableCardGO>
         {
             if (hit.collider.tag == "PlaySpace")
             {
-                Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.CHOSEN, _context, Player.First));
+                Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.CHOSEN, _context, PlayerType.First));
 
                 BoardSceneManager.Instance.PlayCard(_context, () =>
                 {
                     _context.FlipCard(false);
                     _stateMachine.ChangeState<InPlay>();
-                    Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, _context, Player.First));
+                    Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, _context, PlayerType.First));
                 });
 
                 return;

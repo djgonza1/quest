@@ -6,7 +6,12 @@ using Silvermine.Battle.Core;
 
 public class BoardServerSceneManager : MonoBehaviour, IBattleEventManager
 {
-    public void BoardOpen()
+    public void OnBoardOpen()
+    {
+
+    }
+
+    public void OnChoosingPhaseStart()
     {
 
     }
@@ -21,7 +26,7 @@ public class BoardServerSceneManager : MonoBehaviour, IBattleEventManager
 
     }
 
-    public void StartBattlePhase(Player winner)
+    public void OnBattlePhaseStart(PlayerType winner)
     {
 
     }

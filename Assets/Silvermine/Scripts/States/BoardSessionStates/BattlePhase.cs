@@ -9,7 +9,7 @@ namespace Silvermine.Battle.Core
     {
         public override void Begin()
         {
-            _context.EventsManager.StartBattlePhase(Player.First);
+            _context.EventsManager.OnBattlePhaseStart(PlayerType.First);
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }

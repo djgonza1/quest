@@ -1,15 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Silvermine.Battle.Core
 {
-    public class EnemyPlayerController
+    public class AIPlayer : IPlayer
     {
         private Board _gameBoard;
         private PlayerInfo _info;
 
-        public EnemyPlayerController(Board board, PlayerType player)
+        public AIPlayer(Board board, PlayerType player)
         {
             _gameBoard = board;
             _info = _gameBoard[player];
@@ -29,6 +30,13 @@ namespace Silvermine.Battle.Core
             }
 
             return chosenCard;
+        }
+
+        public void RequestCardChoice(Action<AbilityCard> onCardChosen)
+        {
+            var cardChosen = ChooseCardToPlay();
+
+            onCardChosen?.Invoke(cardChosen);
         }
     }
 }

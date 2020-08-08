@@ -21,15 +21,15 @@ namespace Silvermine.Battle.Core
             playerTwo = playerTwoInfo;
         }
 
-        public PlayerInfo this[Player player]
+        public PlayerInfo this[PlayerType player]
         {
             get
             {
                 switch(player)
                 {
-                    case Player.First:
+                    case PlayerType.First:
                         return playerOne;
-                    case Player.Second:
+                    case PlayerType.Second:
                         return playerTwo;
                     default:
                         return null;
@@ -38,20 +38,20 @@ namespace Silvermine.Battle.Core
         }
 
         //Returns a copy
-        public List<AbilityCard> GetPlayerHand(Player player)
+        public List<AbilityCard> GetPlayerHand(PlayerType player)
         {
             switch (player)
             {
-                case Player.First:
+                case PlayerType.First:
                     return playerOne.Hand;
-                case Player.Second:
+                case PlayerType.Second:
                     return playerTwo.Hand;
                 default:
                     return null;
             }
         }
 
-        public void SetPlayerChoice(Player player, AbilityCard card)
+        public void SetPlayerChoice(PlayerType player, AbilityCard card)
         {
             this[player].BattleChoice = card;
             this[player].Hand.Remove(card);

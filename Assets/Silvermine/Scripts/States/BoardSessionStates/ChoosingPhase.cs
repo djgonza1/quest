@@ -15,13 +15,15 @@ namespace Silvermine.Battle.Core
             _playerOneCardChosen = false;
             _playerTwoCardChosen = false;
 
-            _context.EventsManager.RequestPlayerOneChoice(OnPlayerOneCardChosen);
-            _context.EventsManager.RequestPlayerTwoChoice(OnPlayerTwoCardChosen);
+            _context.EventsManager.OnChoosingPhaseStart();
+
+            _context.PlayerOne.RequestCardChoice(OnPlayerOneCardChosen);
+            _context.PlayerTwo.RequestCardChoice(OnPlayerTwoCardChosen);
         }
 
         private void OnPlayerOneCardChosen(AbilityCard cardChoice)
         {
-            _context.GameBoard.SetPlayerChoice(Player.First, cardChoice);
+            _context.GameBoard.SetPlayerChoice(PlayerType.First, cardChoice);
             _playerOneCardChosen = true;
 
             if (_playerOneCardChosen && _playerTwoCardChosen)
@@ -32,7 +34,7 @@ namespace Silvermine.Battle.Core
 
         private void OnPlayerTwoCardChosen(AbilityCard playerTwoChoice)
         {
-            _context.GameBoard.SetPlayerChoice(Player.Second, playerTwoChoice);
+            _context.GameBoard.SetPlayerChoice(PlayerType.Second, playerTwoChoice);
             _playerTwoCardChosen = true;
 
             if (_playerOneCardChosen && _playerTwoCardChosen)
