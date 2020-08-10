@@ -7,3 +7,5 @@ The project is a work in progress and not fully playable yet. Some of the curren
 -Client and Server are able to communicate with eachother
 
 Most of the code examples can be found in quest/Assets/Silvermine/Scripts/
+
+The game is "playable" in the Unity editor by playing the scene "start_scene" and pressing the "VS AI" button.Online functionality is WIP. 
