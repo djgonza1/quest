@@ -8,4 +8,4 @@ The project is a work in progress and not fully playable yet. Some of the curren
 
 Most of the code examples can be found in quest/Assets/Silvermine/Scripts/
 
-The game is "playable" in the Unity editor by playing the scene "start_scene" and pressing the "VS AI" button. Online functionality is WIP. 
+The game is "playable" in the Unity editor by playing the scene "start_scene" and pressing the "VS AI" button. Click and drag cards to the center of the screen to play them and the AI will respond by playing a card. Online functionality is WIP. 
