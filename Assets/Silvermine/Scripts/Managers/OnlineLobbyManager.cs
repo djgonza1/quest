@@ -38,7 +38,8 @@ public class OnlineLobbyManager : MonoBehaviour
                 _matchedPlayers[opponent] = player;
 
                 player.OnOpponentFound();  
-                opponent.OnOpponentFound();  
+                opponent.OnOpponentFound(); 
+                
             }
             else
             {
@@ -53,7 +54,7 @@ public class OnlineLobbyManager : MonoBehaviour
                 player.OnOpponentFound();  
                 opponent.OnOpponentFound();  
                 
-                Debug.LogWarning("Server added client to matchmaking queue");
+                Debug.LogWarning("Server matched client to AI opponent");
             }
         }
     }
