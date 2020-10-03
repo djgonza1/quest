@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Silvermine.Battle.Core;
 
-public class CardBehaviour : MonoBehaviour, ICardGO
+public class CardBehaviour : MonoBehaviour, ICardBehavior
 {
     [SerializeField] public SortingGroup SortingGroup = null;
     [SerializeField] private SpriteRenderer _cardFront = null;

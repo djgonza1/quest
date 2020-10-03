@@ -51,7 +51,7 @@ public class InHand : SMState<PlayableCardBehaviour>
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            (_context as ICardGO).Highlight(true);
+            (_context as ICardBehavior).Highlight(true);
         }
     }
 
@@ -66,11 +66,11 @@ public class InHand : SMState<PlayableCardBehaviour>
 
         handState = InHandState.Reseting;
 
-        (_context as ICardGO).Highlight(false);
+        (_context as ICardBehavior).Highlight(false);
         BoardSceneManager.Instance.ResetCardInHand(_context, ()=> 
         {
             handState = InHandState.Neutral;
-            (_context as ICardGO).SetSortingOrder(0);
+            (_context as ICardBehavior).SetSortingOrder(0);
         });
     }
 
@@ -79,13 +79,13 @@ public class InHand : SMState<PlayableCardBehaviour>
         if (handState == InHandState.Neutral)
         {
             handState = InHandState.Highlighted;
-            (_context as ICardGO).Highlight(true);
+            (_context as ICardBehavior).Highlight(true);
         }
     }
 
     private void OnCardDrag()
     {
-        (_context as ICardGO).Highlight(false);
+        (_context as ICardBehavior).Highlight(false);
         _stateMachine.ChangeState<Grabbed>();
     }
 }

@@ -16,7 +16,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
     [SerializeField] private Transform _rightSpellBoardLocator = null;
     [SerializeField] private Text _battleText = null;
 
-    public CallbackQueue CallbackQueue;
+    public ActionQueue CallbackQueue;
 
     public Dictionary<AbilityCard, CardGOSceneInfo> PlayerHandMap;
     public Dictionary<AbilityCard, CardGOSceneInfo> EnemyHandMap;
@@ -30,7 +30,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         _playerOneCardChosen = false;
         _playerTwoCardChosen = false;
 
-        CallbackQueue = new CallbackQueue();
+        CallbackQueue = new ActionQueue();
 
         PlayerInfo playerOneInfo = new PlayerInfo();
         PlayerInfo playerTwoInfo = new PlayerInfo();
@@ -41,7 +41,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         IPlayer opponent = new OfflineAIPlayer(gameBoard, PlayerType.Second, this);
         _session = new BoardSessionManager(gameBoard, player, opponent, this);
         
-        CallbackQueue = new CallbackQueue();
+        CallbackQueue = new ActionQueue();
         
         ContentManager.Instance.LoadAbilityCardsPrefabs(StartBoardGameSession);
     }
@@ -150,7 +150,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
     
     public void OnBoardOpen()
     {
-        Action<Action> boardOpenStart = (boardOpenEnd) =>
+        QueuedAction boardOpenStart = (boardOpenEnd) =>
         {
             _battleText.text = "GameStart";
             _battleText.gameObject.SetActive(true);
@@ -172,7 +172,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
     public void RequestCardChoice(Action<AbilityCard> onCardChosen)
     {
-        Action<Action> chooseCardsStart = (chooseCardEnd) =>
+        QueuedAction chooseCardsStart = (chooseCardEnd) =>
         {
             AbilityCard firstChoice = null;
 
@@ -226,7 +226,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
     public void OnBattlePhaseStart(PlayerType winner)
     {
-        Action<Action> phaseStart = (phaseEnd) =>
+        QueuedAction phaseStart = (phaseEnd) =>
         {
             _battleText.text = "Flip Cards";
             _battleText.gameObject.SetActive(true);
@@ -239,7 +239,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
             });
         };
 
-        Action<Action> flipStart = (flipEnd) =>
+        QueuedAction flipStart = (flipEnd) =>
         {
             AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
             PlayableCardBehaviour cardGO = EnemyHandMap[card].CardGO;
