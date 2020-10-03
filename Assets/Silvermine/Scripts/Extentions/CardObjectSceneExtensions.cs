@@ -17,7 +17,7 @@ public static class CardObjectSceneExtensions
             callback?.Invoke();
         });
 
-        (card as ICardGO).SetSortingOrder(0);
+        (card as ICardBehavior).SetSortingOrder(0);
     }
 
     public static void GrabCard(this BoardSceneManager manager, PlayableCardBehaviour card)
@@ -44,6 +44,6 @@ public static class CardObjectSceneExtensions
             callback?.Invoke();
         });
 
-        (card as ICardGO).SetSortingOrder(0);
+        (card as ICardBehavior).SetSortingOrder(0);
     }
 }

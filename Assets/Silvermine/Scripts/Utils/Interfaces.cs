@@ -19,7 +19,7 @@ namespace Silvermine.Battle.Core
         void OnBattlePhaseStart(PlayerType winner);
     }
 
-    public interface ICardGO
+    public interface ICardBehavior
     {
         void SetSortingOrder(int order);
         void Highlight(bool enable);

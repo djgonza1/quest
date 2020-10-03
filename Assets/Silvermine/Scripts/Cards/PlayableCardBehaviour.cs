@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using Silvermine.Battle.Core;
 using System;
 
-public class PlayableCardBehaviour : MonoBehaviour, ICardGO 
+public class PlayableCardBehaviour : MonoBehaviour, ICardBehavior 
 {
     public const string AssetName = "Card";
 
