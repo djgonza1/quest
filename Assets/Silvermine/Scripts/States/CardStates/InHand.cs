@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class InHand : SMState<PlayableCardGO>
+public class InHand : SMState<PlayableCardBehaviour>
 {
     private enum InHandState { Neutral, Reseting, Highlighted};
 
@@ -57,7 +57,7 @@ public class InHand : SMState<PlayableCardGO>
 
     private void OnCardExit()
     {
-        var card = _context as PlayableCardGO;
+        var card = _context as PlayableCardBehaviour;
 
         if (handState != InHandState.Highlighted)
         {

@@ -26,11 +26,11 @@ public class ContentManager : SingletonGameObject<ContentManager>
         };
     }
     
-    public PlayableCardGO CreateCardObject(AbilityCard card)
+    public PlayableCardBehaviour CreateCardObject(AbilityCard card)
     {
         var go = Instantiate(_cardPrefab.gameObject);
 
-        PlayableCardGO cardObject = go.GetComponent<PlayableCardGO>();
+        PlayableCardBehaviour cardObject = go.GetComponent<PlayableCardBehaviour>();
         cardObject.Init(card);
 
         return cardObject;

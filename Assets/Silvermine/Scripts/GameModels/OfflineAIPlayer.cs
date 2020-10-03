@@ -27,7 +27,7 @@ namespace Silvermine.Battle.Core
                 cardChoice = _aiPlayer.ChooseCardToPlay();
                 onCardChosen(cardChoice);
 
-                PlayableCardGO enemyGO = _sceneManager.EnemyHandMap[cardChoice].CardGO;
+                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHandMap[cardChoice].CardGO;
                 _sceneManager.PlayCard(enemyGO, () =>
                 {
                     Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, PlayerType.First));

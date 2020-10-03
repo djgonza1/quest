@@ -3,11 +3,11 @@ using UnityEngine.EventSystems;
 using Silvermine.Battle.Core;
 using System;
 
-public class PlayableCardGO : MonoBehaviour, ICardGO 
+public class PlayableCardBehaviour : MonoBehaviour, ICardGO 
 {
     public const string AssetName = "Card";
 
-    [SerializeField] private CardGO _cardGO = null;
+    [SerializeField] private CardBehaviour _cardGO = null;
     
     public bool IsTappable { get; set; }
     public AbilityCard Card { get; private set; }

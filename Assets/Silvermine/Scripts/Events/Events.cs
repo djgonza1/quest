@@ -97,10 +97,10 @@ public class CardGOEvent : GameEvent
     public enum EventType { MOUSE_ENTER, MOUSE_EXIT, MOUSE_HOVER, TAP_DOWN, TAP_RELEASE, MOUSE_DRAG, CHOSEN, PLAYED };
 
     public EventType Type;
-    public PlayableCardGO CardObject;
+    public PlayableCardBehaviour CardObject;
     public PlayerType Player;
 
-    public CardGOEvent(EventType type, PlayableCardGO card, PlayerType player = PlayerType.None)
+    public CardGOEvent(EventType type, PlayableCardBehaviour card, PlayerType player = PlayerType.None)
     {
         this.Type = type;
         this.CardObject = card;

@@ -74,21 +74,21 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         
         for (int i = 0; i < cards.Count; i++)
         {
-            PlayableCardGO cardObject = ContentManager.Instance.CreateCardObject(cards[i]);
+            PlayableCardBehaviour cardObject = ContentManager.Instance.CreateCardObject(cards[i]);
 
             cardObject.IsTappable = isPlayerHand;
             cardObject.FlipCard(isPlayerHand);
 
             Transform handLoc = isPlayerHand ? _playerCardLocators[i] : _enemyCardLocators[i];
 
-            SMState<PlayableCardGO>[] states =
+            SMState<PlayableCardBehaviour>[] states =
             {
                 new InHand(),
                 new Grabbed(),
                 new InPlay()
             };
 
-            SMStateMachine<PlayableCardGO> machine = new SMStateMachine<PlayableCardGO>(cardObject, states);
+            SMStateMachine<PlayableCardBehaviour> machine = new SMStateMachine<PlayableCardBehaviour>(cardObject, states);
 
             CardGOSceneInfo cardInfo = new CardGOSceneInfo(cardObject, handLoc.position, machine);
 
@@ -106,7 +106,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         return handMap;
     }
     
-    public Vector3 GetCardHandPosition(PlayableCardGO cardGO)
+    public Vector3 GetCardHandPosition(PlayableCardBehaviour cardGO)
     {
 
         if (PlayerHandMap.ContainsKey(cardGO.Card))
@@ -123,7 +123,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         return Vector2.zero;
     }
 
-    public Vector3 GetBoardPlayPosition(PlayableCardGO cardGO)
+    public Vector3 GetBoardPlayPosition(PlayableCardBehaviour cardGO)
     {
         if (PlayerHandMap.ContainsKey(cardGO.Card))
         {
@@ -242,7 +242,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         Action<Action> flipStart = (flipEnd) =>
         {
             AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
-            PlayableCardGO cardGO = EnemyHandMap[card].CardGO;
+            PlayableCardBehaviour cardGO = EnemyHandMap[card].CardGO;
             cardGO.FlipCard(true);
 
             card = _session.GameBoard.playerOne.BattleChoice;
@@ -276,11 +276,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
     public struct CardGOSceneInfo
     {
-        public PlayableCardGO CardGO;
+        public PlayableCardBehaviour CardGO;
         public Vector3 HandPosition;
-        public SMStateMachine<PlayableCardGO> StateMachine;
+        public SMStateMachine<PlayableCardBehaviour> StateMachine;
 
-        public CardGOSceneInfo(PlayableCardGO cardGO, Vector3 handPosition, SMStateMachine<PlayableCardGO> stateMachine)
+        public CardGOSceneInfo(PlayableCardBehaviour cardGO, Vector3 handPosition, SMStateMachine<PlayableCardBehaviour> stateMachine)
         {
             CardGO = cardGO;
             HandPosition = handPosition;

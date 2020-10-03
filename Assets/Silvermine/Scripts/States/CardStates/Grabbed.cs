@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class Grabbed : SMState<PlayableCardGO>
+public class Grabbed : SMState<PlayableCardBehaviour>
 {
     public override void Begin()
     {
