@@ -256,7 +256,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         };
 
         CallbackQueue.QueuedCall(phaseStart)
-                    .QueuedCall(flipStart);
+                     .QueuedCall(flipStart);
     }
 
     public void DelayCall(float delay, Action callback)
