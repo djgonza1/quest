@@ -50,28 +50,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         _session.StartSession();
     }
     
-    public Vector3 GetCardHandPosition(PlayableCardBehaviour cardGO)
-    {
-
-        if (_playerHand.ContainsCard(cardGO))
-        {
-            return _playerHand.GetCardHandPosition(cardGO);
-        }
-
-        if (_enemyHand.ContainsCard(cardGO))
-        {
-            return _enemyHand.GetCardHandPosition(cardGO);
-        }
-
-        Debug.LogError("No hand locator found for card object");
-        return Vector2.zero;
-    }
-
-    public Vector2 GetPlayBoardCardScale()
-    {
-        return new Vector2(0.6f, 0.6f);
-    }
-    
     public void OnBoardOpen()
     {
         QueuedAction boardOpenStart = (boardOpenEnd) =>
@@ -103,17 +81,11 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
             Action<CardGOEvent> onPlayerCardChosen = null;
             onPlayerCardChosen = (msg) =>
             {
-                Debug.LogWarning("player card played event raised");
                 if (msg.Player != PlayerType.First || msg.Type != CardGOEvent.EventType.CHOSEN)
                 {
                     return;
                 }
 
-                // foreach (var cInfo in PlayerHandMap.Values)
-                // {
-                //     //TODO - Change Card state here
-                // }
-                Debug.LogWarning("player card played event raised");
                 Events.Instance.RemoveListener(onPlayerCardChosen);
 
                 firstChoice = msg.CardObject.Card;
@@ -121,11 +93,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
                 chooseCardEnd();
             };
-
-            // foreach(var handCard in PlayerHandMap)
-            // {
-                
-            // }
 
             Events.Instance.AddListener(onPlayerCardChosen);
         };
@@ -140,11 +107,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
         DelayCall(2f, () =>
         {
-            // foreach (var cInfo in PlayerHandMap.Values)
-            // {
-            //     //TODO - Change Card State Here
-            // }
-
             _battleText.gameObject.SetActive(false);
             popupEnd();
         });
@@ -203,21 +165,5 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         }
 
         callback.Invoke();
-    }
-
-    public struct HandCardInfo
-    {
-        public PlayableCardBehaviour CardGO;
-        public Vector3 HandPosition;
-        public Vector2 HandScale;
-        public SMStateMachine<PlayableCardBehaviour> StateMachine;
-
-        public HandCardInfo(PlayableCardBehaviour cardGO, Vector3 handPosition, Vector2 handScale, SMStateMachine<PlayableCardBehaviour> stateMachine)
-        {
-            CardGO = cardGO;
-            HandPosition = handPosition;
-            HandScale = handScale;
-            StateMachine = stateMachine;
-        }
     }
 }

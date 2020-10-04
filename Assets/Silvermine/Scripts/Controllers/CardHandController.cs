@@ -97,8 +97,6 @@ public class CardHandController : MonoBehaviour
 
         _handMap[card.Card].StateMachine.ChangeState<InPlay>();
 
-        Debug.LogWarning("Placed card on board: " + _playerType);
-
         Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, card, _playerType));
     }
     
