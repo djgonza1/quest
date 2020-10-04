@@ -94,7 +94,7 @@ public class GameEvent { };
 
 public class CardGOEvent : GameEvent
 {
-    public enum EventType { MOUSE_ENTER, MOUSE_EXIT, MOUSE_HOVER, TAP_DOWN, TAP_RELEASE, MOUSE_DRAG, CHOSEN, PLAYED };
+    public enum EventType { CHOSEN, PLAYED };
 
     public EventType Type;
     public PlayableCardBehaviour CardObject;
