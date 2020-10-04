@@ -57,11 +57,6 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
             _battleText.text = "GameStart";
             _battleText.gameObject.SetActive(true);
 
-            // foreach (var cInfo in PlayerHandMap.Values)
-            // {
-            //     //TODO - Switch card states here
-            // }
-
             DelayCall(2f, () =>
             {
                 _battleText.gameObject.SetActive(false);
@@ -76,25 +71,17 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
     {
         QueuedAction chooseCardsStart = (chooseCardEnd) =>
         {
-            AbilityCard firstChoice = null;
-
-            Action<CardGOEvent> onPlayerCardChosen = null;
-            onPlayerCardChosen = (msg) =>
+            Action<AbilityCard> onPlayerCardChosen = null;
+            onPlayerCardChosen = (card) =>
             {
-                if (msg.Player != PlayerType.First || msg.Type != CardGOEvent.EventType.CHOSEN)
-                {
-                    return;
-                }
+                _playerHand.OnCardChosen -= onPlayerCardChosen;
 
-                Events.Instance.RemoveListener(onPlayerCardChosen);
-
-                firstChoice = msg.CardObject.Card;
-                onCardChosen(firstChoice);
+                onCardChosen(card);
 
                 chooseCardEnd();
             };
 
-            Events.Instance.AddListener(onPlayerCardChosen);
+            _playerHand.OnCardChosen += onPlayerCardChosen;
         };
 
         CallbackQueue.QueuedCall(chooseCardsStart);

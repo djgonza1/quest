@@ -12,6 +12,8 @@ public class CardHandController : MonoBehaviour
     private Dictionary<AbilityCard, HandCardInfo> _handMap;
     private PlayerType _playerType;
 
+    public event Action<AbilityCard> OnCardChosen;
+
     public void Init(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
     {
         _playerType = playerType;
@@ -96,8 +98,6 @@ public class CardHandController : MonoBehaviour
         card.FlipCard(false);
 
         _handMap[card.Card].StateMachine.ChangeState<InPlay>();
-
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, card, _playerType));
     }
     
     public Vector3 GetCardHandPosition(PlayableCardBehaviour cardGO)
@@ -141,7 +141,7 @@ public class CardHandController : MonoBehaviour
 
     public void PlayCard(PlayableCardBehaviour card, Action callback = null)
     {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.CHOSEN, card, _playerType));
+        OnCardChosen?.Invoke(card.Card);
 
         Vector3 playPosition = _playCardLocator.position;
         Vector3 playScale = new Vector2(0.6f, 0.6f);

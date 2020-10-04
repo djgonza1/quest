@@ -92,22 +92,6 @@ public class Events
 
 public class GameEvent { };
 
-public class CardGOEvent : GameEvent
-{
-    public enum EventType { CHOSEN, PLAYED };
-
-    public EventType Type;
-    public PlayableCardBehaviour CardObject;
-    public PlayerType Player;
-
-    public CardGOEvent(EventType type, PlayableCardBehaviour card, PlayerType player = PlayerType.None)
-    {
-        this.Type = type;
-        this.CardObject = card;
-        this.Player = player;
-    }
-}
-
 public class OnlineEvent : GameEvent
 {
     public enum EventType { REQUEST_SERVER_JOIN, JOINED_SERVER, SERVER_FAIL, REQUEST_FIND_OPPONENT, FOUND_OPPONENT};

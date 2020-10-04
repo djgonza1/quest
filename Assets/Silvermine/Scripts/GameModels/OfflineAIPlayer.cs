@@ -18,8 +18,6 @@ namespace Silvermine.Battle.Core
 
         public void RequestCardChoice(Action<AbilityCard> onCardChosen)
         {
-            var cardChosen = _aiPlayer.ChooseCardToPlay();
-
            QueuedAction chooseCardsStart = (chooseCardEnd) =>
             {
                 AbilityCard cardChoice = _aiPlayer.ChooseCardToPlay();
