@@ -21,6 +21,7 @@ namespace Silvermine.Battle.Core
 
     public interface ICardBehavior
     {
+        AbilityCard Card { get; }
         void SetSortingOrder(int order);
         void Highlight(bool enable);
     }
