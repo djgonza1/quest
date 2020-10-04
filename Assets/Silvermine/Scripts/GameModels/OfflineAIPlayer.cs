@@ -27,11 +27,14 @@ namespace Silvermine.Battle.Core
                 cardChoice = _aiPlayer.ChooseCardToPlay();
                 onCardChosen(cardChoice);
 
-                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHandMap[cardChoice].CardGO;
+                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHand.GetCard(cardChoice);;
                 _sceneManager.PlayCard(enemyGO, () =>
                 {
                     Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, PlayerType.First));
-                    _sceneManager.EnemyHandMap[cardChoice].StateMachine.ChangeState<InPlay>();
+
+                    //TODO - remove this dependency on hand card state machines
+                    _sceneManager.EnemyHand.GetStateMachine(cardChoice).ChangeState<InPlay>();
+                    
                     chooseCardEnd();
                 });
             };
