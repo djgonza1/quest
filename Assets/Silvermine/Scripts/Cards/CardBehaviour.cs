@@ -6,10 +6,18 @@ using Silvermine.Battle.Core;
 
 public class CardBehaviour : MonoBehaviour, ICardBehavior
 {
-    [SerializeField] public SortingGroup SortingGroup = null;
+    [SerializeField] public SortingGroup _sortingGroup = null;
     [SerializeField] private SpriteRenderer _cardFront = null;
     [SerializeField] private SpriteRenderer _portrait = null;
     [SerializeField] private SpriteRenderer _cardBack = null;
+
+    public AbilityCard Card { get; private set; }
+
+    public void Init(AbilityCard card)
+    {
+        Card = card;
+        SetColor(Card.Color);
+    }
     
     public void SetColor(CardColor color)
     {
@@ -25,7 +33,7 @@ public class CardBehaviour : MonoBehaviour, ICardBehavior
 
     public void SetSortingOrder(int order)
     {
-        SortingGroup.sortingOrder = order;
+        _sortingGroup.sortingOrder = order;
     }
 
     public void Highlight(bool enable)
