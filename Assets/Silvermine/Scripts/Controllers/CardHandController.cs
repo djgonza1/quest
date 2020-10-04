@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
@@ -6,8 +7,16 @@ using Silvermine.Battle.Core;
 public class CardHandController : MonoBehaviour
 {
     [SerializeField] private Transform[] _cardLocators = null;
+    [SerializeField] private Transform _playCardLocator;
 
     private Dictionary<AbilityCard, HandCardInfo> _handMap;
+    private PlayerType _playerType;
+
+    public void Init(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
+    {
+        _playerType = playerType;
+        _handMap = CreateHandMap(cards, playerType);
+    }
 
     void Update()
     {
@@ -22,9 +31,9 @@ public class CardHandController : MonoBehaviour
         }
     }
     
-    public void CreateHand(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
+    public Dictionary<AbilityCard, HandCardInfo> CreateHandMap(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
     {
-        _handMap = new Dictionary<AbilityCard, HandCardInfo>();
+        var handMap = new Dictionary<AbilityCard, HandCardInfo>();
         
         for (int i = 0; i < cards.Count; i++)
         {
@@ -41,9 +50,9 @@ public class CardHandController : MonoBehaviour
             {
                 SMState<PlayableCardBehaviour>[] states =
                 {
-                    new ChoosableInHand(),
-                    new HighlightableInHand(),
-                    new Grabbed(),
+                    new ChoosableInHand(this),
+                    new HighlightableInHand(this),
+                    new Grabbed(this),
                     new InPlay()
                 };
                 
@@ -53,31 +62,54 @@ public class CardHandController : MonoBehaviour
             {
                 SMState<PlayableCardBehaviour>[] states =
                 {
-                    new HighlightableInHand(),
-                    new Grabbed(),
+                    new HighlightableInHand(this),
                     new InPlay()
                 };
 
                 machine = new SMStateMachine<PlayableCardBehaviour>(cardObject, states);
             }
 
-            HandCardInfo cardInfo = new HandCardInfo(cardObject, handLoc.position, BoardSceneManager.Instance.GetHandCardScale(), machine);
+            HandCardInfo cardInfo = new HandCardInfo(cardObject, handLoc.position, GetHandCardScale(), machine);
 
-            _handMap.Add(cards[i], cardInfo);
+            handMap.Add(cards[i], cardInfo);
         }
 
-        foreach (var cInfo in _handMap.Values)
+        foreach (var cInfo in handMap.Values)
         {
             var position = cInfo.HandPosition;
 
             cInfo.CardGO.transform.position = position;
-            cInfo.CardGO.transform.localScale = BoardSceneManager.Instance.GetHandCardScale();
+            cInfo.CardGO.transform.localScale = GetHandCardScale();
         }
+
+        return handMap;
+    }
+    
+    public void PlaceCardOnBoard(PlayableCardBehaviour card)
+    {
+        if (!ContainsCard(card))
+        {
+            Debug.LogError("Cannot play card that does not exist in hand: " + this.name);
+            return;
+        }
+
+        card.FlipCard(false);
+
+        _handMap[card.Card].StateMachine.ChangeState<InPlay>();
+
+        Debug.LogWarning("Placed card on board: " + _playerType);
+
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, card, _playerType));
     }
     
     public Vector3 GetCardHandPosition(PlayableCardBehaviour cardGO)
     {
         return _handMap[cardGO.Card].HandPosition;
+    }
+
+    public Vector2 GetHandCardScale()
+    {
+        return new Vector2(0.6f, 0.6f);
     }
 
     public bool ContainsCard(PlayableCardBehaviour cardGO)
@@ -93,6 +125,45 @@ public class CardHandController : MonoBehaviour
     public SMStateMachine<PlayableCardBehaviour> GetStateMachine(AbilityCard card)
     {
         return _handMap[card].StateMachine;
+    }
+
+    public void ResetCardInHand(PlayableCardBehaviour card, Action callback = null)
+    {
+        Vector2 handPosition = GetCardHandPosition(card);
+        Vector2 handScale = GetHandCardScale();
+
+        LeanTween.scale(card.gameObject, handScale, 0.2f);
+        LeanTween.move(card.gameObject, new Vector2(handPosition.x, handPosition.y), 0.2f).setOnComplete(() =>
+        {
+            callback?.Invoke();
+        });
+
+        (card as ICardBehavior).SetSortingOrder(0);
+    }
+
+    public void PlayCard(PlayableCardBehaviour card, Action callback = null)
+    {
+        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.CHOSEN, card, _playerType));
+
+        Vector3 playPosition = _playCardLocator.position;
+        Vector3 playScale = new Vector2(0.6f, 0.6f);
+
+        LeanTween.scale(card.gameObject, playScale, 0.3f);
+
+        Vector3 start = card.transform.position;
+        Vector3 point1 = start + new Vector3(0, 2f);
+        Vector3 point2 = playPosition + new Vector3(0, 2f);
+
+        LTBezierPath path = new LTBezierPath(new Vector3[] { start, point2, point1, playPosition });
+
+        LeanTween.move(card.gameObject, path, 0.3f).setOnComplete(() =>
+        {
+            PlaceCardOnBoard(card);
+
+            callback?.Invoke();
+        });
+
+        (card as ICardBehavior).SetSortingOrder(0);
     }
 
     public struct HandCardInfo

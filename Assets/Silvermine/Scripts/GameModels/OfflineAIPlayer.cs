@@ -22,19 +22,12 @@ namespace Silvermine.Battle.Core
 
            QueuedAction chooseCardsStart = (chooseCardEnd) =>
             {
-                AbilityCard cardChoice = null;
-
-                cardChoice = _aiPlayer.ChooseCardToPlay();
+                AbilityCard cardChoice = _aiPlayer.ChooseCardToPlay();
                 onCardChosen(cardChoice);
 
-                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHand.GetCard(cardChoice);;
-                _sceneManager.PlayCard(enemyGO, () =>
+                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHandController.GetCard(cardChoice);;
+                _sceneManager.EnemyHandController.PlayCard(enemyGO, () =>
                 {
-                    Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, enemyGO, PlayerType.First));
-
-                    //TODO - remove this dependency on hand card state machines
-                    _sceneManager.EnemyHand.GetStateMachine(cardChoice).ChangeState<InPlay>();
-                    
                     chooseCardEnd();
                 });
             };

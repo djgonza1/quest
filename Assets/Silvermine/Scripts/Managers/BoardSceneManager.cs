@@ -12,24 +12,17 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
     [SerializeField] private CardHandController _playerHand;
     [SerializeField] private CardHandController _enemyHand;
-    [SerializeField] private Transform _leftSpellBoardLocator = null;
-    [SerializeField] private Transform _rightSpellBoardLocator = null;
     [SerializeField] private Text _battleText = null;
 
     public ActionQueue CallbackQueue;
     private BoardSessionManager _session;
-    private bool _playerOneCardChosen;
-    private bool _playerTwoCardChosen;
 
-    public CardHandController PlayerHand { get => _playerHand; }
-    public CardHandController EnemyHand { get => _enemyHand; }
+    public CardHandController PlayerHandController { get => _playerHand; }
+    public CardHandController EnemyHandController { get => _enemyHand; }
     
     // Start is called before the first frame update
     void Start()
     {
-        _playerOneCardChosen = false;
-        _playerTwoCardChosen = false;
-
         CallbackQueue = new ActionQueue();
 
         PlayerInfo playerOneInfo = new PlayerInfo();
@@ -49,10 +42,10 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
     private void StartBoardGameSession()
     {
         List<AbilityCard> playerCards = _session.GameBoard.GetPlayerHand(PlayerType.First);
-        _playerHand.CreateHand(playerCards, PlayerType.First);
-
         List<AbilityCard> enemyCards = _session.GameBoard.GetPlayerHand(PlayerType.Second);
-        _enemyHand.CreateHand(enemyCards, PlayerType.Second);
+
+        _playerHand.Init(playerCards, PlayerType.First);
+        _enemyHand.Init(enemyCards, PlayerType.Second);
 
         _session.StartSession();
     }
@@ -74,29 +67,9 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
         return Vector2.zero;
     }
 
-    public Vector3 GetBoardPlayPosition(PlayableCardBehaviour cardGO)
-    {
-        if (_playerHand.ContainsCard(cardGO))
-        {
-            return _leftSpellBoardLocator.position;
-        }
-        else if (_enemyHand.ContainsCard(cardGO))
-        {
-            return _rightSpellBoardLocator.position;
-        }
-
-        Debug.LogError("No play locator found for card object");
-        return Vector2.zero;
-    }
-
-    public Vector2 GetHandCardScale()
-    {
-        return new Vector2(0.6f, 0.6f);
-    }
-
     public Vector2 GetPlayBoardCardScale()
     {
-        return GetHandCardScale();
+        return new Vector2(0.6f, 0.6f);
     }
     
     public void OnBoardOpen()
@@ -130,6 +103,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
             Action<CardGOEvent> onPlayerCardChosen = null;
             onPlayerCardChosen = (msg) =>
             {
+                Debug.LogWarning("player card played event raised");
                 if (msg.Player != PlayerType.First || msg.Type != CardGOEvent.EventType.CHOSEN)
                 {
                     return;
@@ -139,7 +113,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
                 // {
                 //     //TODO - Change Card state here
                 // }
-
+                Debug.LogWarning("player card played event raised");
                 Events.Instance.RemoveListener(onPlayerCardChosen);
 
                 firstChoice = msg.CardObject.Card;

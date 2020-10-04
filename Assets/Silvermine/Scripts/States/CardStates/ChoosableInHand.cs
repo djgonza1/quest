@@ -9,6 +9,12 @@ public class ChoosableInHand : SMState<PlayableCardBehaviour>
     private enum InHandState { Neutral, Reseting, Highlighted};
 
     private InHandState handState;
+    private CardHandController _handController;
+
+    public ChoosableInHand(CardHandController handController)
+    {
+        _handController = handController;
+    }
 
     public override void Begin()
     {
@@ -47,7 +53,7 @@ public class ChoosableInHand : SMState<PlayableCardBehaviour>
         handState = InHandState.Reseting;
 
         card.Highlight(false);
-        BoardSceneManager.Instance.ResetCardInHand(_context, ()=> 
+        _handController.ResetCardInHand(_context, ()=> 
         {
             handState = InHandState.Neutral;
             card.SetSortingOrder(0);

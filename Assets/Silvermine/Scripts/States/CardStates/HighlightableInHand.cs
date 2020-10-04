@@ -9,7 +9,12 @@ public class HighlightableInHand : SMState<PlayableCardBehaviour>
     private enum InHandState { Neutral, Reseting, Highlighted};
 
     private InHandState handState;
+    private CardHandController _handController;
 
+    public HighlightableInHand(CardHandController handController)
+    {
+        _handController = handController;
+    }
     public override void Begin()
     {
         handState = InHandState.Neutral;
@@ -45,7 +50,7 @@ public class HighlightableInHand : SMState<PlayableCardBehaviour>
         handState = InHandState.Reseting;
 
         card.Highlight(false);
-        BoardSceneManager.Instance.ResetCardInHand(_context, ()=> 
+        _handController.ResetCardInHand(_context, ()=> 
         {
             handState = InHandState.Neutral;
             card.SetSortingOrder(0);

@@ -1,15 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
 public class Grabbed : SMState<PlayableCardBehaviour>
 {
+    private CardHandController _handController;
+
+    public Grabbed(CardHandController handController)
+    {
+        _handController = handController;
+    }
+
     public override void Begin()
     {
         _context.OnMouseUnclicksCard += OnCardTapRelease;
 
-        BoardSceneManager.Instance.GrabCard(_context);
+        Vector2 handScale = _handController.GetHandCardScale();
+        LeanTween.scale(_context.gameObject, handScale, 0.2f);
     }
 
     public override void End()
@@ -30,20 +39,13 @@ public class Grabbed : SMState<PlayableCardBehaviour>
         {
             if (hit.collider.tag == "PlaySpace")
             {
-                Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.CHOSEN, _context, PlayerType.First));
-
-                BoardSceneManager.Instance.PlayCard(_context, () =>
-                {
-                    _context.FlipCard(false);
-                    _stateMachine.ChangeState<InPlay>();
-                    Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, _context, PlayerType.First));
-                });
+                _handController.PlayCard(card);
 
                 return;
             }
         }
 
-        BoardSceneManager.Instance.ResetCardInHand(_context, () =>
+        _handController.ResetCardInHand(_context, () =>
         {
             _stateMachine.ChangeState<ChoosableInHand>();
         });

@@ -650,6 +650,7 @@ MonoBehaviour:
   - {fileID: 1330119931}
   - {fileID: 1492934507}
   - {fileID: 509369777}
+  _playCardLocator: {fileID: 653163687}
 --- !u!1 &638457977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,6 +1212,7 @@ MonoBehaviour:
   - {fileID: 251833617}
   - {fileID: 1930637023}
   - {fileID: 700605665}
+  _playCardLocator: {fileID: 656292293}
 --- !u!1 &1831457245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,20 +1260,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c6a0f4db0e97e42b70278a77d1f86f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerCardLocators:
-  - {fileID: 1060053030}
-  - {fileID: 515260489}
-  - {fileID: 1612571950}
-  - {fileID: 251833617}
-  - {fileID: 1930637023}
-  - {fileID: 700605665}
-  _enemyCardLocators:
-  - {fileID: 311455229}
-  - {fileID: 1079064831}
-  - {fileID: 1465623661}
-  - {fileID: 1330119931}
-  - {fileID: 1492934507}
-  - {fileID: 509369777}
   _playerHand: {fileID: 1765176908}
   _enemyHand: {fileID: 601415879}
   _leftSpellBoardLocator: {fileID: 656292293}
