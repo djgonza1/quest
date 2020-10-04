@@ -7,21 +7,14 @@ public class Grabbed : SMState<PlayableCardBehaviour>
 {
     public override void Begin()
     {
+        _context.OnMouseUnclicksCard += OnCardTapRelease;
+
         BoardSceneManager.Instance.GrabCard(_context);
-        Events.Instance.AddListener<CardGOEvent>(OnCardEvent);
     }
 
     public override void End()
     {
-        Events.Instance.RemoveListener<CardGOEvent>(OnCardEvent);
-    }
-
-    public void OnCardEvent(CardGOEvent msg)
-    {
-        if (msg.CardObject == _context && msg.Type == CardGOEvent.EventType.TAP_RELEASE)
-        {
-            OnCardTapRelease();
-        }
+        _context.OnMouseUnclicksCard -= OnCardTapRelease;
     }
 
     public override void Update()
@@ -29,7 +22,7 @@ public class Grabbed : SMState<PlayableCardBehaviour>
         _context.transform.position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
-    private void OnCardTapRelease()
+    private void OnCardTapRelease(PlayableCardBehaviour card)
     {
         RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward);
 
@@ -52,7 +45,7 @@ public class Grabbed : SMState<PlayableCardBehaviour>
 
         BoardSceneManager.Instance.ResetCardInHand(_context, () =>
         {
-            _stateMachine.ChangeState<InHand>();
+            _stateMachine.ChangeState<ChoosableInHand>();
         });
     }
 }
