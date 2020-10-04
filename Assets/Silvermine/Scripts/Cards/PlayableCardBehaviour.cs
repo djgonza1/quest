@@ -9,71 +9,22 @@ public class PlayableCardBehaviour : MonoBehaviour, ICardBehavior
 
     [SerializeField] private CardBehaviour _cardGO = null;
     
-    public bool IsTappable { get; set; }
-    public AbilityCard Card { get; private set; }
+    public event Action<PlayableCardBehaviour> OnMouseEnterCard;
+    public event Action<PlayableCardBehaviour> OnMouseExitCard;
+    public event Action<PlayableCardBehaviour> OnMouseClicksCard;
+    public event Action<PlayableCardBehaviour> OnMouseUnclicksCard;
+    public event Action<PlayableCardBehaviour> OnMouseDragCard;
+    public event Action<PlayableCardBehaviour> OnMouseHoverCard;
 
     public void Init(AbilityCard card)
     {
-        Card = card;
-        _cardGO.SetColor(Card.Color);
+        _cardGO.Init(card);
 
         FlipCard(true);
-
-        IsTappable = true;
     }
 
-    public void FlipCard(bool showFront)
-    {
-        _cardGO.FlipCard(showFront);
-    }
-
-    #region Mouse Events
-
-    public void OnMouseEnter()
-    {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_ENTER, this));
-    }
-
-    public void OnMouseExit()
-    {
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_EXIT, this));
-    }
-
-    public void OnMouseDown()
-    {
-        if (!IsTappable)
-        {
-            return;
-        }
-
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.TAP_DOWN, this));
-    }
-
-    public void OnMouseUp()
-    {
-        if (!IsTappable)
-        {
-            return;
-        }
-
-        Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.TAP_RELEASE, this));
-    }
-
-    public void OnMouseOver()
-    {
-        if (IsTappable && Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
-        {
-            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_DRAG, this));
-        }
-        else if(!Input.GetMouseButton(0))
-        {
-            Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.MOUSE_HOVER, this));
-        }
-    }
-
-    #endregion
-
-    #region ICardGO Implementation
+    #region Interfaces
+    public AbilityCard Card { get => _cardGO.Card; }
 
     public void SetSortingOrder(int order)
     {
@@ -85,6 +36,44 @@ public class PlayableCardBehaviour : MonoBehaviour, ICardBehavior
         _cardGO.Highlight(enable);
         _cardGO.SetSortingOrder(1);
     }
-    
+    #endregion
+
+    public void FlipCard(bool showFront)
+    {
+        _cardGO.FlipCard(showFront);
+    }
+
+    #region Mouse Callbacks
+    public void OnMouseEnter()
+    {
+        OnMouseEnterCard?.Invoke(this);
+    }
+
+    public void OnMouseExit()
+    {
+        OnMouseExitCard?.Invoke(this);
+    }
+
+    public void OnMouseDown()
+    {
+        OnMouseClicksCard?.Invoke(this);
+    }
+
+    public void OnMouseUp()
+    {
+        OnMouseUnclicksCard?.Invoke(this);
+    }
+
+    public void OnMouseOver()
+    {
+        if (Input.GetMouseButton(0) && (Input.GetAxis("Mouse X") != 0f || Input.GetAxis("Mouse Y") != 0f))
+        {
+            OnMouseDragCard?.Invoke(this);
+        }
+        else if(!Input.GetMouseButton(0))
+        {
+            OnMouseHoverCard?.Invoke(this);
+        }
+    }
     #endregion
 } 
