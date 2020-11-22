@@ -21,9 +21,11 @@ namespace Silvermine.Battle.Core
            QueuedAction chooseCardsStart = (chooseCardEnd) =>
             {
                 AbilityCard cardChoice = _aiPlayer.ChooseCardToPlay();
+
+                _sceneManager.PlayerTwoChoice = _sceneManager.EnemyHandController.GetCard(cardChoice);
                 onCardChosen(cardChoice);
 
-                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHandController.GetCard(cardChoice);;
+                PlayableCardBehaviour enemyGO = _sceneManager.EnemyHandController.GetCard(cardChoice);
                 _sceneManager.EnemyHandController.PlayCard(enemyGO, () =>
                 {
                     chooseCardEnd();

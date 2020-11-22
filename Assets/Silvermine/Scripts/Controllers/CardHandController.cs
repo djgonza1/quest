@@ -86,18 +86,20 @@ public class CardHandController : MonoBehaviour
 
         return handMap;
     }
-    
+
     public void PlaceCardOnBoard(PlayableCardBehaviour card)
     {
         if (!ContainsCard(card))
         {
-            Debug.LogError("Cannot play card that does not exist in hand: " + this.name);
+            Debug.LogError("Cannot place card that does not exist in hand: " + this.name);
             return;
         }
 
         card.FlipCard(false);
 
         _handMap[card.Card].StateMachine.ChangeState<InPlay>();
+
+        _handMap.Remove(card.Card);
     }
     
     public Vector3 GetCardHandPosition(PlayableCardBehaviour cardGO)
@@ -162,6 +164,28 @@ public class CardHandController : MonoBehaviour
         });
 
         (card as ICardBehavior).SetSortingOrder(0);
+    }
+
+    public void OnCardGrabbed(PlayableCardBehaviour grabbedCard)
+    {
+        foreach(var handCardInfo in _handMap.Values)
+        {
+            var handCard = handCardInfo.CardGO;
+
+            if(handCard != grabbedCard)
+            {
+                Debug.LogWarning("Set rest of cards to highlightable only");
+                handCardInfo.StateMachine.ChangeState<HighlightableInHand>();
+            }
+        }
+    }
+
+    public void SetCardsAsChoosable()
+    {
+        foreach(var handCardInfo in _handMap.Values)
+        {
+            handCardInfo.StateMachine.ChangeState<ChoosableInHand>();
+        }
     }
 
     public struct HandCardInfo

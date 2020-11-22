@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattleEventManager, IPlayer
+public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
 {
     public const float CardOverSizePosOffset = 3f;
     public const float CardOverSizeScale = 3f;
@@ -14,11 +14,14 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
     [SerializeField] private CardHandController _enemyHand;
     [SerializeField] private Text _battleText = null;
 
-    public ActionQueue CallbackQueue;
     private BoardSessionManager _session;
 
+    public PlayableCardBehaviour PlayerOneChoice;
+    public PlayableCardBehaviour PlayerTwoChoice;
     public CardHandController PlayerHandController { get => _playerHand; }
     public CardHandController EnemyHandController { get => _enemyHand; }
+    public ActionQueue CallbackQueue;
+
     
     // Start is called before the first frame update
     void Start()
@@ -66,6 +69,7 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
         CallbackQueue.QueuedCall(boardOpenStart);
     }
+    
 
     public void RequestCardChoice(Action<AbilityCard> onCardChosen)
     {
@@ -75,6 +79,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
             onPlayerCardChosen = (card) =>
             {
                 _playerHand.OnCardChosen -= onPlayerCardChosen;
+
+                PlayerOneChoice = PlayerHandController.GetCard(card);
 
                 onCardChosen(card);
 
@@ -121,13 +127,8 @@ public class BoardSceneManager : SingletonGameObject<BoardSceneManager>, IBattle
 
         QueuedAction flipStart = (flipEnd) =>
         {
-            AbilityCard card = _session.GameBoard.playerTwo.BattleChoice;
-            PlayableCardBehaviour cardGO = _enemyHand.GetCard(card);
-            cardGO.FlipCard(true);
-
-            card = _session.GameBoard.playerOne.BattleChoice;
-            cardGO = _playerHand.GetCard(card);
-            cardGO.FlipCard(true);
+            PlayerOneChoice.FlipCard(true);
+            PlayerTwoChoice.FlipCard(true);
 
             DelayCall(1f, () =>
             {

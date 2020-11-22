@@ -16,6 +16,8 @@ public class Grabbed : SMState<PlayableCardBehaviour>
     public override void Begin()
     {
         _context.OnMouseUnclicksCard += OnCardTapRelease;
+        
+        _handController.OnCardGrabbed(_context);
 
         Vector2 handScale = _handController.GetHandCardScale();
         LeanTween.scale(_context.gameObject, handScale, 0.2f);
@@ -40,7 +42,6 @@ public class Grabbed : SMState<PlayableCardBehaviour>
             if (hit.collider.tag == "PlaySpace")
             {
                 _handController.PlayCard(card);
-
                 return;
             }
         }
