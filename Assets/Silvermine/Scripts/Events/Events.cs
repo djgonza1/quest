@@ -92,18 +92,14 @@ public class Events
 
 public class GameEvent { };
 
-public class CardGOEvent : GameEvent
+public class OnlineEvent : GameEvent
 {
-    public enum EventType { MOUSE_ENTER, MOUSE_EXIT, MOUSE_HOVER, TAP_DOWN, TAP_RELEASE, MOUSE_DRAG, CHOSEN, PLAYED };
+    public enum EventType { REQUEST_SERVER_JOIN, JOINED_SERVER, SERVER_FAIL, REQUEST_FIND_OPPONENT, FOUND_OPPONENT};
 
     public EventType Type;
-    public PlayableCardGO CardObject;
-    public Player Player;
 
-    public CardGOEvent(EventType type, PlayableCardGO card, Player player = Player.None)
+    public OnlineEvent(EventType type)
     {
-        this.Type = type;
-        this.CardObject = card;
-        this.Player = player;
+        Type = type;
     }
 }

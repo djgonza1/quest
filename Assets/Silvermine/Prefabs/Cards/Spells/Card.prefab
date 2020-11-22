@@ -167,7 +167,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2695254302613636280}
-  - component: {fileID: 8385336025439593530}
+  - component: {fileID: 4970316926624730459}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -190,7 +190,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8385336025439593530
+--- !u!114 &4970316926624730459
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f2fbb869185dc459c32d4d7020617e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortingGroup: {fileID: 6160106609930153526}
+  _sortingGroup: {fileID: 6160106609930153526}
   _cardFront: {fileID: 673025100839787419}
   _portrait: {fileID: 2673449357146087811}
   _cardBack: {fileID: 7422081599358706795}

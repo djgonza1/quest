@@ -1,27 +1,31 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class Grabbed : SMState<PlayableCardGO>
+public class Grabbed : SMState<PlayableCardBehaviour>
 {
+    private CardHandController _handController;
+
+    public Grabbed(CardHandController handController)
+    {
+        _handController = handController;
+    }
+
     public override void Begin()
     {
-        BoardSceneManager.Instance.GrabCard(_context);
-        Events.Instance.AddListener<CardGOEvent>(OnCardEvent);
+        _context.OnMouseUnclicksCard += OnCardTapRelease;
+        
+        _handController.OnCardGrabbed(_context);
+
+        Vector2 handScale = _handController.GetHandCardScale();
+        LeanTween.scale(_context.gameObject, handScale, 0.2f);
     }
 
     public override void End()
     {
-        Events.Instance.RemoveListener<CardGOEvent>(OnCardEvent);
-    }
-
-    public void OnCardEvent(CardGOEvent msg)
-    {
-        if (msg.CardObject == _context && msg.Type == CardGOEvent.EventType.TAP_RELEASE)
-        {
-            OnCardTapRelease();
-        }
+        _context.OnMouseUnclicksCard -= OnCardTapRelease;
     }
 
     public override void Update()
@@ -29,7 +33,7 @@ public class Grabbed : SMState<PlayableCardGO>
         _context.transform.position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
-    private void OnCardTapRelease()
+    private void OnCardTapRelease(PlayableCardBehaviour card)
     {
         RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward);
 
@@ -37,22 +41,14 @@ public class Grabbed : SMState<PlayableCardGO>
         {
             if (hit.collider.tag == "PlaySpace")
             {
-                Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.CHOSEN, _context, Player.First));
-
-                BoardSceneManager.Instance.PlayCard(_context, () =>
-                {
-                    _context.FlipCard(false);
-                    _stateMachine.ChangeState<InPlay>();
-                    Events.Instance.Raise(new CardGOEvent(CardGOEvent.EventType.PLAYED, _context, Player.First));
-                });
-
+                _handController.PlayCard(card);
                 return;
             }
         }
 
-        BoardSceneManager.Instance.ResetCardInHand(_context, () =>
+        _handController.ResetCardInHand(_context, () =>
         {
-            _stateMachine.ChangeState<InHand>();
+            _stateMachine.ChangeState<ChoosableInHand>();
         });
     }
 }

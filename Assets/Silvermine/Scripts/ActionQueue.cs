@@ -3,16 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CallbackQueue
-{
-    private Queue<Action<Action>> _callbackQueue;
+public delegate void QueuedAction(Action onComplete);
 
-    public CallbackQueue()
+public class ActionQueue
+{
+    private Queue<QueuedAction> _callbackQueue;
+
+    public ActionQueue()
     {
-        _callbackQueue = new Queue<Action<Action>>();
+        _callbackQueue = new Queue<QueuedAction>();
     }
     
-    public CallbackQueue QueuedCall(Action<Action> action)
+    public ActionQueue QueuedCall(QueuedAction action)
     {
         _callbackQueue.Enqueue(action);
         
@@ -33,7 +35,7 @@ public class CallbackQueue
             return;
         }
 
-        Action<Action> current = _callbackQueue.Peek();
+        QueuedAction current = _callbackQueue.Peek();
         current(NextCallback);
     }
 }

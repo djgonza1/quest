@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,16 +12,27 @@ namespace Silvermine.Battle.Core
         string AssetName { get; }
     }
 
-    public interface IBoardSceneManager
+    public interface IBattleEventManager
     {
-        void BoardOpen();
-        void ChooseCards(Action<AbilityCard, AbilityCard> onCardsChosen);
-        void StartBattlePhase(Player winner);
+        void OnBoardOpen();
+        void OnChoosingPhaseStart();
+        void OnBattlePhaseStart(PlayerType winner);
     }
 
-    public interface ICardGO
+    public interface ICardBehavior
     {
+        AbilityCard Card { get; }
         void SetSortingOrder(int order);
         void Highlight(bool enable);
+    }
+
+    public interface IPlayer
+    {
+        void RequestCardChoice(Action<AbilityCard> onCardChosen);
+    }
+
+    public interface IOnlinePlayer
+    {
+        void OnOpponentFound();
     }
 }

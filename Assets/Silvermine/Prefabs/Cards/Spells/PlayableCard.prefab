@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c60af492216f5479def8ec5167616b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardGO: {fileID: 5776664523400964152}
+  _cardGO: {fileID: 6957634393303318873}
 --- !u!61 &4102852982944753378
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -152,9 +152,9 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2626838244158245890}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5776664523400964152 stripped
+--- !u!114 &6957634393303318873 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8385336025439593530, guid: 0503630321082cd44bdd0212dc0f06c8,
+  m_CorrespondingSourceObject: {fileID: 4970316926624730459, guid: 0503630321082cd44bdd0212dc0f06c8,
     type: 3}
   m_PrefabInstance: {fileID: 2626838244158245890}
   m_PrefabAsset: {fileID: 0}
