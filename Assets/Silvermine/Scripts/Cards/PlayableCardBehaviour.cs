@@ -8,6 +8,7 @@ public class PlayableCardBehaviour : MonoBehaviour, ICardBehavior
     public const string AssetName = "Card";
 
     [SerializeField] private CardBehaviour _cardGO = null;
+    [SerializeField] private PlayableCardStateMachine _stateMachine;
     
     public event Action<PlayableCardBehaviour> OnMouseEnterCard;
     public event Action<PlayableCardBehaviour> OnMouseExitCard;
@@ -15,6 +16,8 @@ public class PlayableCardBehaviour : MonoBehaviour, ICardBehavior
     public event Action<PlayableCardBehaviour> OnMouseUnclicksCard;
     public event Action<PlayableCardBehaviour> OnMouseDragCard;
     public event Action<PlayableCardBehaviour> OnMouseHoverCard;
+
+    public PlayableCardStateMachine StateMachine => _stateMachine;
 
     public void Init(AbilityCard card)
     {

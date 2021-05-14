@@ -7,6 +7,7 @@ using Silvermine.Battle.Core;
 public class Grabbed : SMState<PlayableCardBehaviour>
 {
     private CardHandController _handController;
+    private bool _keepGrabbing;
 
     public Grabbed(CardHandController handController)
     {
@@ -15,6 +16,8 @@ public class Grabbed : SMState<PlayableCardBehaviour>
 
     public override void Begin()
     {
+        _keepGrabbing = true;
+
         _context.OnMouseUnclicksCard += OnCardTapRelease;
         
         _handController.OnCardGrabbed(_context);
@@ -28,13 +31,18 @@ public class Grabbed : SMState<PlayableCardBehaviour>
         _context.OnMouseUnclicksCard -= OnCardTapRelease;
     }
 
-    public override void Update()
+    public override IEnumerator Reason()
     {
-        _context.transform.position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        while (_keepGrabbing)
+        {
+            _context.transform.position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            yield return 0;
+        }
     }
 
     private void OnCardTapRelease(PlayableCardBehaviour card)
     {
+        _keepGrabbing = false;
         RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector3.forward);
 
         foreach (var hit in hits)

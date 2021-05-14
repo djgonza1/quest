@@ -13,6 +13,7 @@ public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
     [SerializeField] private CardHandController _playerHand;
     [SerializeField] private CardHandController _enemyHand;
     [SerializeField] private Text _battleText = null;
+    [SerializeField] private BoardStateMachine _boardStateMachine;
 
     private BoardSessionManager _session;
 
@@ -50,7 +51,7 @@ public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
         _playerHand.Init(playerCards, PlayerType.First);
         _enemyHand.Init(enemyCards, PlayerType.Second);
 
-        _session.StartSession();
+        _boardStateMachine.Begin(_session);
     }
     
     public void OnBoardOpen()

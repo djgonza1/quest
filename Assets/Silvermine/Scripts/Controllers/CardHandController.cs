@@ -8,6 +8,7 @@ public class CardHandController : MonoBehaviour
 {
     [SerializeField] private Transform[] _cardLocators = null;
     [SerializeField] private Transform _playCardLocator;
+    [SerializeField] private PlayableCardStateMachine _stateMachine;
 
     private Dictionary<AbilityCard, HandCardInfo> _handMap;
     private PlayerType _playerType;
@@ -18,19 +19,6 @@ public class CardHandController : MonoBehaviour
     {
         _playerType = playerType;
         _handMap = CreateHandMap(cards, playerType);
-    }
-
-    void Update()
-    {
-        if (_handMap == null)
-        {
-            return;
-        }
-
-        foreach (var cardInfo in _handMap.Values)
-        {
-            cardInfo.StateMachine.Update();
-        }
     }
     
     public Dictionary<AbilityCard, HandCardInfo> CreateHandMap(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
@@ -45,8 +33,6 @@ public class CardHandController : MonoBehaviour
 
             Transform handLoc = _cardLocators[i];
 
-            SMStateMachine<PlayableCardBehaviour> machine = null;
-
             //Set state machine for card depending on player type
             if (playerType == PlayerType.First)
             {
@@ -58,7 +44,7 @@ public class CardHandController : MonoBehaviour
                     new InPlay()
                 };
                 
-                machine = new SMStateMachine<PlayableCardBehaviour>(cardObject, states);
+                cardObject.StateMachine.Begin(cardObject, states);
             }
             else
             {
@@ -68,10 +54,10 @@ public class CardHandController : MonoBehaviour
                     new InPlay()
                 };
 
-                machine = new SMStateMachine<PlayableCardBehaviour>(cardObject, states);
+                cardObject.StateMachine.Begin(cardObject, states);
             }
 
-            HandCardInfo cardInfo = new HandCardInfo(cardObject, handLoc.position, GetHandCardScale(), machine);
+            HandCardInfo cardInfo = new HandCardInfo(cardObject, handLoc.position, GetHandCardScale(), cardObject.StateMachine);
 
             handMap.Add(cards[i], cardInfo);
         }
