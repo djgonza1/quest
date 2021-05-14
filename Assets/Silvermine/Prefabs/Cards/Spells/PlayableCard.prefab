@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2695254302613636280}
   - component: {fileID: 2695254302613636262}
+  - component: {fileID: 7671902236091133138}
   - component: {fileID: 4102852982944753378}
   m_Layer: 0
   m_Name: PlayableCard
@@ -46,6 +47,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardGO: {fileID: 6957634393303318873}
+  _stateMachine: {fileID: 7671902236091133138}
+--- !u!114 &7671902236091133138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2695254302613636263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9cd7bf416f75b4c91a24ee97975d4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!61 &4102852982944753378
 BoxCollider2D:
   m_ObjectHideFlags: 0

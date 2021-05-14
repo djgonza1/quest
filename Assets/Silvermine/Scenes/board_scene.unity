@@ -1223,6 +1223,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1831457247}
   - component: {fileID: 1831457248}
+  - component: {fileID: 1831457246}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -1230,6 +1231,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1831457246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831457245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c865c9727a16834d9fbf8d4aea1de3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1831457247
 Transform:
   m_ObjectHideFlags: 0
@@ -1262,9 +1275,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerHand: {fileID: 1765176908}
   _enemyHand: {fileID: 601415879}
-  _leftSpellBoardLocator: {fileID: 656292293}
-  _rightSpellBoardLocator: {fileID: 653163687}
   _battleText: {fileID: 1730191669}
+  _boardStateMachine: {fileID: 1831457246}
+  PlayerOneChoice: {fileID: 0}
+  PlayerTwoChoice: {fileID: 0}
 --- !u!1 &1930637022
 GameObject:
   m_ObjectHideFlags: 0
