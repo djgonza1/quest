@@ -651,6 +651,7 @@ MonoBehaviour:
   - {fileID: 1492934507}
   - {fileID: 509369777}
   _playCardLocator: {fileID: 653163687}
+  _stateMachine: {fileID: 0}
 --- !u!1 &638457977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1214,7 @@ MonoBehaviour:
   - {fileID: 1930637023}
   - {fileID: 700605665}
   _playCardLocator: {fileID: 656292293}
+  _stateMachine: {fileID: 0}
 --- !u!1 &1831457245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1243,6 +1245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c865c9727a16834d9fbf8d4aea1de3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _context: {fileID: 1831457248}
 --- !u!4 &1831457247
 Transform:
   m_ObjectHideFlags: 0

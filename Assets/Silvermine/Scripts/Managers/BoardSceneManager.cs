@@ -15,8 +15,9 @@ public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
     [SerializeField] private Text _battleText = null;
     [SerializeField] private BoardStateMachine _boardStateMachine;
 
-    private BoardSessionManager _session;
-
+    public BoardSessionManager Session { get; private set; }
+    public IPlayer Player { get; private set; }
+    public IPlayer Enemy { get; private set; }
     public PlayableCardBehaviour PlayerOneChoice;
     public PlayableCardBehaviour PlayerTwoChoice;
     public CardHandController PlayerHandController { get => _playerHand; }
@@ -34,9 +35,9 @@ public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
 
         Board gameBoard = new Board(playerOneInfo, playerTwoInfo);
 
-        IPlayer player = this;
-        IPlayer opponent = new OfflineAIPlayer(gameBoard, PlayerType.Second, this);
-        _session = new BoardSessionManager(gameBoard, player, opponent, this);
+        Player = this;
+        Enemy = new OfflineAIPlayer(gameBoard, PlayerType.Second, this);
+        Session = new BoardSessionManager(gameBoard, Player, Enemy, this);
         
         CallbackQueue = new ActionQueue();
         
@@ -45,13 +46,13 @@ public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
 
     private void StartBoardGameSession()
     {
-        List<AbilityCard> playerCards = _session.GameBoard.GetPlayerHand(PlayerType.First);
-        List<AbilityCard> enemyCards = _session.GameBoard.GetPlayerHand(PlayerType.Second);
+        List<AbilityCard> playerCards = Session.GameBoard.GetPlayerHand(PlayerType.First);
+        List<AbilityCard> enemyCards = Session.GameBoard.GetPlayerHand(PlayerType.Second);
 
         _playerHand.Init(playerCards, PlayerType.First);
         _enemyHand.Init(enemyCards, PlayerType.Second);
 
-        _boardStateMachine.Begin(_session);
+        _boardStateMachine.Init();
     }
     
     public void OnBoardOpen()

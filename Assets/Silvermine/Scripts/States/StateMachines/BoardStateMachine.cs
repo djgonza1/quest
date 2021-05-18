@@ -1,33 +1,36 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Silvermine.Battle.Core;
 
-public class BoardStateMachine : SMStateMachine<BoardSessionManager>
+public class BoardStateMachine : SMStateMachine<BoardSceneManager>
 {
-    public void Begin(BoardSessionManager session)
+    [SerializeField] private BoardSceneManager _context;
+
+    public void Init()
     {
-        SMState<BoardSessionManager>[] states =
+        SMState<BoardSceneManager>[] states =
         {
             new BattleStart(),
             new ChoosingPhase(),
             new BattlePhase()
         };
 
-        Begin(session, states);
+        Begin(_context, states);
     }
 
 #region Battle States
-    private class BattleStart : SMState<BoardSessionManager>
+    private class BattleStart : SMState<BoardSceneManager>
     {
         public override void Begin()
         {
-            _context.EventsManager.OnBoardOpen();
+            _context.OnBoardOpen();
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }
     
-    private class ChoosingPhase : SMState<BoardSessionManager>
+    private class ChoosingPhase : SMState<BoardSceneManager>
     {
         private bool _playerOneCardChosen;
         private bool _playerTwoCardChosen;
@@ -37,15 +40,15 @@ public class BoardStateMachine : SMStateMachine<BoardSessionManager>
             _playerOneCardChosen = false;
             _playerTwoCardChosen = false;
 
-            _context.EventsManager.OnChoosingPhaseStart();
+            _context.OnChoosingPhaseStart();
 
-            _context.PlayerOne.RequestCardChoice(OnPlayerOneCardChosen);
-            _context.PlayerTwo.RequestCardChoice(OnPlayerTwoCardChosen);
+            _context.Player.RequestCardChoice(OnPlayerOneCardChosen);
+            _context.Enemy.RequestCardChoice(OnPlayerTwoCardChosen);
         }
 
         private void OnPlayerOneCardChosen(AbilityCard cardChoice)
         {
-            _context.GameBoard.SetPlayerChoice(PlayerType.First, cardChoice);
+            _context.Session.GameBoard.SetPlayerChoice(PlayerType.First, cardChoice);
             _playerOneCardChosen = true;
 
             if (_playerOneCardChosen && _playerTwoCardChosen)
@@ -56,7 +59,7 @@ public class BoardStateMachine : SMStateMachine<BoardSessionManager>
 
         private void OnPlayerTwoCardChosen(AbilityCard playerTwoChoice)
         {
-            _context.GameBoard.SetPlayerChoice(PlayerType.Second, playerTwoChoice);
+            _context.Session.GameBoard.SetPlayerChoice(PlayerType.Second, playerTwoChoice);
             _playerTwoCardChosen = true;
 
             if (_playerOneCardChosen && _playerTwoCardChosen)
@@ -66,11 +69,11 @@ public class BoardStateMachine : SMStateMachine<BoardSessionManager>
         }
     }
 
-    private class BattlePhase : SMState<BoardSessionManager>
+    private class BattlePhase : SMState<BoardSceneManager>
     {
         public override void Begin()
         {
-            _context.EventsManager.OnBattlePhaseStart(PlayerType.First);
+            _context.OnBattlePhaseStart(PlayerType.First);
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }
