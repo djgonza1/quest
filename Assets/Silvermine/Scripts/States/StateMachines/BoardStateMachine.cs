@@ -6,7 +6,7 @@ using Silvermine.Battle.Core;
 
 public class BoardStateMachine : SMStateMachine<BoardSceneManager>
 {
-    [SerializeField] private BoardSceneManager _context;
+    [SerializeField] private BoardSceneManager _manager;
 
     public void Init()
     {
@@ -17,15 +17,16 @@ public class BoardStateMachine : SMStateMachine<BoardSceneManager>
             new BattlePhase()
         };
 
-        Begin(_context, states);
+        Begin(_manager, states);
     }
 
 #region Battle States
     private class BattleStart : SMState<BoardSceneManager>
     {
-        public override void Begin()
+        public override IEnumerator Reason()
         {
-            _context.OnBoardOpen();
+            yield return _context.OpenBoard();
+
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }

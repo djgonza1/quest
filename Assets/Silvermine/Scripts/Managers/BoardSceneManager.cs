@@ -72,6 +72,17 @@ public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
         CallbackQueue.QueuedCall(boardOpenStart);
     }
     
+    public IEnumerator OpenBoard()
+    {
+        float openDuration = 2f;
+
+        _battleText.text = "GameStart";
+        _battleText.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(openDuration);
+
+        _battleText.gameObject.SetActive(false);
+    }
 
     public void RequestCardChoice(Action<AbilityCard> onCardChosen)
     {
