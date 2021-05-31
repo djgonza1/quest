@@ -28,6 +28,7 @@ namespace Silvermine.Battle.Core
 
     public interface IPlayer
     {
+        PlayerInfo Info { get; }
         void RequestCardChoice(Action<AbilityCard> onCardChosen);
     }
 

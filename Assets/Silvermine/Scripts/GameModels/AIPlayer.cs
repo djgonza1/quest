@@ -7,20 +7,20 @@ namespace Silvermine.Battle.Core
 {
     public class AIPlayer : IPlayer
     {
+    public PlayerInfo Info { get; }
         private Board _gameBoard;
-        private PlayerInfo _info;
 
-        public AIPlayer(Board board, PlayerType player)
+        public AIPlayer(Board board, PlayerInfo info)
         {
             _gameBoard = board;
-            _info = _gameBoard[player];
+            Info = info;
         }
 
         public AbilityCard ChooseCardToPlay()
         {
             AbilityCard chosenCard = null;
 
-            foreach (var card in _info.Hand)
+            foreach (var card in Info.Hand)
             {
                 if (card != null)
                 {

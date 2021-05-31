@@ -33,48 +33,37 @@ public class BoardStateMachine : SMStateMachine<BoardSceneManager>
     
     private class ChoosingPhase : SMState<BoardSceneManager>
     {
-        private bool _playerOneCardChosen;
-        private bool _playerTwoCardChosen;
-
         public override void Begin()
         {
-            _playerOneCardChosen = false;
-            _playerTwoCardChosen = false;
-
-            _context.OnChoosingPhaseStart();
-
-            _context.Player.RequestCardChoice(OnPlayerOneCardChosen);
-            _context.Enemy.RequestCardChoice(OnPlayerTwoCardChosen);
+            _context.Session.StartNextTurn();
         }
 
-        private void OnPlayerOneCardChosen(AbilityCard cardChoice)
+        public override IEnumerator Reason()
         {
-            _context.Session.GameBoard.SetPlayerChoice(PlayerType.First, cardChoice);
-            _playerOneCardChosen = true;
+            yield return _context.OpenChooseCardPopup();
 
-            if (_playerOneCardChosen && _playerTwoCardChosen)
+            var currentPlayer = _context.Session.CurrentTurnPlayer;
+
+            AbilityCard chosenCard = null;
+            currentPlayer.RequestCardChoice((card)=>
             {
-                _stateMachine.ChangeState<BattlePhase>();
-            }
-        }
+                chosenCard = card;
+            });
+            while(chosenCard == null) { yield return 0; }
 
-        private void OnPlayerTwoCardChosen(AbilityCard playerTwoChoice)
-        {
-            _context.Session.GameBoard.SetPlayerChoice(PlayerType.Second, playerTwoChoice);
-            _playerTwoCardChosen = true;
+            _context.Session.SetPlayerChoice(currentPlayer, chosenCard);
 
-            if (_playerOneCardChosen && _playerTwoCardChosen)
-            {
-                _stateMachine.ChangeState<BattlePhase>();
-            }
+            _stateMachine.ChangeState<BattlePhase>();
         }
     }
 
+
     private class BattlePhase : SMState<BoardSceneManager>
     {
-        public override void Begin()
+        public override IEnumerator Reason()
         {
-            _context.OnBattlePhaseStart(PlayerType.First);
+            yield return _context.BattlePhaseStart();
+
             _stateMachine.ChangeState<ChoosingPhase>();
         }
     }
