@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,28 +40,27 @@ public class BoardStateMachine : SMStateMachine<BoardSceneManager>
 
         public override IEnumerator Reason()
         {
+            Debug.LogWarning("Starting ChoosingPhase");
             yield return _context.OpenChooseCardPopup();
+            
+            var currentPlayer = _context.CurrentPlayer;
 
-            var currentPlayer = _context.Session.CurrentTurnPlayer;
+            PlayableCardBehaviour cardBehavior = null;
+            yield return currentPlayer.PlayCard((card)=> { cardBehavior = card; });
 
-            AbilityCard chosenCard = null;
-            currentPlayer.RequestCardChoice((card)=>
-            {
-                chosenCard = card;
-            });
-            while(chosenCard == null) { yield return 0; }
+            Debug.LogWarning("After chose card in state machine");
 
-            _context.Session.SetPlayerChoice(currentPlayer, chosenCard);
+            _context.Session.SetPlayerChoice(currentPlayer.Info, cardBehavior.Card);
 
             _stateMachine.ChangeState<BattlePhase>();
         }
     }
 
-
     private class BattlePhase : SMState<BoardSceneManager>
     {
         public override IEnumerator Reason()
         {
+            Debug.LogWarning("Starting BattlePhase");
             yield return _context.BattlePhaseStart();
 
             _stateMachine.ChangeState<ChoosingPhase>();

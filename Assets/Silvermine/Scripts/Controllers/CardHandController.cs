@@ -8,12 +8,11 @@ public class CardHandController : MonoBehaviour
 {
     [SerializeField] private Transform[] _cardLocators = null;
     [SerializeField] private Transform _playCardLocator;
-    [SerializeField] private PlayableCardStateMachine _stateMachine;
 
     private Dictionary<AbilityCard, HandCardInfo> _handMap;
     private PlayerType _playerType;
 
-    public event Action<AbilityCard> OnCardChosen;
+    public event Action<PlayableCardBehaviour> OnCardPlayed;
 
     public void Init(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
     {
@@ -129,7 +128,7 @@ public class CardHandController : MonoBehaviour
 
     public void PlayCard(PlayableCardBehaviour card, Action callback = null)
     {
-        OnCardChosen?.Invoke(card.Card);
+        Debug.LogWarning("Play Card");
 
         Vector3 playPosition = _playCardLocator.position;
         Vector3 playScale = new Vector2(0.6f, 0.6f);
@@ -142,14 +141,16 @@ public class CardHandController : MonoBehaviour
 
         LTBezierPath path = new LTBezierPath(new Vector3[] { start, point2, point1, playPosition });
 
+        (card as ICardBehavior).SetSortingOrder(0);
+
         LeanTween.move(card.gameObject, path, 0.3f).setOnComplete(() =>
         {
             PlaceCardOnBoard(card);
 
             callback?.Invoke();
-        });
+            OnCardPlayed?.Invoke(card);
 
-        (card as ICardBehavior).SetSortingOrder(0);
+        });
     }
 
     public void OnCardGrabbed(PlayableCardBehaviour grabbedCard)

@@ -9,15 +9,13 @@ namespace Silvermine.Battle.Core
 
     public class BoardSessionManager
     {
-        public Board GameBoard { get; private set; }
-        public IPlayer PlayerOne;
-        public IPlayer PlayerTwo;
+        public PlayerInfo PlayerOne;
+        public PlayerInfo PlayerTwo;
         public int CurrentTurn;
-        public IPlayer CurrentTurnPlayer { get; private set; }
+        public PlayerInfo CurrentTurnPlayer { get; private set; }
 
-        public BoardSessionManager(Board gameBoard, IPlayer playerOne, IPlayer playerTwo)
+        public BoardSessionManager(PlayerInfo playerOne, PlayerInfo playerTwo)
         {
-            GameBoard = gameBoard;
             PlayerOne = playerOne;
             PlayerTwo = playerTwo;
             CurrentTurnPlayer = PlayerOne;
@@ -30,10 +28,10 @@ namespace Silvermine.Battle.Core
             CurrentTurnPlayer = CurrentTurn % 2 == 0 ? PlayerTwo : PlayerOne;
         }
         
-        public void SetPlayerChoice(IPlayer player, AbilityCard card)
+        public void SetPlayerChoice(PlayerInfo player, AbilityCard card)
         {
-            player.Info.BattleChoice = card;
-            player.Info.Hand.Remove(card);
+            player.BattleChoice = card;
+            player.Hand.Remove(card);
         }
     }
 }

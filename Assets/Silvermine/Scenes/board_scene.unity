@@ -608,9 +608,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 601415878}
+  - component: {fileID: 601415880}
   - component: {fileID: 601415879}
   m_Layer: 0
-  m_Name: EnemyHandController
+  m_Name: EnemyBehavior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -652,6 +653,19 @@ MonoBehaviour:
   - {fileID: 509369777}
   _playCardLocator: {fileID: 653163687}
   _stateMachine: {fileID: 0}
+--- !u!114 &601415880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601415877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c4981a7edc873c46899f4595e3dfaba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerHand: {fileID: 601415879}
 --- !u!1 &638457977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,9 +1185,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1765176907}
+  - component: {fileID: 1765176909}
   - component: {fileID: 1765176908}
   m_Layer: 0
-  m_Name: PlayerHandController
+  m_Name: MainPlayerBehavior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1215,6 +1230,19 @@ MonoBehaviour:
   - {fileID: 700605665}
   _playCardLocator: {fileID: 656292293}
   _stateMachine: {fileID: 0}
+--- !u!114 &1765176909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765176906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bbac63c8fa4442469ff9b0e5cc83857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerHand: {fileID: 1765176908}
 --- !u!1 &1831457245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1276,8 +1304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c6a0f4db0e97e42b70278a77d1f86f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerHand: {fileID: 1765176908}
-  _enemyHand: {fileID: 601415879}
+  _mainPlayer: {fileID: 1765176909}
+  _enemyPlayer: {fileID: 601415880}
   _battleText: {fileID: 1730191669}
   _boardStateMachine: {fileID: 1831457246}
   PlayerOneChoice: {fileID: 0}

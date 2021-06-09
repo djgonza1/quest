@@ -5,48 +5,42 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : MonoBehaviour, IPlayer
+public class BoardSceneManager : MonoBehaviour
 {
     public const float CardOverSizePosOffset = 3f;
     public const float CardOverSizeScale = 3f;
 
-    [SerializeField] private CardHandController _playerHand;
-    [SerializeField] private CardHandController _enemyHand;
+    [SerializeField] private PlayerBehavior _mainPlayer;
+    [SerializeField] private PlayerBehavior _enemyPlayer;
     [SerializeField] private Text _battleText = null;
     [SerializeField] private BoardStateMachine _boardStateMachine;
 
     public BoardSessionManager Session { get; private set; }
-    public IPlayer Player { get; private set; }
-    public PlayerInfo Info { get; private set; }
-    public IPlayer Enemy { get; private set; }
-    public PlayableCardBehaviour PlayerOneChoice;
-    public PlayableCardBehaviour PlayerTwoChoice;
-    public CardHandController PlayerHandController { get => _playerHand; }
-    public CardHandController EnemyHandController { get => _enemyHand; }
+    public Dictionary<PlayerInfo, PlayerBehavior> Players { get; private set; }
+    public PlayerBehavior CurrentPlayer => Players[Session.CurrentTurnPlayer];
 
     // Start is called before the first frame update
     void Start()
     {
 
-        Info = new PlayerInfo();
+        PlayerInfo playerOneInfo = new PlayerInfo();
         PlayerInfo playerTwoInfo = new PlayerInfo();
+        Session = new BoardSessionManager(playerOneInfo, playerTwoInfo);
 
-        Board gameBoard = new Board(Info, playerTwoInfo);
-
-        Player = this;
-        Enemy = new OfflineAIPlayer(gameBoard, playerTwoInfo, this);
-        Session = new BoardSessionManager(gameBoard, Player, Enemy);
+        Players = new Dictionary<PlayerInfo, PlayerBehavior>();
+        Players.Add(playerOneInfo, _mainPlayer);
+        Players.Add(playerTwoInfo, _enemyPlayer);
         
         ContentManager.Instance.LoadAbilityCardsPrefabs(StartBoardGameSession);
     }
 
     private void StartBoardGameSession()
     {
-        List<AbilityCard> playerCards = Session.GameBoard.GetPlayerHand(PlayerType.First);
-        List<AbilityCard> enemyCards = Session.GameBoard.GetPlayerHand(PlayerType.Second);
+        // List<AbilityCard> playerCards = Session.GameBoard.GetPlayerHand(PlayerType.First);
+        // List<AbilityCard> enemyCards = Session.GameBoard.GetPlayerHand(PlayerType.Second);
 
-        _playerHand.Init(playerCards, PlayerType.First);
-        _enemyHand.Init(enemyCards, PlayerType.Second);
+        _mainPlayer.Init(Session.PlayerOne, PlayerType.First);
+        _enemyPlayer.Init(Session.PlayerTwo, PlayerType.Second);
 
         _boardStateMachine.Init();
     }
@@ -61,22 +55,6 @@ public class BoardSceneManager : MonoBehaviour, IPlayer
         yield return new WaitForSeconds(openDuration);
 
         _battleText.gameObject.SetActive(false);
-    }
-
-    public void RequestCardChoice(Action<AbilityCard> onCardChosen)
-    {
-        Action<AbilityCard> onPlayerCardChosen = null;
-        onPlayerCardChosen = (card) =>
-        {
-            _playerHand.OnCardChosen -= onPlayerCardChosen;
-
-            PlayerOneChoice = PlayerHandController.GetCard(card);
-
-            onCardChosen(card);
-
-        };
-
-        _playerHand.OnCardChosen += onPlayerCardChosen;
     }
 
     public IEnumerator OpenChooseCardPopup()
@@ -97,7 +75,8 @@ public class BoardSceneManager : MonoBehaviour, IPlayer
         yield return new WaitForSeconds(2f);
 
         _battleText.gameObject.SetActive(false);
-        PlayerOneChoice.FlipCard(true);
+
+        CurrentPlayer.CardChoice.FlipCard(true);
 
         yield return new WaitForSeconds(1f);
     }
