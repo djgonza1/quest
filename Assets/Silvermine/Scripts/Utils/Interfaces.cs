@@ -25,14 +25,4 @@ namespace Silvermine.Battle.Core
         void SetSortingOrder(int order);
         void Highlight(bool enable);
     }
-
-    public interface IPlayer
-    {
-        void RequestCardChoice(Action<AbilityCard> onCardChosen);
-    }
-
-    public interface IOnlinePlayer
-    {
-        void OnOpponentFound();
-    }
 }

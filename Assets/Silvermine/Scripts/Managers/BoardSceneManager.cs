@@ -5,153 +5,79 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Silvermine.Battle.Core;
 
-public class BoardSceneManager : MonoBehaviour, IBattleEventManager, IPlayer
+public class BoardSceneManager : MonoBehaviour
 {
     public const float CardOverSizePosOffset = 3f;
     public const float CardOverSizeScale = 3f;
 
-    [SerializeField] private CardHandController _playerHand;
-    [SerializeField] private CardHandController _enemyHand;
+    [SerializeField] private PlayerBehavior _mainPlayer;
+    [SerializeField] private PlayerBehavior _enemyPlayer;
     [SerializeField] private Text _battleText = null;
+    [SerializeField] private BoardStateMachine _boardStateMachine;
 
-    private BoardSessionManager _session;
+    public BoardSessionManager Session { get; private set; }
+    public Dictionary<PlayerInfo, PlayerBehavior> Players { get; private set; }
+    public PlayerBehavior CurrentPlayer => Players[Session.CurrentTurnPlayer];
 
-    public PlayableCardBehaviour PlayerOneChoice;
-    public PlayableCardBehaviour PlayerTwoChoice;
-    public CardHandController PlayerHandController { get => _playerHand; }
-    public CardHandController EnemyHandController { get => _enemyHand; }
-    public ActionQueue CallbackQueue;
-
-    
     // Start is called before the first frame update
     void Start()
     {
-        CallbackQueue = new ActionQueue();
 
         PlayerInfo playerOneInfo = new PlayerInfo();
         PlayerInfo playerTwoInfo = new PlayerInfo();
+        Session = new BoardSessionManager(playerOneInfo, playerTwoInfo);
 
-        Board gameBoard = new Board(playerOneInfo, playerTwoInfo);
-
-        IPlayer player = this;
-        IPlayer opponent = new OfflineAIPlayer(gameBoard, PlayerType.Second, this);
-        _session = new BoardSessionManager(gameBoard, player, opponent, this);
-        
-        CallbackQueue = new ActionQueue();
+        Players = new Dictionary<PlayerInfo, PlayerBehavior>();
+        Players.Add(playerOneInfo, _mainPlayer);
+        Players.Add(playerTwoInfo, _enemyPlayer);
         
         ContentManager.Instance.LoadAbilityCardsPrefabs(StartBoardGameSession);
     }
 
     private void StartBoardGameSession()
     {
-        List<AbilityCard> playerCards = _session.GameBoard.GetPlayerHand(PlayerType.First);
-        List<AbilityCard> enemyCards = _session.GameBoard.GetPlayerHand(PlayerType.Second);
+        // List<AbilityCard> playerCards = Session.GameBoard.GetPlayerHand(PlayerType.First);
+        // List<AbilityCard> enemyCards = Session.GameBoard.GetPlayerHand(PlayerType.Second);
 
-        _playerHand.Init(playerCards, PlayerType.First);
-        _enemyHand.Init(enemyCards, PlayerType.Second);
+        _mainPlayer.Init(Session.PlayerOne, PlayerType.First);
+        _enemyPlayer.Init(Session.PlayerTwo, PlayerType.Second);
 
-        _session.StartSession();
+        _boardStateMachine.Init();
     }
     
-    public void OnBoardOpen()
+    public IEnumerator OpenBoard()
     {
-        QueuedAction boardOpenStart = (boardOpenEnd) =>
-        {
-            _battleText.text = "GameStart";
-            _battleText.gameObject.SetActive(true);
+        float openDuration = 2f;
 
-            DelayCall(2f, () =>
-            {
-                _battleText.gameObject.SetActive(false);
-                boardOpenEnd();
-            });
-        };
+        _battleText.text = "GameStart";
+        _battleText.gameObject.SetActive(true);
 
-        CallbackQueue.QueuedCall(boardOpenStart);
-    }
-    
+        yield return new WaitForSeconds(openDuration);
 
-    public void RequestCardChoice(Action<AbilityCard> onCardChosen)
-    {
-        QueuedAction chooseCardsStart = (chooseCardEnd) =>
-        {
-            Action<AbilityCard> onPlayerCardChosen = null;
-            onPlayerCardChosen = (card) =>
-            {
-                _playerHand.OnCardChosen -= onPlayerCardChosen;
-
-                PlayerOneChoice = PlayerHandController.GetCard(card);
-
-                onCardChosen(card);
-
-                chooseCardEnd();
-            };
-
-            _playerHand.OnCardChosen += onPlayerCardChosen;
-        };
-
-        CallbackQueue.QueuedCall(chooseCardsStart);
+        _battleText.gameObject.SetActive(false);
     }
 
-    private void OpenChooseCardPopup(Action popupEnd)
+    public IEnumerator OpenChooseCardPopup()
     {
         _battleText.text = "Choose Card";
         _battleText.gameObject.SetActive(true);
 
-        DelayCall(2f, () =>
-        {
-            _battleText.gameObject.SetActive(false);
-            popupEnd();
-        });
+        yield return new WaitForSeconds(2f);
+
+        _battleText.gameObject.SetActive(false);
     }
 
-    public void OnChoosingPhaseStart()
+    public IEnumerator BattlePhaseStart()
     {
-        CallbackQueue.QueuedCall(OpenChooseCardPopup);
-    }
+        _battleText.text = "Flip Cards";
+        _battleText.gameObject.SetActive(true);
 
-    public void OnBattlePhaseStart(PlayerType winner)
-    {
-        QueuedAction phaseStart = (phaseEnd) =>
-        {
-            _battleText.text = "Flip Cards";
-            _battleText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
 
-            DelayCall(2f, () =>
-            {
-                _battleText.text = "Flip Cards";
-                _battleText.gameObject.SetActive(false);
-                phaseEnd();
-            });
-        };
+        _battleText.gameObject.SetActive(false);
 
-        QueuedAction flipStart = (flipEnd) =>
-        {
-            PlayerOneChoice.FlipCard(true);
-            PlayerTwoChoice.FlipCard(true);
+        CurrentPlayer.CardChoice.FlipCard(true);
 
-            DelayCall(1f, () =>
-            {
-                flipEnd();
-            });
-        };
-
-        CallbackQueue.QueuedCall(phaseStart)
-                     .QueuedCall(flipStart);
-    }
-
-    public void DelayCall(float delay, Action callback)
-    {
-        StartCoroutine(DelayedAction(delay, callback));
-    }
-    
-    private IEnumerator DelayedAction(float delay, Action callback)
-    {
-        if(delay > 0f)
-        {
-            yield return new WaitForSeconds(delay);
-        }
-
-        callback.Invoke();
+        yield return new WaitForSeconds(1f);
     }
 }

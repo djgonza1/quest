@@ -50,12 +50,6 @@ namespace Silvermine.Battle.Core
                     return null;
             }
         }
-
-        public void SetPlayerChoice(PlayerType player, AbilityCard card)
-        {
-            this[player].BattleChoice = card;
-            this[player].Hand.Remove(card);
-        }
     }
 
     public class PlayerInfo

@@ -3,41 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Silvermine.Battle.Core
-{
-    public class AIPlayer : IPlayer
-    {
-        private Board _gameBoard;
-        private PlayerInfo _info;
+// namespace Silvermine.Battle.Core
+// // {
+// //     public class AIPlayer : IPlayer
+// //     {
+// //     public PlayerInfo Info { get; }
+// //         private Board _gameBoard;
 
-        public AIPlayer(Board board, PlayerType player)
-        {
-            _gameBoard = board;
-            _info = _gameBoard[player];
-        }
+// //         public AIPlayer(Board board, PlayerInfo info)
+// //         {
+// //             _gameBoard = board;
+// //             Info = info;
+// //         }
 
-        public AbilityCard ChooseCardToPlay()
-        {
-            AbilityCard chosenCard = null;
+// //         public AbilityCard ChooseCardToPlay()
+// //         {
+// //             AbilityCard chosenCard = null;
 
-            foreach (var card in _info.Hand)
-            {
-                if (card != null)
-                {
-                    chosenCard = card;
-                    break;
-                }
-            }
+// //             foreach (var card in Info.Hand)
+// //             {
+// //                 if (card != null)
+// //                 {
+// //                     chosenCard = card;
+// //                     break;
+// //                 }
+// //             }
 
-            return chosenCard;
-        }
+// //             return chosenCard;
+// //         }
 
-        public void RequestCardChoice(Action<AbilityCard> onCardChosen)
-        {
-            var cardChosen = ChooseCardToPlay();
+// //         public void RequestCardChoice(Action<AbilityCard> onCardChosen)
+// //         {
+// //             var cardChosen = ChooseCardToPlay();
 
-            onCardChosen?.Invoke(cardChosen);
-        }
-    }
-}
+// //             onCardChosen?.Invoke(cardChosen);
+// //         }
+// //     }
+// }
 

@@ -12,25 +12,12 @@ public class CardHandController : MonoBehaviour
     private Dictionary<AbilityCard, HandCardInfo> _handMap;
     private PlayerType _playerType;
 
-    public event Action<AbilityCard> OnCardChosen;
+    public event Action<PlayableCardBehaviour> OnCardPlayed;
 
     public void Init(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
     {
         _playerType = playerType;
         _handMap = CreateHandMap(cards, playerType);
-    }
-
-    void Update()
-    {
-        if (_handMap == null)
-        {
-            return;
-        }
-
-        foreach (var cardInfo in _handMap.Values)
-        {
-            cardInfo.StateMachine.Update();
-        }
     }
     
     public Dictionary<AbilityCard, HandCardInfo> CreateHandMap(List<AbilityCard> cards, PlayerType playerType = PlayerType.First)
@@ -45,8 +32,6 @@ public class CardHandController : MonoBehaviour
 
             Transform handLoc = _cardLocators[i];
 
-            SMStateMachine<PlayableCardBehaviour> machine = null;
-
             //Set state machine for card depending on player type
             if (playerType == PlayerType.First)
             {
@@ -58,7 +43,7 @@ public class CardHandController : MonoBehaviour
                     new InPlay()
                 };
                 
-                machine = new SMStateMachine<PlayableCardBehaviour>(cardObject, states);
+                cardObject.StateMachine.Begin(cardObject, states);
             }
             else
             {
@@ -68,10 +53,10 @@ public class CardHandController : MonoBehaviour
                     new InPlay()
                 };
 
-                machine = new SMStateMachine<PlayableCardBehaviour>(cardObject, states);
+                cardObject.StateMachine.Begin(cardObject, states);
             }
 
-            HandCardInfo cardInfo = new HandCardInfo(cardObject, handLoc.position, GetHandCardScale(), machine);
+            HandCardInfo cardInfo = new HandCardInfo(cardObject, handLoc.position, GetHandCardScale(), cardObject.StateMachine);
 
             handMap.Add(cards[i], cardInfo);
         }
@@ -143,7 +128,7 @@ public class CardHandController : MonoBehaviour
 
     public void PlayCard(PlayableCardBehaviour card, Action callback = null)
     {
-        OnCardChosen?.Invoke(card.Card);
+        Debug.LogWarning("Play Card");
 
         Vector3 playPosition = _playCardLocator.position;
         Vector3 playScale = new Vector2(0.6f, 0.6f);
@@ -156,14 +141,16 @@ public class CardHandController : MonoBehaviour
 
         LTBezierPath path = new LTBezierPath(new Vector3[] { start, point2, point1, playPosition });
 
+        (card as ICardBehavior).SetSortingOrder(0);
+
         LeanTween.move(card.gameObject, path, 0.3f).setOnComplete(() =>
         {
             PlaceCardOnBoard(card);
 
             callback?.Invoke();
-        });
+            OnCardPlayed?.Invoke(card);
 
-        (card as ICardBehavior).SetSortingOrder(0);
+        });
     }
 
     public void OnCardGrabbed(PlayableCardBehaviour grabbedCard)

@@ -14,11 +14,11 @@ namespace Silvermine.Battle.Core
 
         }
 
-        public virtual void Update()
+        public virtual IEnumerator Reason()
         {
-
+            yield break;
         }
-
+        
         public virtual void End()
         {
 
