@@ -10,14 +10,14 @@ public class BoardSceneManager : MonoBehaviour
     public const float CardOverSizePosOffset = 3f;
     public const float CardOverSizeScale = 3f;
 
-    [SerializeField] private PlayerBehavior _mainPlayer;
-    [SerializeField] private PlayerBehavior _enemyPlayer;
-    [SerializeField] private Text _battleText = null;
-    [SerializeField] private BoardStateMachine _boardStateMachine;
+    [SerializeField] private PlayerBehavior     _mainPlayer;
+    [SerializeField] private PlayerBehavior     _enemyPlayer;
+    [SerializeField] private Text               _battleText = null;
+    [SerializeField] private BoardStateMachine  _boardStateMachine;
 
-    public BoardSessionManager Session { get; private set; }
-    public Dictionary<PlayerInfo, PlayerBehavior> Players { get; private set; }
-    public PlayerBehavior CurrentPlayer => Players[Session.CurrentTurnPlayer];
+    public BoardSessionManager                      Session { get; private set; }
+    public Dictionary<PlayerInfo, PlayerBehavior>   Players { get; private set; }
+    public PlayerBehavior                           CurrentPlayer => Players[Session.CurrentTurnPlayer];
 
     // Start is called before the first frame update
     void Start()
