@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +14,7 @@ public class BoardSceneManager : MonoBehaviour
     [SerializeField] private PlayerBehavior     _enemyPlayer;
     [SerializeField] private Text               _battleText = null;
     [SerializeField] private BoardStateMachine  _boardStateMachine;
+    [SerializeField] List<Transform> _selectedCardLocators;
 
     public BoardSessionManager                      Session { get; private set; }
     public Dictionary<PlayerInfo, PlayerBehavior>   Players { get; private set; }
