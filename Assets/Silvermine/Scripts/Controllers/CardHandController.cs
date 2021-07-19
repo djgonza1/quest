@@ -39,7 +39,7 @@ public class CardHandController : MonoBehaviour
                 {
                     new ChoosableInHand(this),
                     new HighlightableInHand(this),
-                    new Grabbed(this),
+                    new CardFocused(),
                     new InPlay()
                 };
                 
