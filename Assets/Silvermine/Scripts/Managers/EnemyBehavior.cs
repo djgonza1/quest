@@ -10,7 +10,7 @@ public class EnemyBehavior : PlayerBehavior
 
     public override PlayableCardBehaviour CardChoice => _cardChoice;
 
-    protected override IEnumerator WaitForCardPlayed()
+    public override IEnumerator PlayCard(Action<PlayableCardBehaviour> callback = null)
     {
         _cardChoice = null;
 
@@ -31,5 +31,7 @@ public class EnemyBehavior : PlayerBehavior
         while (wait) { yield return 0; }
 
         yield return _cardChoice;
+        
+        callback(CardChoice);
     }
 }
