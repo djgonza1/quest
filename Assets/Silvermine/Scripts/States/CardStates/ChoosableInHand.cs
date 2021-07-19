@@ -23,7 +23,7 @@ public class ChoosableInHand : SMState<PlayableCardBehaviour>
         _context.OnMouseEnterCard += CardEnter;
         _context.OnMouseExitCard += OnCardExit;
         _context.OnMouseHoverCard += OnCardHover;
-        _context.OnMouseDragCard += OnCardDrag;
+        _context.OnMouseUnclicksCard += OnCardChosen;
     }
 
     public override void End()
@@ -31,7 +31,7 @@ public class ChoosableInHand : SMState<PlayableCardBehaviour>
         _context.OnMouseEnterCard -= CardEnter;
         _context.OnMouseExitCard -= OnCardExit;
         _context.OnMouseHoverCard -= OnCardHover;
-        _context.OnMouseDragCard -= OnCardDrag;
+        _context.OnMouseUnclicksCard -= OnCardChosen;
     }
 
     private void CardEnter(PlayableCardBehaviour card)
@@ -69,9 +69,9 @@ public class ChoosableInHand : SMState<PlayableCardBehaviour>
         }
     }
 
-    private void OnCardDrag(PlayableCardBehaviour card)
+    private void OnCardChosen(PlayableCardBehaviour card)
     {
         card.Highlight(false);
-        _stateMachine.ChangeState<Grabbed>();
+        _stateMachine.ChangeState<CardFocused>();
     }
 }
