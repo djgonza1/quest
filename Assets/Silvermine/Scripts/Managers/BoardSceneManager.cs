@@ -13,7 +13,6 @@ public class BoardSceneManager : MonoBehaviour
     [SerializeField] private PlayerBehavior     _mainPlayer;
     [SerializeField] private PlayerBehavior     _enemyPlayer;
     [SerializeField] private Text               _battleText = null;
-    [SerializeField] private BoardStateMachine  _boardStateMachine;
     [SerializeField] List<Transform> _selectedCardLocators;
 
     public BoardSessionManager                      Session { get; private set; }
@@ -43,7 +42,20 @@ public class BoardSceneManager : MonoBehaviour
         _mainPlayer.Init(Session.PlayerOne, PlayerType.First);
         _enemyPlayer.Init(Session.PlayerTwo, PlayerType.Second);
 
-        _boardStateMachine.Init();
+        StartCoroutine(BeginSession());
+    }
+
+    private IEnumerator BeginSession()
+    {
+        yield return OpenBoard();
+
+        while (true)
+        {
+            yield return WaitForPlayerToChooseCard();
+
+            Debug.LogWarning("Starting BattlePhase");
+            yield return BattlePhaseStart();
+        }
     }
     
     public IEnumerator OpenBoard()
@@ -56,6 +68,23 @@ public class BoardSceneManager : MonoBehaviour
         yield return new WaitForSeconds(openDuration);
 
         _battleText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator WaitForPlayerToChooseCard()
+    {
+        Debug.LogWarning("Starting ChoosingPhase");
+        yield return OpenChooseCardPopup();
+        
+        var currentPlayer = CurrentPlayer;
+
+        PlayableCardBehaviour cardBehavior = null;
+        yield return currentPlayer.PlayCard((card)=> { cardBehavior = card; });
+
+        Debug.LogWarning("After chose card in state machine");
+
+        Session.SetPlayerChoice(currentPlayer.Info, cardBehavior.Card);
+
+        yield return new WaitForSeconds(5f);
     }
 
     public IEnumerator OpenChooseCardPopup()
